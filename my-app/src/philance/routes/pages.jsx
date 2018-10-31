@@ -13,6 +13,7 @@ import UserProfile from "philance/views/Pages/UserProfilePage.jsx";
 import ForgotPassword from "../views/Pages/ForgotPassword";
 import ProjectDetails from "../views/Pages/ProjectDetails"
 import ApplicationPage from "philance/views/Pages/ApplicationPage.jsx"
+import ProjectApplicantPage from "philance/views/Pages/ProjectApplicantPage.jsx"
 
 // @material-ui/icons
 import HomeIcon from "@material-ui/icons/Home";
@@ -27,8 +28,23 @@ import PersonIcon from "@material-ui/icons/Person";
 import FolderIcon from "@material-ui/icons/Folder";
 import ResetPasswordPublic from "../views/Pages/ResetPasswordPublic";
 import Profile from "../views/Pages/Profile";
+import ProfileSettings from "../views/Pages/ProfileSettings";
+import ProjectNavigator from "../views/Pages/ProjectNavigator";
+import ProjectTeam from "../views/Pages/ProjectTeam";
+import CreateProjectTaskDetails from "../views/Pages/CreateProjectTaskDetails";
+import ProjectTaskDetails from "../views/Pages/ProjectTaskDetails";
+import ProjectTaskView from "../views/Pages/ProjectTaskView";
+import ProjectChat from "../views/Pages/ProjectChat";
 
 export const pagesRoutes = [
+  {
+    path: "/project-details/:id",
+    name: "Project Details",
+    short: "Details",
+    mini: "PD",
+    icon: FolderIcon,
+    component: ProjectDetails
+  },
   {
     path: "/home",
     name: "Home",
@@ -84,7 +100,7 @@ export const pagesRoutes = [
     mini: "FP",
     icon: PersonAddIcon,
     component: ForgotPassword
-    
+
   },
   {
     path: "/resetPassword/:id",
@@ -93,7 +109,7 @@ export const pagesRoutes = [
     mini: "RP",
     icon: PersonAddIcon,
     component: ResetPasswordPublic
-    
+
   },
   {
     redirect: true,
@@ -202,6 +218,14 @@ export const pvtSidebarRoutes = [
     icon: NotificationsIcon,
     component: NotificationsPage
   },
+  // {
+  //   path: "/settings",
+  //   name: "Settings",
+  //   short: "Settings",
+  //   mini: "S",
+  //   icon: NotificationsIcon,
+  //   component: ProfileSettings
+  // },
   {
     path: "/messages",
     name: "Messages",
@@ -236,6 +260,22 @@ export const pvtPagesRoutes = [
     component: StartProjectPage
   },
   {
+    path: "/project-details/tasks/create",
+    name: "Create Project Tasks",
+    short: "Create Tasks",
+    mini: "CPTk",
+    icon: SearchIcon,
+    component: CreateProjectTaskDetails
+  },
+  {
+    path: "/project-details/tasks/:id",
+    name: "View Project Task",
+    short: "View Task",
+    mini: "CPTk",
+    icon: SearchIcon,
+    component: ProjectTaskDetails
+  },
+  {
     path: "/find-project",
     name: "Find Project",
     short: "Find A project",
@@ -258,6 +298,22 @@ export const pvtPagesRoutes = [
     mini: "NP",
     icon: NotificationsIcon,
     component: NotificationsPage
+  },
+  {
+    path: "/project-details",
+    name: "Project Navigator",
+    short: "Details",
+    mini: "PD",
+    icon: FolderIcon,
+    component: ProjectNavigator
+  },
+  {
+    path: "/settings",
+    name: "Settings",
+    short: "Settings",
+    mini: "S",
+    icon: NotificationsIcon,
+    component: ProfileSettings
   },
   {
     path: "/messages",
@@ -292,12 +348,12 @@ export const pvtPagesRoutes = [
     component: UserProfile
   },
   {
-    path: "/project-details/:id",
-    name: "Project Details",
-    short: "Details",
-    mini: "PD",
-    icon: FolderIcon,
-    component: ProjectDetails
+    path: "/project/:projectId/user/:userId",
+    name: "Project Applicant",
+    short: "Project Applicant",
+    mini: "PA",
+    icon: PersonIcon,
+    component: ProjectApplicantPage
   },
   {
     path: "/application-page/:id",
@@ -320,3 +376,69 @@ export const pvtPagesRoutes = [
     name: "Home"
   }
 ];
+export const projectPagesRoutes = [
+  {
+    path: "/project-details/info",
+    name: "Project Info",
+    short: "Info",
+    mini: "Info",
+    icon: HomeIcon,
+    component: ProjectDetails
+  },
+  {
+    path: "/project-details/team",
+    name: "Project Team",
+    short: "Team",
+    mini: "PTm",
+    icon: LaunchIcon,
+    component: ProjectTeam
+  },
+  {
+    path: "/project-details/tasks",
+    name: "Project Tasks",
+    short: "Tasks",
+    mini: "PTk",
+    icon: SearchIcon,
+    component: ProjectTaskView
+  },
+  {
+    path: "/project-details/v1/chat",
+    name: "Project Chat",
+    short: "Chat",
+    mini: "PC",
+    icon: FolderIcon,
+    component: ProjectChat
+  }]
+export const projectPagesHeaderRoutes = [
+  {
+    path: "/project-details/info",
+    name: "Details",
+    short: "Details",
+    mini: "D",
+    icon: HomeIcon,
+    component: ProjectDetails
+  },
+  {
+    path: "/project-details/team",
+    name: "Project Team",
+    short: "Team",
+    mini: "PTm",
+    icon: LaunchIcon,
+    component: ProjectTeam
+  },
+  {
+    path: "/project-details/tasks",
+    name: "Project Tasks",
+    short: "Tasks",
+    mini: "PTk",
+    icon: SearchIcon,
+    component: CreateProjectTaskDetails
+  },
+  {
+    path: "/project-details/v1/chat",
+    name: "Project Chat",
+    short: "Chat",
+    mini: "PC",
+    icon: FolderIcon,
+    component: ProjectChat
+  }]

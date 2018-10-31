@@ -66,11 +66,11 @@ export const resetPassword = ({email}) => {
             email: email
         })
         .then(response=>{
-            const status = response.status
+            // const status = response.status
                 dispatch({type: RESET_PASSWORD_EMAIL_SENT})
         })
         .catch(error=>{
-            const status = error.response.status 
+            // const status = error.response.status 
                 dispatch({type: RESET_PASSWORD_NETWORK_ERROR})
         });
     }
@@ -94,11 +94,11 @@ export const resetPasswordFinal = ({password,token}) => {
             password: password
         })
         .then(response=>{
-            const status = response.status
+            // const status = response.status
                 dispatch({type: PASSWORD_CHANGED_SUCCESS})
         })
         .catch(error=>{
-            const status = error.response.status 
+            // const status = error.response.status 
                 dispatch({type: RESET_PASSWORD_NETWORK_ERROR})
         });
     }

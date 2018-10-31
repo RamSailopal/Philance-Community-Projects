@@ -2,7 +2,6 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import {connect} from 'react-redux'
-import axios from 'axios'
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
 import FormLabel from "@material-ui/core/FormLabel";
@@ -11,7 +10,7 @@ import {CountryDropdown, InterestsDropdown} from '../../components/DoubleDropdow
 // @material-ui/icons
 import PermIdentity from "@material-ui/icons/PermIdentity";
 
-import { Button as Buttons, Label, Icon} from 'semantic-ui-react';
+import {Label} from 'semantic-ui-react';
 
 // core components
 import GridContainer from "components/Grid/GridContainer.jsx";
@@ -53,12 +52,8 @@ import {
 } from '../../actions/userProfile'
 
 import Toaster from "../../components/Toaster/Toaster";
-import { hostname } from "../../../config";
 
 class UserProfile extends React.Component {
-  constructor(props) {
-    super(props);
-  }
 
   onCountryChanged(text) {
     store.dispatch(countryChanged(text))
@@ -187,7 +182,7 @@ class UserProfile extends React.Component {
                       labelText="Email address"
                       id="email-address"
                       inputProps={{
-                        defaultValue: this.props.currentEmail
+                        value: this.props.currentEmail
                       }}
                       formControlProps={{  
                         fullWidth: true,
@@ -244,12 +239,10 @@ class UserProfile extends React.Component {
                     </GridItem>
                     <GridItem xs={12} sm={12} md={12}>
                     
-                    {console.log(this.props.interests,'********0')}
                     <InterestsDropdown 
                     onInterestsChange={
                       async (e, {value})=>{
                         await this.setState({value:value})
-                        {console.log({value},'********0.5')}
                         if (this.state.value === "") {
                           await this.setState({
                               valid:true
@@ -265,14 +258,13 @@ class UserProfile extends React.Component {
                   }
                   interestOptions={this.props.interestOptions} defaultValue={this.props.interests?this.props.interests:null}
                   />
-                  {console.log(this.props.interests,'********1')}
                   </GridItem>
                   <GridItem xs={12} sm={12} md={12}>
                     <CustomInput
                       labelText="Your Zip Code"
                       id="postal-code"
                       inputProps={{
-                        defaultValue: this.props.postalCode
+                        value: this.props.postalCode
                       }}
                       formControlProps={{
                         fullWidth: true,
@@ -287,7 +279,7 @@ class UserProfile extends React.Component {
                       labelText="Phone"
                       id="contact"
                       inputProps={{
-                        defaultValue: this.props.contact
+                        value: this.props.contact
                       }}
                       formControlProps={{
                         fullWidth: true,
@@ -322,9 +314,9 @@ class UserProfile extends React.Component {
                 
                 {
                   this.props.displayImage?
-                  <img src={this.props.userImageUrl?this.props.userImageUrl:avatar}/>
+                  <img src={this.props.userImageUrl?this.props.userImageUrl:avatar} alt="Profile Pic"/>
                 :
-                <img src={avatar} />              
+                <img src={avatar} alt="Profile Pic" />              
                 }
 
               </CardAvatar>
@@ -357,7 +349,7 @@ class UserProfile extends React.Component {
                       labelText="Name"
                       id="name"
                       inputProps={{
-                        defaultValue: !this.props.name?this.props.defaultName:this.props.name
+                        value: !this.props.name?this.props.defaultName:this.props.name
                       }}
                       formControlProps={{
                         fullWidth: true,
@@ -374,7 +366,7 @@ class UserProfile extends React.Component {
                       labelText="Title"
                       id="title"
                       inputProps={{
-                        defaultValue: this.props.title
+                        value: this.props.title
                       }}
                       formControlProps={{
                         fullWidth: true,
@@ -405,7 +397,7 @@ class UserProfile extends React.Component {
                       labelText="Organization"
                       id="organization"
                       inputProps={{
-                        defaultValue: this.props.organization
+                        value: this.props.organization
                       }}
                       formControlProps={{
                         fullWidth: true,
@@ -442,7 +434,7 @@ class UserProfile extends React.Component {
                           onChange: e => {
                             this.onDescriptionChange(e.target.value)
                           },
-                        defaultValue: this.props.description
+                          value: this.props.description
                         }}
                       />
                         :

@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "3ff25b35-6235-4eed-ad35-6bd74a8cccc1",
+		"_postman_id": "8b19edae-2582-4492-94bb-82200fa99094",
 		"name": "Philance",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -154,19 +154,18 @@
 					"listen": "test",
 					"script": {
 						"id": "8ce1247d-9224-43ba-b60f-0bb0b91d2cb9",
-						"type": "text/javascript",
 						"exec": [
 							"",
 							"var reqBody = JSON.parse(request.data);",
 							"var resBody = JSON.parse(responseBody);",
-							"",
 							"switch (responseCode.code){",
 							"    ",
 							"    case 200:{",
 							"        tests[\"Status code is 200\"] = responseCode.code === 200;",
 							"        tests[\"Authentication\"] = resBody.message === \"authentication successful\";",
 							"        tests[\"Returned token\"] = resBody.token !== null;",
-							"        ",
+							"        console.log(resBody.token)",
+							"        postman.setEnvironmentVariable(\"token\",resBody.token);",
 							"        break;",
 							"    }",
 							"    case 409:{",
@@ -180,7 +179,8 @@
 							"    ",
 							"}",
 							""
-						]
+						],
+						"type": "text/javascript"
 					}
 				}
 			],
@@ -223,7 +223,6 @@
 					"listen": "test",
 					"script": {
 						"id": "08a8d3e3-bc25-4bbf-bf81-4efc8677c568",
-						"type": "text/javascript",
 						"exec": [
 							"// var reqBody = JSON.parse(request.data);",
 							"var resBody = JSON.parse(responseBody);",
@@ -253,13 +252,20 @@
 							"    ",
 							"}",
 							""
-						]
+						],
+						"type": "text/javascript"
 					}
 				}
 			],
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": ""
@@ -332,22 +338,28 @@
 					"listen": "test",
 					"script": {
 						"id": "5f3ae3a2-a917-4a88-bb12-f9a7bf611a58",
-						"type": "text/javascript",
 						"exec": [
 							"tests[\"Status code is 200\"] = responseCode.code === 200;"
-						]
+						],
+						"type": "text/javascript"
 					}
 				}
 			],
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": ""
 				},
 				"url": {
-					"raw": "http://localhost:3001/philance/users/1",
+					"raw": "http://localhost:3001/philance/users/1?=",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -357,6 +369,12 @@
 						"philance",
 						"users",
 						"1"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": ""
+						}
 					]
 				},
 				"description": "UserSearchById"
@@ -507,17 +525,16 @@
 					"listen": "test",
 					"script": {
 						"id": "aebb438d-6e57-4aa4-a50e-783a218b647c",
-						"type": "text/javascript",
 						"exec": [
 							"tests[\"Status code is 200\"] = responseCode.code === 200;",
 							"var jsonData = JSON.parse(responseBody);",
-							"tests[\"project_Id\"] = jsonData.Projects[0].project_id === 1;",
-							"tests[\"status\"] = jsonData.Projects[0].status === \"ACTIVE\";",
-							"tests[\"created_by\"] = jsonData.Projects[0].created_by === 1;",
-							"tests[\"OWNER\"] = jsonData.Projects[0].OWNER === \"OWNER\";",
+							"tests[\"project_Id\"] = jsonData[0].projectId === 1;",
+							"tests[\"status\"] = jsonData[0].status === \"ACTIVE\";",
+							"tests[\"created_by\"] = jsonData[0].createdBy === 1;",
 							"",
 							""
-						]
+						],
+						"type": "text/javascript"
 					}
 				}
 			],

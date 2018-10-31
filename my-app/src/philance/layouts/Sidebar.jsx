@@ -21,7 +21,6 @@ import HeaderLinks from "components/Header/HeaderLinks.jsx";
 import sidebarStyle from "../assets/styles/sidebarStyle.jsx";
 
 import avatar from "assets/img/faces/UpdateProfileAvatarIcon.png";
-import { hostname } from "../../config";
 
 var ps;
 
@@ -210,7 +209,7 @@ class Sidebar extends React.Component {
                 </ListItem>
                 <ListItem className={classes.collapseItem}>
                   <NavLink
-                    to="#"
+                    to="/settings"
                     className={
                       classes.itemLink + " " + classes.userCollapseLinks
                     }
@@ -389,12 +388,6 @@ class Sidebar extends React.Component {
           rtlActive && this.props.miniActive && this.state.miniActive,
         [classes.logoNormalRTL]: rtlActive
       });
-    const logoMini =
-      classes.logoMini +
-      " " +
-      cx({
-        [classes.logoMiniRTL]: rtlActive
-      });
     const logoClasses =
       classes.logo +
       " " +
@@ -517,5 +510,9 @@ Sidebar.propTypes = {
   image: PropTypes.string,
   routes: PropTypes.arrayOf(PropTypes.object)
 };
-
+const mapStateToProps = state => {
+  return {
+      messages: state.projectChat.messages,
+  }
+}
 export default withStyles(sidebarStyle)(Sidebar);

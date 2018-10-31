@@ -16,7 +16,10 @@ import {
     PROJECT_DETAILS_UPDATE_SUCESS,
     PROJECT_DETAILS_REMOVE_TOASTER,
     PROJECT_DETAILS_ID_STORED,
-    PROJECT_DETAILS_INTERESTS_CHANGED
+    PROJECT_DETAILS_INTERESTS_CHANGED,
+    PROJECT_APPLICANT_DETAILS_GET_DETAILS,
+    PROJECT_DETAILS_FILES_CHANGED,
+    PROJECT_DETAILS_CLEAR_FILES
 } from '../types'
 
 export const removeToaster =()=> {
@@ -108,10 +111,26 @@ export const budgetChanged = text => {
         payload: text
       }
   }
-
+  export const clearFiles  = text => {
+      return {
+        type: PROJECT_DETAILS_CLEAR_FILES,
+        payload: text
+      }
+  }
+  export const filesChanged = (text, callback) => {
+    return dispatch => {
+      dispatch({
+        type: PROJECT_DETAILS_FILES_CHANGED,
+        payload: text
+      })
+      callback ? callback() : null
+    }
+  }
+  
 export const updateProject =({name, status, zipCode, interests, country, description, volunteers, freelancers, budget, startDate, endDate, id, userId},loaderCallback)=> {
     let impactCategories = []
     interests.map((element, prop)=>{
+    return(
         impactCategories.push({  
             detailType: "IMPACT_CATEGORY",
             name: element,
@@ -123,10 +142,10 @@ export const updateProject =({name, status, zipCode, interests, country, descrip
             attribute4 : "",
             attribute5 : ""
         })
+    );
     })
 
     return dispatch => {
-        console.log('a', impactCategories)
         axios.put(hostname()+`/philance/projects/${id}`, {
             projectName : name,
             description : description,
@@ -158,7 +177,7 @@ export const updateProject =({name, status, zipCode, interests, country, descrip
     }
 }
 
-export const getProjectById =(id, loaderCallback)=> {
+export const getProjectById =({id}, loaderCallback)=> {
     return dispatch=> {
         let arr = [], interests = [];
         axios.get(hostname()+`/philance/projects/${id}`)
@@ -169,15 +188,50 @@ export const getProjectById =(id, loaderCallback)=> {
                 const element = arr[index];
                 interests.push(element.name)
             }
-        loaderCallback(false)
             dispatch({
                 type: PROJECT_DETAILS_GET_DETAILS,
                 payload: response.data.project[0],
                 interests:interests
             })
+            loaderCallback(false)
         })
         .catch(err=>{
         loaderCallback(false)
+        console.log(err)
+        })
+    }
+}
+
+export const getApplicantForProject =({projectId,userId}, loaderCallback)=> {
+    return dispatch=> {
+        axios.get(hostname()+`/philance/projects/${projectId}/users/${userId}`)
+        .then(response=>{
+            dispatch({
+                type: PROJECT_APPLICANT_DETAILS_GET_DETAILS,
+                payload: response.data
+            })
+            loaderCallback(false)
+        })
+        .catch(err=>{
+        loaderCallback(false)
+        console.log(err)
+        })
+    }
+}
+export const deleteProjectAttachment =({filename,projectId},callback)=> {
+    return dispatch=> {
+        // filename=filename.split('/')[filename.split('/').length-1]
+        axios.delete(hostname()+`${filename}`)
+        .then(response=>{
+            callback()
+            // dispatch({
+            //     type: PROJECT_APPLICANT_DETAILS_GET_DETAILS,
+            //     payload: response.data
+            // })
+            // loaderCallback(false)
+        })
+        .catch(err=>{
+        // loaderCallback(false)
         console.log(err)
         })
     }

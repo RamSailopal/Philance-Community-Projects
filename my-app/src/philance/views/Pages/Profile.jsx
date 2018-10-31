@@ -2,8 +2,8 @@ import React from "react";
 import PropTypes from "prop-types";
 
 import {connect} from 'react-redux'
-import axios from 'axios'
 // @material-ui/core components
+
 import withStyles from "@material-ui/core/styles/withStyles";
 import FormLabel from "@material-ui/core/FormLabel";
 
@@ -11,12 +11,11 @@ import {CountryDropdown, InterestsDropdown} from '../../components/DoubleDropdow
 // @material-ui/icons
 import PermIdentity from "@material-ui/icons/PermIdentity";
 
-import { Button as Buttons, Label, Icon} from 'semantic-ui-react';
+import { Label } from 'semantic-ui-react';
 
 // core components
 import GridContainer from "components/Grid/GridContainer.jsx";
 import GridItem from "components/Grid/GridItem.jsx";
-import Button from "components/CustomButtons/Button.jsx";
 import CustomInput from "philance/components/CustomInput/CustomInput.jsx";
 import Clearfix from "components/Clearfix/Clearfix.jsx";
 import Card from "components/Card/Card.jsx";
@@ -24,31 +23,21 @@ import CardBody from "components/Card/CardBody.jsx";
 import CardHeader from "components/Card/CardHeader.jsx";
 import CardIcon from "components/Card/CardIcon.jsx";
 import CardAvatar from "components/Card/CardAvatar.jsx";
-import store from '../../store/store'
 
 import userProfileStyles from "philance/views/PageStyles/UserProfileStyles.jsx";
 
 import avatar from "assets/img/faces/UpdateProfileAvatarIcon.png";
 
-import {registerToast} from '../../actions/register'
-
 import {
-  updateUnmount,
-  getUserById,
+  getUserById
 } from '../../actions/userProfile'
 
-import Toaster from "../../components/Toaster/Toaster";
-import { hostname } from "../../../config";
-
 class Profile extends React.Component {
-  constructor(props) {
-    super(props);
-  }
 
   componentWillUnmount() {
   }
   componentDidMount(){
-    this.props.getUserById(this.props.match.params.id)
+    this.props.getUserById(this.props.match.params.id,this.props.authToken)
   }
 
 
@@ -99,10 +88,8 @@ class Profile extends React.Component {
                     </GridItem>
                     <GridItem xs={12} sm={12} md={12}>
                   
-                    {console.log(this.props.match.params.id,'********0')}
                     <InterestsDropdown disabled={true} interestOptions={this.props.interestOptions} defaultValue={this.props.interests?this.props.interests.split(','):null}
                   />
-                  {console.log(this.props.interests,'********1')}
                   </GridItem>
                   <GridItem xs={12} sm={12} md={12}>
                     <CustomInput
@@ -148,7 +135,7 @@ class Profile extends React.Component {
                 style={{cursor:'pointer'}}
                 >
               <CardAvatar profile>
-                  <img src={this.props.userImageUrl?this.props.userImageUrl:avatar}/>
+                  <img src={this.props.userImageUrl?this.props.userImageUrl:avatar} alt="Profile Pic"/>
               </CardAvatar>
                 
               </Label>
@@ -196,8 +183,6 @@ class Profile extends React.Component {
                         fullWidth: true,
                       }}
                     />
-{console.log(this.props)
-}
                   </GridItem>
                   <GridItem xs={12} sm={12} md={12}>
                   <CustomInput
@@ -242,6 +227,7 @@ const mapStateToProps = state => {
     interests: state.publicUserPage.interests,
     interestOptions: state.common.interestOptions,
     userImageUrl: state.publicUserPage.userImageUrl,
+    authToken: state.auth.authToken,
   }
 }
 

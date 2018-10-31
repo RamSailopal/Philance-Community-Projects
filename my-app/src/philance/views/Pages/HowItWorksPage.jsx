@@ -18,9 +18,6 @@ import NavPills from "components/NavPills/NavPills.jsx";
 import howItWorksPageStyle from "assets/jss/material-dashboard-pro-react/views/registerPageStyle";
 
 class HowItWorksPage extends React.Component {
-  constructor(props) {
-    super(props);
-  }
 
   render() {
     const { classes } = this.props;

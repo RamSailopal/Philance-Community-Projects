@@ -21,85 +21,88 @@ import {
 
 import axios from 'axios'
 
-import {hostname} from '../../../config'
+import { hostname } from '../../../config'
 
 export const textChanged = () => {
-    return {
-        type: START_PROJECT
-    }
+  return {
+    type: START_PROJECT
+  }
 }
 
 export const budgetChanged = text => {
   return {
-      type: START_PROJECT_BUDGET_CHANGED,
-      payload: text
+    type: START_PROJECT_BUDGET_CHANGED,
+    payload: text
   }
 }
 
-export const filesChanged = text => {
-  return {
+export const filesChanged = (text, callback) => {
+  return dispatch => {
+    dispatch({
       type: START_PROJECT_FILES_CHANGED,
       payload: text
+    })
+    callback ? callback() : null
   }
 }
 
 export const descriptionChanged = text => {
   return {
-      type: START_PROJECT_DESCRIPTION_CHANGED,
-      payload: text
+    type: START_PROJECT_DESCRIPTION_CHANGED,
+    payload: text
   }
 }
 
 export const endDateChanged = text => {
   return {
-      type: START_PROJECT_END_DATE_CHANGED,
-      payload: text
+    type: START_PROJECT_END_DATE_CHANGED,
+    payload: text
   }
 }
 
 export const freelancersChanged = text => {
   return {
-      type: START_PROJECT_FREELANCERS_CHANGED,
-      payload: text
+    type: START_PROJECT_FREELANCERS_CHANGED,
+    payload: text
   }
 }
 
 export const projectNameChanged = text => {
   return {
-      type: START_PROJECT_NAME_CHANGED,
-      payload: text
+    type: START_PROJECT_NAME_CHANGED,
+    payload: text
   }
 }
 
 export const countryChanged = text => {
   return {
-      type: START_PROJECT_COUNTRY_CHANGED,
-      payload: text
+    type: START_PROJECT_COUNTRY_CHANGED,
+    payload: text
   }
 }
 
 export const startDateChanged = text => {
   return {
-      type: START_PROJECT_START_DATE_CHANGED,
-      payload: text
+    type: START_PROJECT_START_DATE_CHANGED,
+    payload: text
   }
 }
 
 export const volunteersChanged = text => {
   return {
-      type: START_PROJECT_VOLUNTEERS_CHANGED,
-      payload: text
+    type: START_PROJECT_VOLUNTEERS_CHANGED,
+    payload: text
   }
 }
 
 export const zipCodeChanged = text => {
   return {
-      type: START_PROJECT_ZIP_CODE_CHANGED,
-      payload: text
+    type: START_PROJECT_ZIP_CODE_CHANGED,
+    payload: text
   }
 }
 
-export const startProject=({
+export const startProject = ({
   name,
   description,
   volunteers,
@@ -112,60 +115,55 @@ export const startProject=({
   budget,
   userId,
   files
-},uploadCallback , loaderCallback)=>{
+}, uploadCallback, loaderCallback) => {
 
-  if(
-    name === '' ||
-    description === '' ||
-    interests === '' ||
-    country === '' ||
-    startDate === ''
-   ) {
-     loaderCallback(false)
+  if (
+    name === ''
+  ) {
+    loaderCallback(false)
     return {
       type: START_PROJECT_FIELDS_EMPTY
     }
-  }  var projectDetails=[]
-var interestsArray=interests
-  for(var i=0;i<interestsArray.length;i++){
-    projectDetails.push({  
+  } var projectDetails = []
+  var interestsArray = interests
+  for (var i = 0; i < interestsArray.length; i++) {
+    projectDetails.push({
       "detailType": "IMPACT_CATEGORY",
       "name": interestsArray[i],
       "certificationReq": "NO",
       "certificationLink": "",
-      "attribute1" : "",
-      "attribute2" : "",
-      "attribute3" : "",
-      "attribute4" : "",
-      "attribute5" : ""
+      "attribute1": "",
+      "attribute2": "",
+      "attribute3": "",
+      "attribute4": "",
+      "attribute5": ""
     })
   }
   return dispatch => {
-    loaderCallback(false)
-      dispatch({type: START_PROJECT})
-      axios.post(hostname()+'/philance/projects/', {  
-        projectName : name,
-        description : description,
-        zipCode: zipCode,
-        country: country,
-        volunteers:volunteers,
-        freelancers:freelancers,
-        estimatedBudget:budget,
-        startDate :startDate,
-        interests :interests,
-        endDate :endDate,
-        userId:userId,
-        files:files,
-        "projectDetails":projectDetails
-        }
-)
-      .then(response=>{
-        if(response.status !== 200) {
+    dispatch({ type: START_PROJECT })
+    axios.post(hostname() + '/philance/projects/', {
+      projectName: name,
+      description: description,
+      zipCode: zipCode,
+      country: country,
+      volunteers: volunteers,
+      freelancers: freelancers,
+      estimatedBudget: budget,
+      startDate: startDate,
+      interests: interests,
+      endDate: endDate,
+      userId: userId,
+      files: files,
+      "projectDetails": projectDetails
+    }
+    )
+      .then(response => {
+        if (response.status !== 200) {
           loaderCallback(false)
           return {
             type: START_PROJECT_NETWORK_ERROR
           }
-        }else{
+        } else {
           loaderCallback(false)
           dispatch({
             type: START_PROJECT_REQUEST_SUCCESS
@@ -173,17 +171,17 @@ var interestsArray=interests
           uploadCallback(response.data.project[0].projectId);
         }
       })
-      .catch(error=>{
+      .catch(error => {
         loaderCallback(false)
-      console.log(error);
-      return {
-        type: START_PROJECT_NETWORK_ERROR
-      }
+        console.log(error);
+        return {
+          type: START_PROJECT_NETWORK_ERROR
+        }
       });
   }
 }
-export const startProjectUnmount=()=>{
-  return dispatch=> {
+export const startProjectUnmount = () => {
+  return dispatch => {
     dispatch({
       type: START_PROJECT_UNMOUNT
     })
@@ -191,41 +189,55 @@ export const startProjectUnmount=()=>{
 }
 export const interestschanged = text => {
   return {
-      type: START_PROJECT_INTERESTS_CHANGED,
-      payload: text
+    type: START_PROJECT_INTERESTS_CHANGED,
+    payload: text
   }
 }
-export const uploadFiles = (metadata, files) => {
-  if(!files){
-      return dispatch=>{
-          dispatch({
-              type:START_PROJECT_FILES_UPLOAD_FAILED
-          })
-      }
-  }else{
-      return dispatch => {
-          const url = hostname() + '/philance/files';
-          const formData = new FormData();
-          formData.append('file', files)
-          formData.append('param', JSON.stringify(metadata))          
-          const config = {
-              headers: {
-                  'content-type': 'multipart/form-data'
-              }
+export const uploadFiles = (metadata, files,callback) => {
+  var axPromises=[]
+  if (!files) {
+    return dispatch => {
+      dispatch({
+        type: START_PROJECT_FILES_UPLOAD_FAILED
+      })
+    }
+  } else {
+    return dispatch => {
+      const url = hostname() + '/philance/files';
+      for (var i = 0; i < files.length; i++) {
+        const formData = new FormData();
+        formData.append('file', files[i])
+        formData.append('param', JSON.stringify(metadata))
+        const config = {
+          headers: {
+            'content-type': 'multipart/form-data'
           }
-          axios.post(url, formData, config)
-              .then(() => {
-                  dispatch({
-                      type: START_PROJECT_FILES_UPLOAD_SUCCESS
-                  })
-              })
-              .catch(() => {
-                  dispatch({
-                      type: START_PROJECT_FILES_UPLOAD_FAILED
-                  })
-  
-              })
+        }
+        setTimeout(() => {
+          axPromises[i]= axios.post(url, formData, config)
+        }, 1000);
       }
+      Promise.all(axPromises)
+      .then(() => {
+        dispatch({
+          type: START_PROJECT_FILES_UPLOAD_SUCCESS
+        })
+        if(callback){
+          setTimeout(() => {
+            callback()
+          }, 2500);
+        }
+      })
+      .catch(() => {
+        dispatch({
+          type: START_PROJECT_FILES_UPLOAD_FAILED
+        })
+        if(callback){
+          callback()
+        }
+
+      })
+    }
   }
 
 }

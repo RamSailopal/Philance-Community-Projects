@@ -10,7 +10,7 @@ import {
 import customCheckboxRadioSwitch from "assets/jss/material-dashboard-pro-react/customCheckboxRadioSwitch.jsx";
 
 const projectSearchStyle = {
-  ...customCheckboxRadioSwitch,
+  // ...customCheckboxRadioSwitch,
   cardTitle: {
     ...cardTitle,
     textAlign: "center"

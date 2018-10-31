@@ -1,24 +1,6 @@
 /*drop database philance;*/
 Create database philance;
 
-/* This table stores all communications and messages between philance users*/
-/*drop table philance.messages;*/
-CREATE TABLE philance.messages (
-    projec_id INT,
-    from_user INT NOT NULL,
-    to_user INT,
-    subject MEDIUMTEXT,
-    body LONGTEXT,
-    status VARCHAR(10) NOT NULL DEFAULT 'DRAFT',
-    attachment BLOB,
-    creation_date DATETIME,
-    created_by INT,
-    last_updated_date DATETIME,
-    last_updated_by INT,
-    INDEX Msgs_project_ix (projec_id),
-    INDEX Msgs_fromuser_ix (From_user),
-    INDEX Msgs_touser_ix (to_user)
-);
 
 /*This table stores refences to all supported values for various functions- project types, impact categories, roles, skills, status etc
 This is the only lookups table for now*/
@@ -93,13 +75,15 @@ CREATE TABLE philance.user_notifications (
     email VARCHAR(10),
     text varchar(10),
     push varchar(10),
+    message varchar(100),
     creation_date DATETIME,
     created_by INT,
     last_updated_date DATETIME,
     last_updated_by INT,
     FOREIGN KEY (user_id)
         REFERENCES philance.users (user_id),
-    PRIMARY KEY (user_id , Notification_Trigger)
+    FOREIGN KEY (created_by)
+        REFERENCES philance.users (user_id)
 );
 
 
@@ -152,7 +136,9 @@ CREATE TABLE philance.project_details (
 CREATE TABLE philance.project_attachments (
     project_id INT,
     name VARCHAR(500),
+    original_name VARCHAR(500),
     attachment VARCHAR(3072),
+    attachment_path VARCHAR(3072),
     creation_date DATETIME,
     created_by INT,
     last_updated_date DATETIME,
@@ -165,20 +151,23 @@ CREATE TABLE philance.project_attachments (
 
 /*This table stores list of tasks created for a project*/
 CREATE TABLE philance.project_tasks (
-    project_id INT,
-    task_id INT,
+    task_id INT AUTO_INCREMENT PRIMARY KEY,
+    project_id INT ,
     task_name VARCHAR(500),
-    description BLOB,
+    description VARCHAR(3072),
     assigned_to INT,
     assigned_by INT,
     status VARCHAR(50),
+    priority VARCHAR(50),
+    start_date DATETIME,
+    end_date DATETIME,
     target_hours DECIMAL(5 , 2 ),
     actual_hours DECIMAL(5 , 2 ),
     creation_date DATETIME,
     created_by INT,
     last_updated_date DATETIME,
     last_updated_by INT,
-    PRIMARY KEY (project_id , task_id),
+    -- PRIMARY KEY (task_id),
     FOREIGN KEY (project_id)
         REFERENCES philance.projects (project_id),
     FOREIGN KEY (assigned_to)
@@ -187,6 +176,26 @@ CREATE TABLE philance.project_tasks (
         REFERENCES philance.users (user_id),
     INDEX projtask_task_name_ix (task_name)
 );
+
+/*Stores any attachments that are added to a task*/
+
+CREATE TABLE philance.task_attachments (
+    task_id INT,
+    project_id INT,
+    name VARCHAR(500),
+    original_name VARCHAR(500),
+    attachment VARCHAR(3072),
+    attachment_path VARCHAR(3072),
+    creation_date DATETIME,
+    created_by INT,
+    last_updated_date DATETIME,
+    last_updated_by INT,
+    PRIMARY KEY (task_id , name),
+    FOREIGN KEY (project_id,task_id)
+        REFERENCES philance.project_tasks (project_id,task_id),
+    INDEX taskatch_name_ix (name)
+);
+
 
 /*all comments and discussions for task will be stored in this table*/
 CREATE TABLE philance.project_task_updates (
@@ -226,3 +235,89 @@ CREATE TABLE philance.project_team (
     FOREIGN KEY (user_id)
         REFERENCES philance.users (user_id)
 );
+
+CREATE TABLE philance.authentication (
+    auth_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    auth_token VARCHAR(3072),
+    refresh_token VARCHAR(3072),
+    platform VARCHAR(100),
+    creation_date DATETIME,
+    created_by INT,
+    last_updated_date DATETIME,
+    last_updated_by INT
+);
+CREATE TABLE philance.user_settings (
+    id INT AUTO_INCREMENT,
+    user_id INT,
+    email_notifications VARCHAR(10) DEFAULT 'NO',
+    text_notifications VARCHAR(10) DEFAULT 'NO',
+    push_notifications VARCHAR(10) DEFAULT 'NO',
+    creation_date DATETIME,
+    created_by INT,
+    last_updated_date DATETIME,
+    last_updated_by INT,
+        PRIMARY KEY (id , user_id)
+);
+/* This table stores all communications and messages between philance users*/
+/*drop table philance.messages;*/
+CREATE TABLE philance.messages (
+    message_id INT AUTO_INCREMENT PRIMARY KEY,
+    body LONGTEXT,
+    status VARCHAR(10) NOT NULL DEFAULT 'DRAFT',
+    creation_date DATETIME,
+    created_by INT,
+    last_updated_date DATETIME,
+    last_updated_by INT,
+    FOREIGN KEY (created_by)
+        REFERENCES philance.users (user_id)
+);
+/* This table represents group and it's details*/
+/*drop table philance.messages;*/
+CREATE TABLE philance.group (
+    group_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(3072),
+    project_id INT,
+    creation_date DATETIME,
+    created_by INT,
+    last_updated_date DATETIME,
+    last_updated_by INT,
+    FOREIGN KEY (project_id)
+        REFERENCES philance.projects (project_id)
+);
+/* This table represents users of a particular group*/
+/*drop table philance.messages;*/
+CREATE TABLE philance.user_group (
+    user_group_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    group_id INT,
+    creation_date DATETIME,
+    created_by INT,
+    last_updated_date DATETIME,
+    last_updated_by INT,
+    FOREIGN KEY (user_id)
+        REFERENCES philance.users (user_id),
+    FOREIGN KEY (group_id)
+        REFERENCES philance.group (group_id)
+);
+
+/* This table stores all recipients of the messages*/
+/*drop table philance.messages;*/
+CREATE TABLE philance.message_recipient (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    recipient_id INT,
+    recipient_group_id INT,
+    message_id INT,
+    creation_date DATETIME,
+    created_by INT,
+    last_updated_date DATETIME,
+    last_updated_by INT,
+    FOREIGN KEY (created_by)
+        REFERENCES philance.users (user_id),
+    FOREIGN KEY (recipient_id)
+        REFERENCES philance.users (user_id),
+    FOREIGN KEY (recipient_group_id)
+        REFERENCES philance.group (group_id)
+    
+);
+

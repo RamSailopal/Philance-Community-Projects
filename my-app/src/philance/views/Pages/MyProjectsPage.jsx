@@ -1,6 +1,7 @@
 import React from "react"
 import PropTypes from "prop-types"
 import ReactTable from "react-table"
+import { NavLink } from "react-router-dom";
 
 // @material-ui/icons
 import withStyles from "@material-ui/core/styles/withStyles"
@@ -58,12 +59,17 @@ class MyProjectsPage extends React.Component {
     this.state = {
       activePage: 1,
       loading: false,
-      loader: false
+      loader: false,
+      data: []
     }
   }
 
   componentDidMount() {
-    this.props.myProject(this.props.id)
+    this.props.myProject(this.props.id,(flag=>{
+      this.props.response ?
+      this.renderData() : null
+    }))
+    this.toggleLoader(true)
   }
 
   handlePaginationChange = (e, { activePage }) => this.setState({ activePage })
@@ -82,64 +88,72 @@ class MyProjectsPage extends React.Component {
     });
   }
 
-  render() {
-    let data = []
-    let i = 0;
+  renderData(){
     const { classes } = this.props;
-    console.log(this.props)
-    {
-      this.props.response ?
-        this.props.response.map((element) => {
-          i = i === 2 ? 1 : i + 1
-          let startDate = new Date(element.start_date);
-          let endDate = new Date(element.end_date);
-          startDate = startDate.toDateString()
-          endDate = endDate.toDateString()
-          let sample = {
-            project_name: element.project_name,
-            status: element.status,
-            startDate: startDate,
-            endDate: endDate,
-            Close: "",
-            Complete: "",
-            Action: <span>
-              <Tooltip title="Details" classes={{ tooltip: classes.lightTooltip }}>
-                <Button
-                  round
-                  justIcon
-                  simple
-                  onClick={() => {
-                    // this.toggleLoader(true)
-                    this.props.getProjectById(element.project_id,(flag)=>{
-                      // this.toggleLoader(flag)
-                      this.props.history.push(`../project-details/${element.project_id}`)
-                      this.props.idStored(element.project_id)
-                    })
-                  }}
-                  color="info"
-                  className="like"
-                ><ViewList /></Button>
-              </Tooltip>
-              <Tooltip title="Review" classes={{ tooltip: classes.lightTooltip }}>
-                <Button
-                  justIcon
-                  round
-                  simple onClick={() => {
-                    // this.toggleLoader(true)
-                    this.props.getProjectCandidateReviewList(element.project_id, (flag)=>{
-                      // this.toggleLoader(flag)
-                      this.props.idStored(element.project_id)
-                      this.props.history.push(`../projectCandidateReview/${element.project_id}/`)
-                    })
-                  }} color="info"
-                  className="like"
-                ><Person /></Button>
-              </Tooltip>
-            </span>
-          }
-          data.push(sample)
-        }) : null
-    }
+    let i = 0;
+    this.props.response ?
+      this.props.response.map((element) => {
+        i = i === 2 ? 1 : i + 1
+        let startDate = new Date(element.startDate);
+        let endDate = new Date(element.endDate);
+        startDate = startDate.toDateString()
+        endDate = endDate.toDateString()
+        let sample = {
+          project_name: element.projectName,
+          status: element.status,
+          startDate: startDate,
+          endDate: endDate,
+          Close: "",
+          Complete: "",
+          Action: <span>
+            <Tooltip title="Details" classes={{ tooltip: classes.lightTooltip }}>
+              <NavLink to={`/project-details/info`}>
+              <Button
+                round
+                justIcon
+                simple
+                onClick={() => {
+                this.toggleLoader(true)
+                  this.props.getProjectById({id:element.projectId},(flag)=>{
+                    this.toggleLoader(flag)
+                    // this.props.history.push(`/project-details/${element.project_id}`)
+                    this.props.idStored(element.projectId)
+                  })
+                }}
+                color="info"
+                className="like"
+              ><ViewList /></Button>
+
+              </NavLink>
+            </Tooltip>
+            <Tooltip title="Review" classes={{ tooltip: classes.lightTooltip }}>
+              <Button
+                justIcon
+                round
+                simple onClick={() => {
+                  this.toggleLoader(true)
+                  this.props.getProjectCandidateReviewList(element.projectId, (flag)=>{
+                    this.toggleLoader(flag)
+                    this.props.idStored(element.projectId)
+                    this.props.history.push(`../projectCandidateReview/${element.projectId}/`)
+                  })
+                }} color="info"
+                className="like"
+              ><Person /></Button>
+            </Tooltip>
+          </span>
+        }
+        return(
+        this.setState((prev)=>({
+          data:[...prev.data,sample]
+      }))
+        );
+      }) : null
+      this.toggleLoader(false)
+  }
+
+  render() {
+    const { classes } = this.props;
 
     return (
       <GridContainer>
@@ -149,7 +163,7 @@ class MyProjectsPage extends React.Component {
             <Card className={classes.cardSignup}>
               <CardBody>
                 <ReactTable style={{ overflow: "none" }}
-                  data={data}
+                  data={this.state.data}
                   columns={[
                     {
                       Header: <strong>Name</strong>,
@@ -208,7 +222,7 @@ const mapStateToProps = state => {
     response: state.mypro.response,
     length: state.mypro.length,
     list: state.mypro.list,
-      id: state.auth.userId
+    id: state.auth.userId
   }
 }
 

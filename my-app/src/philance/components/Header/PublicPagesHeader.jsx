@@ -13,7 +13,7 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import Typography from "@material-ui/core/Typography";
+
 //import Button from "@material-ui/core/Button";
 
 // @material-ui/icons
@@ -22,7 +22,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 // core components
 import Button from "components/CustomButtons/Button";
 
-import { pagesRoutes,headerRoutes } from "../../routes/pages.jsx";
+import { headerRoutes } from "../../routes/pages.jsx";
 
 import publicPagesHeaderStyle from "assets/jss/material-dashboard-pro-react/components/pagesHeaderStyle.jsx";
 

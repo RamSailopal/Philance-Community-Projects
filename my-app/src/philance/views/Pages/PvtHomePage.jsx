@@ -17,17 +17,13 @@ import GridItem from "components/Grid/GridItem.jsx";
 import InfoArea from "components/InfoArea/InfoArea.jsx";
 import Card from "components/Card/Card.jsx";
 import CardBody from "components/Card/CardBody.jsx";
-import CtButton from "components/CustomButtons/Button.jsx";
 
 import pvtHomePageStyle from "assets/jss/material-dashboard-pro-react/views/registerPageStyle";
 
 import {connect} from 'react-redux';
 
 class PvtHomePage extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
+ 
   render() {
     const { classes } = this.props;
 
@@ -40,7 +36,7 @@ class PvtHomePage extends React.Component {
                 <GridContainer justify="center">
                   <GridItem xs={12} sm={12} md={5}>
                     <InfoArea
-                      classes={classes}
+                      // classes={classes}
                       title="WelcomeTo PhiLance"
                       description="This is a platform for individuals and organizations
                           to launch and manage their very own social impact projects, so anyone can
@@ -49,7 +45,7 @@ class PvtHomePage extends React.Component {
                       iconColor="rose"
                     />
                     <InfoArea
-                      classes={classes}
+                      // classes={classes}
                       title="Mission"
                       description="Our mission is to help you launch or contribute to a project
                           having a durable social impact and provide the tools and resources you need
@@ -58,7 +54,7 @@ class PvtHomePage extends React.Component {
                       iconColor="primary"
                     />
                     <InfoArea
-                      classes={classes}
+                      // classes={classes}
                       title="Sign Up to Start Making an Impact Today!"
                       description="Sign Up to post your project on the PhiLance platform or
                           work on someone else's project as a freelancer or a volunteer."
@@ -68,7 +64,7 @@ class PvtHomePage extends React.Component {
                   </GridItem>
                   <GridItem xs={12} sm={8} md={5}>
                     <InfoArea
-                      classes={classes}
+                      // classes={classes}
                       title="Animated Video about PhiLance"
                       description="Watch this brief 1 min video to see how you can use the PhiLance platform and become a changemaker."
                       icon={Video}

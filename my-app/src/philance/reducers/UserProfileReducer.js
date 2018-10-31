@@ -13,13 +13,16 @@ import {
     USER_PROFILE_TITLE_CHANGED,
     USER_PROFILE_UPDATE_SUCCESS,
     USER_PROFILE_UPDATE_UNMOUNT,
+    USER_PROFILE_UPDATE_TOGGLE_PHONE,
+    USER_PROFILE_UPDATE_TOGGLE_EMAIL,
     USER_PROFILE_GET_USER_INFO,
     LOGOUT_USER,
     USER_PROFILE_USER_IMAGE_CHANGED_FOR_PREVIEW,
     USER_PROFILE_USER_IMAGE_CHANGED_AFTER_UPLOAD,
     USER_PROFILE_USER_IMAGE_CHANGED_WAS_CHANGED,
     UPLOAD_STARTED,
-    PROFILE_IMAGE_UPLOAD_SUCCESS
+    PROFILE_IMAGE_UPLOAD_SUCCESS,
+    USER_PROFILE_NOTIFICATIONS_CALLED
 } from '../actions/types'
 import { hostname } from '../../config';
 
@@ -39,7 +42,10 @@ const INITIAL_STATE = {
     interestsArrived: true,
     userId: '',
     displayImage:true,
-    imageRefresh:false
+    imageRefresh:false,
+    toggleEmail: false,
+    togglePhone: false,
+    notifications:[]
 }
 
 export default (state = INITIAL_STATE, action) => {
@@ -76,6 +82,12 @@ export default (state = INITIAL_STATE, action) => {
             return { ...state, organization: action.payload }
         case USER_PROFILE_UPDATE_SUCCESS:
             return { ...state, update: true }
+        case USER_PROFILE_NOTIFICATIONS_CALLED:
+            return { ...state, notifications: action.payload }
+        case USER_PROFILE_UPDATE_TOGGLE_EMAIL:
+            return { ...state, toggleEmail: !action.payload }
+        case USER_PROFILE_UPDATE_TOGGLE_PHONE:
+            return { ...state, togglePhone: !action.payload }
         case USER_PROFILE_UPDATE_UNMOUNT:
             return { ...state, update: false}
         case 'USER_PROFILE_IMAGE_REFRESH_NOT_REQUIRED':
@@ -99,7 +111,9 @@ export default (state = INITIAL_STATE, action) => {
                 userImageUrl:action.payload.user_profile_image_url?a+ action.payload.user_profile_image_url:null,
                 contact: action.payload.ph_number,
                 postalCode: action.payload.zip_code,
-                country: action.payload.country
+                country: action.payload.country,
+                // toggleEmail: action.payload.toggleEmail,
+                // togglePhone: action.payload.togglePhone
             }
         case LOGOUT_USER:
             return {

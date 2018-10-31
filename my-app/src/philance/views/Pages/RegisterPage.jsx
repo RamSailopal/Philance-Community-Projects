@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 
 import {connect} from 'react-redux'
 import {emailChanged, passwordChanged, textChanged, registerUser, firstNameChanged, lastNameChanged} from '../../actions/register'
+import { NavLink } from "react-router-dom";
 
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
@@ -29,9 +30,6 @@ import CardBody from "components/Card/CardBody.jsx";
 import registerPageStyle from "assets/jss/material-dashboard-pro-react/views/registerPageStyle";
 
 class RegisterPage extends React.Component {
-  constructor(props) {
-    super(props);
-  }
 
   onEmailChange(text) {
     this.props.emailChanged(text)
@@ -192,7 +190,7 @@ onButtonPress() {
                       <FormLabel className={classes.labelHorizontal}>
                         <span>
                           By registering you confirm that you accept the{" "}
-                          <a href="#">Terms and Conditions</a>
+                          <a href="">Terms and Conditions</a>
                         </span>
                       </FormLabel>
                       <div className={classes.center}>
@@ -206,7 +204,7 @@ onButtonPress() {
                     <div className={classes.left}>
                       <h4>
                         {" "}
-                        Already have an account? <a href="/login">Login</a>{" "}
+                        Already have an account? <NavLink to={"/login"}>Login</NavLink>{" "}
                       </h4>
                     </div>
                   </GridItem>

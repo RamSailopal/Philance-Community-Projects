@@ -8,18 +8,25 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import GridContainer from "components/Grid/GridContainer.jsx";
 import GridItem from "components/Grid/GridItem.jsx";
 import CustomInput from "philance/components/CustomInput/CustomInput.jsx";
+import CardIcon from "components/Card/CardIcon.jsx";
 import Button from "components/CustomButtons/Button.jsx";
 import Card from "components/Card/Card.jsx";
 import CardHeader from "components/Card/CardHeader.jsx";
 import CardText from "components/Card/CardText.jsx";
 import CardBody from "components/Card/CardBody.jsx";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
+import Assignment from "@material-ui/icons/Assignment";
+import { Label } from 'semantic-ui-react';
+import Table from "components/Table/Table.jsx";
+import SweetAlert from "react-bootstrap-sweetalert";
+import Delete from "@material-ui/icons/Delete";
 
 import FormControl from "@material-ui/core/FormControl";
+import { Dropdown } from 'semantic-ui-react'
+import sweetAlertStyle from "assets/jss/material-dashboard-pro-react/views/sweetAlertStyle.jsx";
 import InputLabel from "@material-ui/core/InputLabel";
-
+import { uploadFiles } from '../../actions/startProject'
 // @material-ui/icons
+
 import startProjectPageStyle from "philance/views/PageStyles/StartProjectPageStyles";
 import { InterestsDropdown, CountryDropdown } from '../../components/DoubleDropdown'
 import { connect } from 'react-redux'
@@ -40,30 +47,205 @@ import {
   removeToaster,
   countryChanged,
   updateProject,
-  interestsChanged
+  deleteProjectAttachment,
+  interestsChanged,
+  getProjectById,
+  filesChanged,
+  clearFiles
 } from '../../actions/projectDetails'
-import {PROJECT_DETAILS_UPDATE_SUCESS} from '../../actions/types'
+import { PROJECT_DETAILS_UPDATE_SUCESS } from '../../actions/types'
 
 import { myProject } from '../../actions/myProject'
 import store from '../../store/store'
 import Loader from "../../components/Loader/Loader"
 import Toaster from "../../components/Toaster/Toaster";
+import { hostname } from "../../../config";
+import extendedTablesStyle from "assets/jss/material-dashboard-pro-react/views/extendedTablesStyle.jsx";
+const style = {
+  ...extendedTablesStyle,
+  ...startProjectPageStyle,
+  ...sweetAlertStyle
 
+};
+var data = [];
+const uid = Math.random().toString(36).substring(7);
 class ProjectDetails extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       isDisabled: true,
       interests: [],
-      loader: false
+      loader: false,
+      files: [],
+      tableData: []
     };
+    this.myRef = React.createRef(); this.fileInput = React.createRef();
+
+
+  }
+  fileSplicer = async (files, key) => {
+    var a = [];
+    await Array.from(files).map((value, index) => {
+      if (index != key) {
+        a.push(value)
+      }
+    })
+    this.onFilesChange(a);
+  }
+  async onFilesChange(files) {
+
+    const { classes } = this.props;
+    if (files.length == 0) {
+      data = []
+    }
+
+    var a = []
+
+    await this.props.filesChanged(files, async () => {
+      await files ? Array.from(this.props.files).map((value, key) => {
+        if (Array.from(files)[key]) {
+          a =
+            [<span className={classes.customFont}>
+              {this.props.files[key].name}
+            </span>,
+            <Button simple justIcon color='info' onClick={() => {
+              //call delete action
+              this.fileSplicer(this.props.files, key);
+            }}>
+              <Delete />
+            </Button>]
+
+          data.push(a)
+
+        }
+      }) : null
+    })
+
+    await this.setState({
+      files: data
+    })
+    data = []
+
+  }
+  handleClick() {
+
+    this.refs.fileInput.click();
+  }
+  warningWithConfirmMessage(callback,{title,confirmBtnText,cancelBtnText}) {
+    this.setState({
+      alert: (
+        <SweetAlert
+          style={{ display: "block", marginTop: "-100px" }}
+          // title={title}
+          onConfirm={()=>{
+            callback()
+            this.setState({ alert: null })
+          }}
+          onCancel={() => this.setState({ alert: null })}
+          confirmBtnCssClass={
+            this.props.classes.button + " " + this.props.classes.success
+          }
+          cancelBtnCssClass={
+            this.props.classes.button + " " + this.props.classes.danger
+          }
+          confirmBtnText={confirmBtnText}
+          cancelBtnText={cancelBtnText}
+          showCancel
+        >
+        <h3>
+        {title}
+        </h3>
+        </SweetAlert>
+      )
+    });
   }
 
+  componentWillReceiveProps() {
+    this.updateTable()
+  }
+  updateTable() {
+    var { classes } = this.props
+    var b = [];
+    if (this.props.projectAttachments) {
+      this.props.projectAttachments.map((value, key) => {
+        var a = [
+          <a className={classes.customFont} target="_blank" href={hostname() + this.props.projectAttachments[key].attachment}>
+            {this.props.projectAttachments[key].originalName}
+          </a>,
+          new Date(this.props.projectAttachments[key].creationDate).toLocaleTimeString('en-us') + ' ' + new Date(this.props.projectAttachments[key].creationDate).toLocaleDateString('en-us'),
+          this.props.projectAttachments[key].user.firstName + ' ' + this.props.projectAttachments[key].user.lastName,
+          this.state.isDisabled ? null : <Button justIcon onClick={() => {
+            //call delete
+            this.warningWithConfirmMessage(
+
+              ()=>{
+                this.props.deleteProjectAttachment({
+                  filename: this.props.projectAttachments[key].attachment,
+                  projectId: this.props.projectAttachments[key].projectId
+                }, 
+                () => {
+
+                  this.props.getProjectById({ id: this.props.projectAttachments[key].projectId }, () => {
+                    b.splice(key, 1)
+                    this.setState({
+                      tableData: b
+                    })
+                    this.updateTable()
+                  })
+                })
+              },{
+                title:<span>Are you sure you want to delete this Attachment <strong>permanently</strong>?</span>,
+                confirmBtnText:"Yes",
+                cancelBtnText:"Cancel"
+              }
+          
+          )
+          
+          }}>
+            <Delete />
+          </Button>
+
+        ]
+        b[key] = a
+        this.setState({
+          tableData: b
+        })
+      })
+    }
+  }
   componentWillUnmount() {
     this.props.removeToaster()
-    this.props.myProject(this.props.userId)
+    this.props.myProject(this.props.userId, () => { })
+    this.setState({
+      tableData: []
+    })
+    this.props.getProjectById({ id: this.props.id }, () => { })
   }
-
+  autoCloseAlert() {
+    this.setState({
+      alert: (
+        <SweetAlert
+          style={{ display: "block", marginTop: "-100px" }}
+          onConfirm={() => this.hideAlert()}
+          showConfirm={true}
+          confirmBtnText={'Close'}
+          confirmBtnCssClass={
+            this.props.classes.button + " " + this.props.classes.success
+          }
+        >
+        <h4>
+        Your changes have been saved!
+        </h4>
+        </SweetAlert>
+      )
+    });
+    setTimeout(()=>{this.hideAlert()}, 2000);
+  }
+  hideAlert() {
+    this.setState({
+      alert: null
+    });
+  }
   onProjectNameChange(text) {
     this.props.projectNameChanged(text)
   }
@@ -78,10 +260,6 @@ class ProjectDetails extends React.Component {
 
   onEndDateChange(text) {
     this.props.endDateChanged(text)
-  }
-
-  onDescriptionChange(text) {
-    this.props.descriptionChanged(text)
   }
 
   onFreeLancersChange(text) {
@@ -111,32 +289,27 @@ class ProjectDetails extends React.Component {
   onInterestsChange(text) {
     this.props.interestsChanged(text)
   }
-  
-  toggleLoader = (flag) => {
+
+  toggleLoader = (flag,cb) => {
     this.setState({
       loader: flag
     });
+    cb?cb():null
   }
   render() {
-    let interests = []; 
-    let interestValues = this.props.interests;
+
     const { classes } = this.props;
     return (
-      <GridContainer className={classes.justifyContentCenter}>
-        <Toaster display={this.props.toast} message={'Project has been updated'} />
+      <GridContainer className={this.props.isLoggedIn ? classes.justifyContentCenter : classes.container}>
         <Loader loader={this.state.loader} />
         <GridItem xs={12} sm={12} md={10}>
           <Card>
-            <CardHeader color="info" text>
-              <CardText color="info">
-                <h4>Project Details</h4>
-              </CardText>
-            </CardHeader>
+        <br/>
             <CardBody>
               <form>
                 <GridContainer align="right" direction="column">
                   <GridItem>
-                    {this.props.userId === this.props.createdBy ?
+                    {this.props.userId == this.props.createdBy ?
                       <Button onClick={async () => {
                         const {
                           name,
@@ -154,12 +327,12 @@ class ProjectDetails extends React.Component {
                           userId
                         } = this.props
                         if (this.state.isDisabled) {
-                          this.setState({ isDisabled: false })
+                          this.setState({ isDisabled: false }, () => { this.updateTable() })
                           this.props.removeToaster()
                         }
                         else {
-                          // this.toggleLoader(true);
-                          this.setState({ isDisabled: true })
+                          this.toggleLoader(true);
+                          this.setState({ isDisabled: true }, () => { this.updateTable() })
                           await this.props.updateProject({
                             name,
                             status,
@@ -175,23 +348,64 @@ class ProjectDetails extends React.Component {
                             id,
                             userId
                           }, (flag) => {
-                            // this.toggleLoader(flag);
+                            this.props.files?this.props.files.length>0?
+                            this.props.uploadFiles(
+                              {
+                                uploadType: 'startProjectFiles',
+                                userInfo: {
+                                  userId: this.props.userId,
+                                  projectId: this.props.id
+                                }
+                              },
+                              this.props.files,
+                              () => {
+                                this.props.getProjectById({ id: this.props.id }, () => {
+                                  this.toggleLoader(false);
+                                  this.updateTable()
+                                  this.autoCloseAlert()
+                                  //clear present uploads
+                                  this.props.clearFiles()
+                                })
+                              }
+                            ):
+                            this.toggleLoader(false,()=>{
+                                console.log('autoClosing')
+                                this.autoCloseAlert()
+                              }):this.toggleLoader(false,()=>{
+                                  console.log('autoClosing')
+                                  this.autoCloseAlert()
+                                })
                           })
-                          store.dispatch({type: PROJECT_DETAILS_UPDATE_SUCESS})
+                          store.dispatch({ type: PROJECT_DETAILS_UPDATE_SUCESS })
                         }
+                        this.updateTable()
                       }}
                         color="info">
                         {this.state.isDisabled ? 'EDIT' : 'SAVE'}
                       </Button> : null}
-                    { this.props.status.toUpperCase()!=='CLOSED'?
-                      this.state.isDisabled?<Button color="info" onClick={() => {
-                      this.props.history.push('..')
-                      this.props.history.replace(`application-page/${this.props.id}`)
-                    }}>Apply</Button>:null
-                    :null
-                  }
+                    {this.props.status.toUpperCase() !== 'CLOSED' ?
+                      this.state.isDisabled ? <Button color="info" onClick={() => {
+                        if (this.props.isLoggedIn) {
+                          this.props.history.push('..')
+                          this.props.history.replace(`application-page/${this.props.id}`)
+                        }
+                        else {
+                          //alert
+                          this.warningWithConfirmMessage(
+                            () => this.props.history.push('/login'),
+                            {
+                              title:"You need to login to Apply for this project",
+                              confirmBtnText:"Login!",
+                              cancelBtnText:"Cancel"
+                            }
+                          )
+                        }
+                      }}>Apply</Button> : null
+                      : null
+                    }
                   </GridItem>
                 </GridContainer>
+                {this.state.alert}
                 <GridContainer>
                   <GridItem xs={12} sm={14} md={6}>
                     <CustomInput
@@ -211,56 +425,28 @@ class ProjectDetails extends React.Component {
                     />
                   </GridItem>
                   <GridItem xs={12} sm={14} md={6}>
-                    <FormControl
-                        fullWidth
-                        className={classes.selectFormControl}
-                        style={{marginTop: 15}}
-                        inputProps={{
-                          disabled: this.state.isDisabled
-                        }}
-                      >
-                        <InputLabel
-                          htmlFor="resource-type"
-                          className={classes.selectLabel}
-                        >
-                          Project Status
-                        </InputLabel>
-                        <Select
-                          value={this.props.status}
-                          onChange={(e)=>this.onStatusChange(e.target.value)}
-                          MenuProps={{ className: classes.selectMenu }}
-                          classes={{ select: classes.select }}
-                          inputProps={{
-                            name: "status-type",
-                            id: "status-type",
-                            disabled: this.state.isDisabled
-                          }}
-                        >
-                          <MenuItem
-                            disabled
-                            classes={{
-                              root: classes.selectMenuItem
-                            }}
-                          >
-                            Choose Project Status
-                          </MenuItem>
-                          {
-                            ['ACTIVE','CLOSED'].map((prop, key) => {
-                              return (
-                                <MenuItem
-                                  classes={{
-                                    root: classes.selectMenuItem,
-                                    selected: classes.selectMenuItemSelected
-                                  }}
-                                  value={prop}
-                                >
-                                  {prop}
-                                </MenuItem>
-                              );
-                            })
-                          }
-                        </Select>
-                      </FormControl>
+                    <InputLabel className={classes.label} style={{ marginBottom: 5, marginTop: 10 }}>
+                      Project Status
+                      </InputLabel>
+                    <Dropdown
+                      placeholder='Select Status'
+                      value={this.props.status}
+                      onChange={async (e, { value }) => {
+                        this.setState({ value })
+                        this.onStatusChange(value)
+                      }
+                      }
+                      fluid selection options={[
+                        {
+                          text: 'ACTIVE',
+                          value: 'ACTIVE'
+                        },
+                        {
+                          text: 'CLOSED',
+                          value: 'CLOSED'
+                        }
+                      ]}
+                    />
                   </GridItem>
                 </GridContainer>
                 <GridContainer>
@@ -311,6 +497,19 @@ class ProjectDetails extends React.Component {
                     }
                   </GridItem>
                 </GridContainer>
+                <label
+                  as="label"
+                  basic
+                  htmlFor={uid}
+                >
+                  <input type="file" id={uid}
+                    ref='fileInput'
+                    multiple
+                    style={{ display: "none" }}
+                    name="files"
+                    onChange={(e) => this.onFilesChange(e.target.files)}
+                  />
+                </label>
                 <GridContainer>
                   <GridItem xs={12} sm={12} md={6} style={{ marginTop: 37 }}>
                     <InputLabel className={classes.label}>
@@ -405,27 +604,25 @@ class ProjectDetails extends React.Component {
                 </GridContainer>
                 <GridContainer xs={12} sm={12} md={10}>
                   <GridItem xs={12} sm={12} md={10}><br />
-                  {console.log(this.props)
-                  }
-                  <InterestsDropdown 
-                    disabled = {this.state.isDisabled}
-                    onInterestsChange={
-                      async (e, {value})=>{
-                        await this.setState({value:value})
-                        {console.log({value},'********0.5')}
-                        if (!this.state.value) {
-                          await this.setState({
-                              valid:true
-                          })
-                          this.props.interestsChanged(value)
+                    <InterestsDropdown
+                      disabled={this.state.isDisabled}
+                      onInterestsChange={
+                        async (e, { value }) => {
+                          await this.setState({ value: value })
+                          if (!this.state.value) {
+                            await this.setState({
+                              valid: true
+                            })
+                            this.props.interestsChanged(value)
+                          }
+                          else {
+                            await this.setState({ valid: false })
+                            this.props.interestsChanged(value)
+                          }
                         }
-                        else {
-                          await this.setState({ valid: false })
-                          this.props.interestsChanged(value)                      }
-                    }
-                  }
-                  interestOptions={this.props.interestOptions} defaultValue={this.props.interests}
-                  />
+                      }
+                      interestOptions={this.props.interestOptions} defaultValue={this.props.interests}
+                    />
                   </GridItem>
                 </GridContainer>
                 <GridContainer>
@@ -482,7 +679,154 @@ class ProjectDetails extends React.Component {
                       }}
                     />
                   </GridItem>
-                  {console.log(this.props)}
+                  {this.state.isDisabled ? null : <GridContainer>
+                    <GridItem xs={12} sm={12} >
+                      <Label
+                        basic
+                      >
+                        <GridContainer className={classes.justifyContentCenter}>
+                          <GridItem>
+                            <Button color="info" onClick={() => this.handleClick()}>
+                              <Icon name='upload' />Select Files{'\t\t\t'}
+                            </Button>
+                          </GridItem>
+                          <GridItem xs={12}>
+                            {
+                              this.props.files?
+                              this.props.files.length != 0 ?
+                                <Card>
+                                  <CardBody>
+                                    <Table
+                                      tableHead={[
+                                        <strong>Name</strong>,
+                                        ''
+                                      ]}
+                                      fixedHeader={true}
+                                      tableHeaderStyle={{ borderRight: '40px solid transparent' }}
+                                      tableData={
+                                        this.state.files
+                                      }
+                                      customHeadCellClasses={[
+                                        classes.description,
+                                        classes.description,
+                                        classes.description,
+                                        classes.left,
+                                        classes.left,
+                                        classes.left
+                                      ]}
+                                      customHeadClassesForCells={[0, 2, 3, 4, 5, 6]}
+                                      customCellClasses={[
+                                        classes.customFont,
+                                        classes.customFont,
+                                        classes.customFont,
+                                        classes.tdNumber,
+                                        classes.tdNumber + " " + classes.tdNumberAndButtonGroup,
+                                        classes.tdNumber
+                                      ]}
+                                      customClassesForCells={[1, 2, 3, 4, 5, 6]}
+                                    />
+                                  </CardBody>
+                                </Card>
+                                : null:null
+                            }
+                          </GridItem>
+                          <GridItem>
+                          </GridItem>
+                        </GridContainer>
+                      </Label>
+                    </GridItem>
+                  </GridContainer>}
+                  {
+                    this.props.projectAttachments === undefined ? null : this.props.projectAttachments[0] === undefined ? null :
+                      <GridItem xs={12} sm={12} md={12}>
+                        <Card>
+                          <CardBody>
+                            {/* <GridItem xs={12} sm={12} md={12}>
+                              <Accordion
+                                collapses={[
+                                  {
+                                    title: "Click to see attachments",
+                                    content:
+                                      <ReactTable
+                                      style={{ overflow: "none" }}
+                                        data={
+                                          [{
+                                            attachmentName: 'sampleName.pdf',
+                                            action: <a target="_blank" href={hostname() + this.props.projectAttachments[0].attachment}>
+                                              Open
+                                    </a>
+                                          }]
+                                        }
+                                        showPagination={false}
+                                        defaultPageSize={1}
+                                        sortable={false}
+                                        columns={[
+                                          {
+                                            Header: <strong>Name</strong>,
+                                            accessor: "attachmentName",
+                                            filterable: true,
+                                            width:'100',
+                                            filterMethod: this.columnFilter
+                                          },
+                                          {
+                                            Header: <strong></strong>,
+                                            accessor: "action",
+                                            filterable: true,
+                                            width:'100',
+                                            filterMethod: this.columnFilter
+                                          }]}
+                                      />
+                                  }
+                                ]}
+                              />
+                            </GridItem> */}
+                            <GridItem xs={12}>
+                              <Card>
+                                <CardHeader color="info" icon>
+                                  <CardIcon color="info">
+                                    <Assignment />
+                                  </CardIcon>
+                                  <h4 className={classes.cardIconTitle}>Project Attachments</h4>
+                                </CardHeader>
+                                <CardBody>
+                                  <Table
+                                    tableHead={[
+                                      <strong>Name</strong>,
+                                      <strong>Date</strong>,
+                                      <strong>Uploaded By</strong>,
+                                      ''
+                                    ]}
+                                    fixedHeader={true}
+                                    tableHeaderStyle={{ borderRight: '40px solid transparent' }}
+                                    tableData={
+                                      this.state.tableData
+                                    }
+                                    customHeadCellClasses={[
+                                      classes.description,
+                                      classes.description,
+                                      classes.description,
+                                      classes.left,
+                                      classes.left,
+                                      classes.left
+                                    ]}
+                                    customHeadClassesForCells={[0, 2, 3, 4, 5, 6]}
+                                    customCellClasses={[
+                                      classes.customFont,
+                                      classes.customFont,
+                                      classes.customFont,
+                                      classes.tdNumber,
+                                      classes.tdNumber + " " + classes.tdNumberAndButtonGroup,
+                                      classes.tdNumber
+                                    ]}
+                                    customClassesForCells={[1, 2, 3, 4, 5, 6]}
+                                  />
+                                </CardBody>
+                              </Card>
+                            </GridItem>
+                          </CardBody>
+                        </Card>
+                      </GridItem>
+                  }
                 </GridContainer>
                 <br />
               </form>
@@ -509,11 +853,12 @@ const mapStateToProps = state => {
     id: state.proDetails.id,
     country: state.proDetails.country,
     interests: state.proDetails.interests,
+    files: state.proDetails.files,
     isLoggedIn: state.auth.isLoggedIn,
     interestOptions: state.common.interestOptions,
     requestCompleted: state.start.requestCompleted,
-    userId: state.user.userId,
     createdBy: state.proDetails.createdBy,
+    projectAttachments: state.proDetails.projectAttachments,
     userId: state.auth.userId
   }
 }
@@ -532,5 +877,10 @@ export default connect(mapStateToProps, {
   countryChanged,
   updateProject,
   myProject,
-  interestsChanged
-})(withStyles(startProjectPageStyle)(ProjectDetails));
+  deleteProjectAttachment,
+  interestsChanged,
+  getProjectById,
+  filesChanged,
+  uploadFiles,
+  clearFiles
+})(withStyles(style)(ProjectDetails));

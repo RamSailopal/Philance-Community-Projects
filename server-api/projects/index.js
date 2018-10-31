@@ -20,6 +20,16 @@ router.post("/:projectId/users", projectsController.resourceApplyForProject);
 router.get("/:projectId/users", projectsController.resourceListForReview);
 // This is called when project creator either Accepts or Rejects Candidate(s) in Review Page
 router.put("/:projectId/users", projectsController.resourceApproveOrReject);
+// This is called when project creator want to see Candidates Review details
+router.get("/:projectId/users/:userId", projectsController.getProjectTeamMember);
+// This is called when one wants to see project attachments
+router.get("/files/:projectId/uploads/:fileName", projectsController.getProjectAttachments);
+// This is called when one wants to see project attachments
+router.delete("/files/:projectId/uploads/:fileName", projectsController.deleteProjectAttachment);
+// This is called when one wants to create project related tasks
+router.post("/:projectId/tasks", projectsController.createProjectTask);
+router.put("/:projectId/tasks/:taskId", projectsController.updateProjectTask);
+router.delete("/:projectId/tasks/:taskId/files/:fileName", projectsController.deleteProjectTaskAttachment);
 
 
 module.exports = router;

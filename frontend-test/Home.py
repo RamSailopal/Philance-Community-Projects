@@ -21,7 +21,7 @@ class HomeButton(unittest.TestCase):
     def test_home_button(self):
         driver = self.driver
         driver.get("http://127.0.0.1:3000/home")
-        try: self.assertEqual("HOME", driver.find_element_by_xpath("(.//*[normalize-space(text()) and normalize-space(.)='Start A Project'])[1]/preceding::div[1]").text)
+        try: self.assertEqual("HOME", driver.find_element_by_xpath("(.//*[normalize-space(text()) and normalize-space(.)='Start A Project'])[1]/preceding::div[2]").text)
         except AssertionError as e: self.verificationErrors.append(str(e))
     
     def is_element_present(self, how, what):

@@ -8,7 +8,6 @@ export const getProjectCandidateReviewList =(id,callback)=> {
         axios.get(hostname()+`/philance/projects/${id}/users/`)
         .then(
             response=>{
-                console.log(response.data)
                 dispatch({
                     type: MY_CANDIDATE_GET_REVIEW,
                     payload: response.data.Candidates,
@@ -40,7 +39,6 @@ export const updateCandidateStatusForProjectApplication =({
         })
         .then(
             response=>{
-                console.log(response.data)
                 callback(false)
                 dispatch({
                     type: CANDIDATE_STATUS_RESPONSE,
@@ -53,12 +51,10 @@ export const updateCandidateStatusForProjectApplication =({
 
 export const storeCandidateReview = (list) => {
     return dispatch => {
-        console.log(list)
         dispatch({
             type: MY_CANDIDATE_STORE_REVIEW,
             payload: list
         })
-        console.log('list', list)
     }
 }
 

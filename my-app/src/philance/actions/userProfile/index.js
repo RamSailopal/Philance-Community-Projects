@@ -1,4 +1,5 @@
 import {
+    USER_AUTHENTICATION_REFRESH_TOKENS,
     USER_PROFILE_TEXT_CHANGED,
     USER_PROFILE_FIELDS_EMPTY,
     USER_PROFILE_COUNTRY_CHANGED,
@@ -20,7 +21,12 @@ import {
     PROFILE_IMAGE_UPLOAD_SUCCESS,
     UNSELECT_FILES,
     USER_PROFILE_IMAGE_UPLOAD_FAILED,
-    ANY_PROFILE_GET_USER_INFO
+    ANY_PROFILE_GET_USER_INFO,
+    USER_PROFILE_NOTIFICATIONS_CALLED,
+    LOGOUT_USER,
+    SET_USER_LOGGED_IN,
+    USER_PROFILE_GET_SETTINGS_INFO,
+    USER_PROFILE_UPDATE_SETTINGS_INFO
 } from '../types'
 
 import axios from 'axios'
@@ -105,13 +111,43 @@ export const passwordChanged = text => {
 }
 
 export const interestschanged = text => {
-    console.log('interestschanged action',text);
-    
     return {
         type: USER_PROFILE_INTERESTS_CHANGED,
         payload: text
     }
 }
+
+export const settingsUpdate = ({settings,userId}) => {
+    var params={}
+    if(settings.notificationSettings.emailNotifications===true){
+        params['emailNotifications']='YES'
+    }
+    if(settings.notificationSettings.emailNotifications===false){
+        params['emailNotifications']='NO'
+    }
+    if(settings.notificationSettings.textNotifications===true){
+        params['textNotifications']='YES'
+    }
+    if(settings.notificationSettings.textNotifications===false){
+        params['textNotifications']='NO'
+    }
+    return dispatch=>{
+        axios.put(hostname()+`/philance/users/${userId}/settings`,params).then((resp)=>{
+            
+            if(resp){
+                dispatch({
+                    type:USER_PROFILE_UPDATE_SETTINGS_INFO,
+                    payload:resp.data.userSettings
+                })
+            }else{
+                dispatch({
+                    type:'nothing'
+                })
+            }
+        })
+    }
+};
+
 
 export const updateUnmount = text => {
     return {
@@ -119,7 +155,22 @@ export const updateUnmount = text => {
     }
 }
 
-export const getUserInfo =(email)=> {
+export const getUserSettings = ({userId}) => {
+    return dispatch=>{
+        axios.get(hostname()+`/philance/users/${userId}/settings`).then((response)=>{
+            
+            dispatch({
+                type:USER_PROFILE_GET_SETTINGS_INFO,
+                payload:response.data.userSettings
+            })
+        }).catch((err)=>{
+            console.log(err);
+            
+        })
+    }
+}
+
+export const getUserInfo =(email,callback)=> {
     return dispatch =>
         axios.post(hostname()+'/philance/users/search', {
             email: email  
@@ -129,22 +180,30 @@ export const getUserInfo =(email)=> {
                 type: USER_PROFILE_GET_USER_INFO,
                 payload: response.data[0]
             })
+            callback()
         })
         .catch(error=>
             console.log(error)
         )
 }
-export const getUserById =(id)=> {
+export const setUserLoggedIn = (userId) => {
+    return{
+        type:SET_USER_LOGGED_IN,
+        payload:userId
+    }
+}
+export const getUserById =(id,authToken)=> {
     return dispatch =>
         axios.get(hostname()+`/philance/users/${id}`, {
-            id: id
-        })
+            headers:{
+                authorization: authToken,
+            }
+            })
         .then(response=>{
             dispatch({
                 type: ANY_PROFILE_GET_USER_INFO,
                 payload: response.data.user[0]
             })
-            console.log(response.data.user[0]);
             
         })
         .catch(error=>
@@ -179,7 +238,6 @@ else {return dispatch => {
             userId:userId
          })
             .then(response=>{
-                console.log(response)
                 dispatch({type: USER_PROFILE_UPDATE_SUCCESS})
             }
             )
@@ -250,6 +308,75 @@ export const getUserProfileImage=(userId)=>{
                 type: 'USER_PROFILE_IMAGE_REFRESH_NOT_REQUIRED',
                 
             })
+        })
+    }
+
+}
+
+export const logout=({userId,authToken,refreshToken})=>{
+    return dispatch =>{
+        localStorage.removeItem('auth')
+        localStorage.removeItem('refresh')
+        axios.get(`${hostname()}/philance/users/${userId}/logout`,{
+            headers:{
+                authorization:authToken
+            }
+        }).then((response)=>{
+            dispatch({
+                type: LOGOUT_USER
+            })
+        })
+    }
+}
+export const forceLogout=()=>{
+    return dispatch =>{
+        localStorage.removeItem('auth')
+        localStorage.removeItem('refresh')
+            dispatch({
+                type: LOGOUT_USER
+            })
+
+    }
+}
+
+
+export const getNotifications=(userId,currentNotifications)=>{
+    return dispatch =>{
+        axios.get(`${hostname()}/philance/users/notifications/${userId}`).then((response)=>{
+            if(currentNotifications!==response.data){
+                response.data.map((notification, key)=>{
+                    response.data[key]={
+                        ...notification,
+                        creationDate:new Date(notification.creationDate).toLocaleTimeString('en-US')+' '+new Date(notification.creationDate).toDateString('en-US')
+                    }
+                })
+                dispatch( {
+                    type: USER_PROFILE_NOTIFICATIONS_CALLED,
+                    payload: response.data
+                })
+            }
+        })
+    }
+
+}
+export const refreshAuthToken=({userId,authToken,refreshToken},callback)=>{
+    
+    return dispatch =>{
+        axios.get(`${hostname()}/philance/users/${userId}/refresh`,{
+                headers: {
+                    authorization: authToken,
+                    refreshtoken: refreshToken
+                }
+        }).then((response,err)=>{
+            
+            dispatch( {
+                type: USER_AUTHENTICATION_REFRESH_TOKENS,
+                payload: response.data
+            })
+            callback?callback({tokenrecieved:true}):null
+            
+        }).catch((err)=>{
+            callback?callback({tokenrecieved:false}):null
         })
     }
 

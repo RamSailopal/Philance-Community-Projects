@@ -60,6 +60,7 @@ export const keywordChanged = text => {
   }
 }
 
+
 export const findProjects = ({
   impactCategories,
   zipCode,
@@ -68,21 +69,25 @@ export const findProjects = ({
   projectStatus,
   resourceType,
 },loaderCallback) => {
-  var volunteers=false;
-  var freelancers=false;
+  var freelancers=false
+  var volunteers=false
   switch(resourceType){
     case 'Needs Volunteers':{
       volunteers=true
       freelancers=false
+      break;
     }
     case 'Needs Freelancers':{
       volunteers=false
       freelancers=true
+      break;
     }
     case 'Any':{
       volunteers=true
       freelancers=true
+      break;
     }
+    default: 
   }
   return dispatch => {
     dispatch({ type: 'START_PROJECT' })
@@ -90,8 +95,8 @@ export const findProjects = ({
       zipCode: zipCode,
       country: country,
       projectStatus: projectStatus==='ANY'?null:projectStatus,
-      volunteers: resourceType=='Needs Volunteers',
-      freelancers: resourceType=='Needs Freelancers',
+      volunteers: resourceType==='Needs Volunteers',
+      freelancers: resourceType==='Needs Freelancers',
       interests:impactCategories,
       keywords:keyword
     })
@@ -110,7 +115,6 @@ export const findProjects = ({
       })
       .catch(error => {
         loaderCallback(false)
-        console.log(error);
         return {
           type: 'FIND_PROJECTS_NETWORK_ERROR'
         }

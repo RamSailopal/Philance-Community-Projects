@@ -86,13 +86,13 @@ const projectDetails = sequelize.define('project_details', {
         timestamps: false,
         freezeTableName: true
     },
-    {
-        classMethods: {
-            associate: function(models) {
-              projectDetails.belongsTo(models.projects, {foreignKey: 'project_id'})
-            }
-          }
-    },
+    // {
+    //     classMethods: {
+    //         associate: function(models) {
+    //           projectDetails.belongsTo(models.projects, {foreignKey: 'project_id'})
+    //         }
+    //       }
+    // },
     {
     instanceMethods: {
         toJSON: function () {

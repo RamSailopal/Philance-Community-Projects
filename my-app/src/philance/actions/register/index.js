@@ -129,7 +129,7 @@ export const registerUser = ({ firstName, lastName, email, password }) =>
                 {
                     dispatch({
                         type: REGISTER_USER_SUCCESS,
-                        payload: response
+                        payload: response.data
                     })
                         axios.post(hostname()+'/philance/users/login/', {
                             email: email,
@@ -140,8 +140,8 @@ export const registerUser = ({ firstName, lastName, email, password }) =>
                             {
                                 dispatch({
                                     type: LOGIN_USER_SUCCESS,
-                                    userId: loginResponse.data.userId,
-                                    payload: loginResponse.data.token
+                                    payload: loginResponse.data,
+                                    email:email
                                 })
                                 dispatch({
                                     type: USER_PROFILE_GET_USER_INFO,
@@ -157,6 +157,9 @@ export const registerUser = ({ firstName, lastName, email, password }) =>
                 
             )
             .catch(error=>{
+                if(error){
+                    alert(error)
+                }
                 if(error.response.status==null){
                 const status = error.response.status
                 if (status === 409)
@@ -168,9 +171,9 @@ export const registerUser = ({ firstName, lastName, email, password }) =>
                 }else{
                     console.log('ss',typeof(error.response.status))
                     const status = error.response.status
-                    if (status == 409)
+                    if (status === 409)
                         dispatch({type: ALREADY_REGISTER})
-                    else if (status == 500)
+                    else if (status === 500)
                         dispatch({type: INVALID_EMAIL})
                     else 
                         dispatch({type: NETWORK_ERROR})

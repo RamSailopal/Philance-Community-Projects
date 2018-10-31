@@ -7,7 +7,7 @@ import {
 } from '../actions/types'
 
 const INITIAL_STATE = {
-    response: null,
+    response: [],
     length: 0,
     list: [],
     candidateStatusResponse:''

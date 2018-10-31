@@ -6,7 +6,6 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
-import Icon from '@material-ui/core/Icon';
 
 // core components
 import GridContainer from "components/Grid/GridContainer.jsx";
@@ -18,7 +17,6 @@ import CardHeader from "components/Card/CardHeader.jsx";
 import CardText from "components/Card/CardText.jsx";
 import CardBody from "components/Card/CardBody.jsx";
 
-import InputLabel from "@material-ui/core/InputLabel";
 import FormLabel from "@material-ui/core/FormLabel";
 
 // @material-ui/icons
@@ -73,8 +71,8 @@ class ApplicationPage extends React.Component {
                 <GridContainer align="right" direction="column">
                   <GridItem style={{ marginRight: 5 }}>
                     <Button color="info" round className={classes.marginRight} onClick={() => {
-                      this.props.history.push('..')
-                      this.props.history.push(`project-details/${this.props.projectId}`)
+                      this.props.history.goBack()
+                      // this.props.history.push(`project-details/${this.props.projectId}`)
                     }}>
                       <i class="fa fa-angle-left"></i> Back to project details
                     </Button>
@@ -142,10 +140,10 @@ class ApplicationPage extends React.Component {
                     <Button
                       color="info"
                       onClick={() => {
-                        // this.toggleLoader(true)
+                        this.toggleLoader(true)
                         const { projectId, userId, message, role } = this.props
                         this.props.applyForProject({ userId, projectId, message, role },(flag)=>{
-                          // this.toggleLoader(flag)                      
+                          this.toggleLoader(flag)                      
                         })
                       }}
                     >

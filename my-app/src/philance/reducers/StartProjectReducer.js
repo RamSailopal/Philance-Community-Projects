@@ -27,6 +27,7 @@ const INITIAL_STATE = {
     freelancers: '',
     interests: '',
     startDate: '',
+    files: [],
     endDate: '',
     budget: '',
     requestCompleted: false,

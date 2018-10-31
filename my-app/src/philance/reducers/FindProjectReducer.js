@@ -41,7 +41,7 @@ export default (state = INITIAL_STATE, action) => {
         case FIND_PROJECT_PROJECT_STATUS_CHANGED:
             return { ...state, projectStatus: action.payload }
         case FIND_PROJECT_UNMOUNT:
-            return { ...state, tableData: [], impactCategories: [], country: "", interests: '', resourceType: "0", projectStatus: "0", }
+            return { ...state, tableData: [], impactCategories: [], country: "", interests: '', resourceType: "Any", projectStatus: "ANY", }
         case LOGOUT_USER:
             return {
                 tableData: [],

@@ -1,21 +1,30 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import { createBrowserHistory } from "history";
+import { Router, Route, Switch } from "react-router-dom";
+import indexRoutes from "philance/routes/index.jsx";
+import { connect } from 'react-redux'
 import './App.css';
+const hist = createBrowserHistory();
 
 class App extends Component {
+
+
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to Philance</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload. Happy Coding!!!
-        </p>
-      </div>
+    <Router history={hist}>
+      <Switch>
+        {indexRoutes.map((prop, key) => {
+          return <Route path={prop.path} component={prop.component} key={key} />;
+        })}
+      </Switch>
+    </Router>
     );
   }
 }
-
-export default App;
+const mapStateToProps = state => {
+  return {
+    isLoggedIn: state.auth.isLoggedIn,
+    id: state.auth.userId
+  }
+}
+export default connect(mapStateToProps)(App);

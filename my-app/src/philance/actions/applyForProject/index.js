@@ -40,7 +40,6 @@ export const applyForProject = ({ userId, projectId, message, role }, loaderCall
             .then(
                 response => {
                     loaderCallback(false)
-                    console.log(response, userId, projectId)
                     dispatch({
                         type: APPLY_FOR_PROJECT_UPDATE_SUCCESS
                     })

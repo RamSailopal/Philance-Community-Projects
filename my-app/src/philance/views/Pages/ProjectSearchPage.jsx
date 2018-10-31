@@ -1,5 +1,4 @@
 import React from "react";
-import Axios from "axios";
 import { connect } from 'react-redux'
 import PropTypes from "prop-types";
 import ReactTable from "react-table";
@@ -11,12 +10,16 @@ import MenuItem from "@material-ui/core/MenuItem";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
 import Tooltip from '@material-ui/core/Tooltip';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 // @material-ui/icons
-import Person from "@material-ui/icons/Person";
 import ViewList from "@material-ui/icons/ViewList";
 import Assignment from "@material-ui/icons/Assignment";
-
+import Slide from "@material-ui/core/Slide";
+import Close from "@material-ui/icons/Close";
 // core components
 import GridContainer from "components/Grid/GridContainer.jsx";
 import GridItem from "components/Grid/GridItem.jsx";
@@ -44,6 +47,34 @@ import { getProjectById, idStored } from '../../actions/projectDetails'
 import { getProjectCandidateReviewList } from '../../actions/candidateReview'
 
 import store from "../../store/store";
+const styles = theme => ({
+  ...projectSearchStyle,
+  root: {
+    width: '100%',
+    marginTop: theme.spacing.unit * 1,
+    overflowX: 'auto',
+  },
+  table: {
+    minWidth: 700,
+  },
+  row: {
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.background.default,
+    },
+  },
+  progress: {
+    margin: theme.spacing.unit * 2,
+  },
+  lightTooltip: {
+    background: theme.palette.common.white,
+    color: theme.palette.text.primary,
+    boxShadow: theme.shadows[1],
+    fontSize: 13,
+  }
+})
+function Transition(props) {
+  return <Slide direction="down" {...props} />;
+}
 
 class ProjectSearch extends React.Component {
   constructor(props) {
@@ -55,7 +86,8 @@ class ProjectSearch extends React.Component {
       resourceType: "0",
       projectStatus: "0",
       distanceFromYou: "0",
-      loader: false
+      loader: false,
+      data: []
     };
   }
 
@@ -100,9 +132,20 @@ class ProjectSearch extends React.Component {
       loader: flag
     });
   }
+  handleClickOpen(modal) {
+    var x = [];
+    x[modal] = true;
+    this.setState(x);
+  }
+
+  handleClose(modal) {
+    var x = [];
+    x[modal] = false;
+    this.setState(x);
+  }
 
   findProjects() {
-    // this.toggleLoader(true);
+    this.toggleLoader(true);
     const {
       impactCategories,
       yourLocation,
@@ -119,56 +162,15 @@ class ProjectSearch extends React.Component {
         keyword,
         projectStatus,
         resourceType
-      },(flag)=>{
-        // this.toggleLoader(flag)
+      }, (flag) => {
+        this.toggleLoader(flag) 
       }
     )
   }
-
+  state = {
+    noticeModal: false
+  }
   render() {
-    let data = []
-    console.log(this.props, 'proj**')
-    {
-      this.props.tableData ?
-        this.props.tableData.map((element) => {
-          i = i === 2 ? 1 : i + 1
-          let startDate = new Date(element.start_date);
-          let endDate = new Date(element.end_date);
-          startDate = startDate.toDateString()
-          endDate = endDate.toDateString()
-          let sample = {
-            project_name: element.project_name,
-            status: element.status,
-            startDate: startDate,
-            endDate: endDate,
-            Close: "",
-            Complete: "",
-            Action: <span>
-              <Tooltip title="Details">
-                <Button
-                  round
-                  justIcon
-                  simple
-                  onClick={() => {
-                    // this.toggleLoader(true)
-                    this.props.getProjectById(element.project_id, (flag) => {
-                    // this.toggleLoader(flag)
-                    this.props.history.push(`../project-details/${element.project_id}`)
-                    this.props.idStored(element.project_id)
-                    })
-                  }}
-                  color="info"
-                  className="like"
-                ><ViewList /></Button>
-              </Tooltip>
-            </span>
-          }
-          data.push(sample)
-        }) : null
-    }
-    console.log(data)
-    let i = 0;
-
     const { classes } = this.props;
 
     return (
@@ -191,22 +193,22 @@ class ProjectSearch extends React.Component {
                     </GridItem>
                     <GridItem xs={12} sm={12} md={6} style={{ marginTop: 30 }}>
                       <InterestsDropdown
-                      onInterestsChange={
-                        async (e, {value})=>{
-                          await this.setState({value:value})
-                          {console.log({value},'********0.5')}
-                          if (!this.state.value) {
-                            await this.setState({
-                                valid:true
-                            })
-                            this.handleImpactCategory(value)
+                        onInterestsChange={
+                          async (e, { value }) => {
+                            await this.setState({ value: value })
+                            if (!this.state.value) {
+                              await this.setState({
+                                valid: true
+                              })
+                              this.handleImpactCategory(value)
+                            }
+                            else {
+                              await this.setState({ valid: false })
+                              this.handleImpactCategory(value)
+                            }
                           }
-                          else {
-                            await this.setState({ valid: false })
-                            this.handleImpactCategory(value)                      }
-                      }
-                    }
-                      interestOptions={this.props.interestOptions} defaultValue={this.props.impactCategories} />
+                        }
+                        interestOptions={this.props.interestOptions} defaultValue={this.props.impactCategories} />
                     </GridItem>
                   </GridContainer>
                   <br />
@@ -249,6 +251,7 @@ class ProjectSearch extends React.Component {
                                     selected: classes.selectMenuItemSelected
                                   }}
                                   value={prop}
+                                  key={key}
                                 >
                                   {prop}
                                 </MenuItem>
@@ -296,6 +299,7 @@ class ProjectSearch extends React.Component {
                                     selected: classes.selectMenuItemSelected
                                   }}
                                   value={prop}
+                                  key={key}
                                 >
                                   {prop}
                                 </MenuItem>
@@ -325,6 +329,72 @@ class ProjectSearch extends React.Component {
                     </GridItem>
                   </GridContainer>
                   <br />
+                  {
+                    //ui part of modal
+                  }
+                  <GridContainer justify="center">
+                    <GridItem
+                      xs={12}
+                      sm={12}
+                      md={12}
+                      className={classes.center}
+                    >
+                      <Dialog
+                        classes={{
+                          root: classes.center + " " + classes.modalRoot,
+                          paper: classes.modal
+                        }}
+                        open={this.state.noticeModal}
+                        TransitionComponent={Transition}
+                        keepMounted
+                        onClose={() => this.handleClose("noticeModal")}
+                        aria-labelledby="notice-modal-slide-title"
+                        aria-describedby="notice-modal-slide-description"
+                      >
+                        <DialogTitle
+                          id="notice-modal-slide-title"
+                          disableTypography
+                          className={classes.modalHeader}
+                        >
+                          <Button
+                            justIcon
+                            className={classes.modalCloseButton}
+                            key="close"
+                            style={{ float: "right" }}
+                            aria-label="Close"
+                            color="transparent"
+                            onClick={() => this.handleClose("noticeModal")}
+                          >
+                            <Close className={classes.modalClose} />
+                          </Button>
+                        </DialogTitle>
+                        <DialogContent
+                          id="notice-modal-slide-description"
+                          className={classes.modalBody}
+                        >
+                          <p style={{ fontSize: "16px" }}>
+                            Please Login to View Project Details
+                          </p>
+                        </DialogContent>
+                        <DialogActions
+                          className={
+                            classes.modalFooter +
+                            " " +
+                            classes.modalFooterCenter
+                          }
+                        >
+                          <Button
+                            onClick={() => this.props.history.push('/login')}
+                            color="info"
+                            round
+                            className={classes.center}
+                          >
+                            Go to Login
+                          </Button>
+                        </DialogActions>
+                      </Dialog>
+                    </GridItem>
+                  </GridContainer>
                   <br />
                   <GridContainer>
                     <GridItem>
@@ -346,7 +416,45 @@ class ProjectSearch extends React.Component {
                 <GridContainer>
                   <GridItem xs={12} sm={12}>
                     <ReactTable style={{ overflow: "none" }}
-                      data={data}
+                      data={
+                          this.props.tableData.map((element) => {
+                            let startDate = new Date(element.start_date);
+                            let endDate = new Date(element.end_date);
+                            startDate = startDate.toDateString()
+                            endDate = endDate.toDateString()
+                            return {
+                              project_name: element.project_name,
+                              status: element.status,
+                              startDate: startDate,
+                              endDate: endDate,
+                              Close: "",
+                              Complete: "",
+                              Action: <span>
+                                <Tooltip
+                                  title="Details"
+                                  classes={{ tooltip: classes.lightTooltip }}
+                                >
+                                  <Button
+                                    round
+                                    justIcon
+                                    simple
+                                    onClick={() => {
+                                      let id = element.project_id
+                                      this.toggleLoader(true)
+                                      this.props.getProjectById({ id }, (flag) => {
+                                        this.toggleLoader(flag)
+                                        this.props.history.push(`/project-details/info`)
+                                        this.props.idStored(element.project_id)
+                                      })
+                                    }}
+                                    color="info"
+                                    className="like"
+                                  ><ViewList /></Button>
+                                </Tooltip>
+                              </span>
+                            }
+                          })
+                      }
                       columns={[
                         {
                           Header: <strong>Name</strong>,
@@ -435,4 +543,4 @@ export default connect(mapStateToProps, {
   findProjects,
   getProjectById,
   idStored
-})(withStyles(projectSearchStyle)(ProjectSearch));
+})(withStyles(styles)(ProjectSearch));

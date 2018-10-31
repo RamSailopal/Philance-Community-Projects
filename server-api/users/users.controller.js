@@ -3,7 +3,9 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 var moment = require('moment')
 var users = require("./users.model");
+var userSettings = require("./user.settings.model");
 var userSkills = require("./user.skills.model");
+var authentication = require("./authentication.model");
 var userNotifications = require("./user.notifications.model");
 var projects = require("../projects/projects.model");
 var projectDetails = require("../projects/project.details.model");
@@ -15,6 +17,7 @@ var config = require('../config/config')
 var authutil = require('../util/authutil')
 var userHelper=require('../helpers/user')
 var {mediaHost}=require('../config')
+const randtoken=require('rand-token')
 
 exports.createProfile = (req, res, next) => {
 
@@ -45,12 +48,32 @@ exports.createProfile = (req, res, next) => {
                                 where:{
                                     userId:founduser.userId
                                 }
+                            }).then(()=>{
+                                userSettings.create({
+                                    userId:founduser.userId,
+                                    emailNotifications:'YES',
+                                    textNotifications:'NO',
+                                    pushNotifications:'NO',
+                                    createdBy:founduser.userId,
+                                    creationDate:new Date(),
+                                    lastUpdatedBy:founduser.userId,
+                                    lastUpdatedDate:new Date(),
+                                }).then(()=>{
+                                    res.status(200).json({
+                                        message: "User # " + req.body.firstName + " " + req.body.lastName + " Registered Successfully",
+                                        user: _user
+                                    });
+                                }).catch((err)=>{
+                                    res.status(500).json({
+                                        error: err.message
+                                    });
+                                })
+                            }).catch((err)=>{
+                                res.status(500).json({
+                                    error: err.message
+                                });
                             })
                         })
-                        res.status(200).json({
-                            message: "User # " + req.body.firstName + " " + req.body.lastName + " Registered Successfully",
-                            user: _user
-                        });
 
                     }).catch(err => {
                         console.log(err);
@@ -70,6 +93,61 @@ exports.createProfile = (req, res, next) => {
 
     }
     )
+}
+
+exports.refreshAuthToken=(req,res,next)=>{
+    
+    authentication.findOne({
+        where:{
+            [Op.and]:{
+                authToken:req.headers.authorization,
+                refreshToken:req.headers.refreshtoken,
+                userId:req.params.userId
+            }
+        },
+        logging:false
+    }).then((_userauth)=>{
+        if(_userauth){
+
+            users.findOne({
+                where:{
+                    [Op.and]:{
+                        userId:_userauth.userId
+                    }
+                },
+                logging:false
+            }).then((_user)=>{
+                const token = jwt.sign(
+                    {
+                        email: _user.email,
+                        userId: _user.userId
+                    }, 'philance_secret',
+                    process.env.JWT_KEY,
+                    {
+                        expiresIn: "1h",
+                    }
+                );
+                const refreshToken = randtoken.uid(256)
+                authentication.update({
+                    authToken:token,
+                    refreshToken:refreshToken
+                },{
+                    where:{
+                        refreshToken:req.headers.refreshtoken
+                    },
+                    logging:false
+                }).then(()=>{
+                    res.send({
+                        message:'Token Refreshed',
+                        token,refreshToken,
+                        userId:_user.userId
+                    })
+                })
+            })
+        }else{
+            res.status(403).send()
+        }
+    })
 }
 
 exports.login = (req, res, next) => {
@@ -93,15 +171,25 @@ exports.login = (req, res, next) => {
                     {
                         email: _user.email,
                         userId: _user.userId
-                    }, 'philance_secret' + _user.userId,
+                    }, 'philance_secret',
                     process.env.JWT_KEY,
                     {
-                        expiresIn: "1h"
+                        expiresIn: "1h",
                     }
                 );
+                const refreshToken = randtoken.uid(256)
+                authentication.create({
+                    userId:_user.userId,
+                    email:_user.email,
+                    authToken:token,
+                    platform:req.headers.platform,
+                    refreshToken:refreshToken,
+                    createdBy:_user.userId,
+                })
                 return res.status(200).json({
                     message: "authentication successful",
                     token: token,
+                    refreshToken: refreshToken,
                     userId: _user.userId
                 });
             }
@@ -350,16 +438,26 @@ exports.getProjects = (req, res, next) => {
     users.hasMany(projectTeam, { foreignKey: 'userId' });
     projectTeam.belongsTo(users, { foreignKey: 'userId' });
 
-    var sql = 'select distinct proj.*, \'OWNER\' from projects proj where 1 = 1 and proj.created_by =' + req.params.userId + ' union ' +
-        'select distinct proj.*, projteam.role from projects proj, project_team projteam where 1 = 1 and proj.project_id = projteam.project_id and user_id =' + req.params.userId;
+    // var sql = 'select distinct proj.*, \'OWNER\' from projects proj where 1 = 1 and proj.created_by =' + req.params.userId + ' union ' +
+    //     'select distinct proj.*, projteam.role from projects proj, project_team projteam where 1 = 1 and proj.project_id = projteam.project_id and user_id =' + req.params.userId;
 
-    sequelize.sync();
-    sequelize.query(sql, { model: projects }).then((_projects) => {
-        res.status(200).json({
-            Projects: _projects
-        });
-    }
-    )
+    // sequelize.sync();
+    // sequelize.query(sql, { model: projects }).then((_projects) => {
+    //     res.status(200).json({
+    //         Projects: _projects
+    //     });
+    // }
+    // )
+    projects.findAll({
+        include:{
+            model:projectTeam,
+            where:{
+                userId:req.params.userId
+            }
+        }
+    }).then((_projs)=>{
+        res.status(200).send(_projs)
+    })
 }
 
 exports.createPasswordResetToken = (req, res, next) => {
@@ -482,3 +580,92 @@ exports.getUserImage = (req, res, next) => {
         res.status(404).send(err)
     })
 }
+exports.getUserNotifications = (req, res, next) => {
+    userNotifications.hasOne(users, { foreignKey: 'createdBy' })
+    userNotifications.findAll({
+        where:{
+            userId:req.params.userId,
+        },
+        include: [
+            { 
+                model: users,
+                on:{
+                    col1:sequelize.where(sequelize.col("user.user_id"), "=", sequelize.col("user_notifications.created_by")),
+                },
+                nested: false, 
+                duplicating: false, 
+                attributes: [
+                    'userId', 
+                    'firstName', 
+                    'lastName', 
+                    'email'
+                ]
+            }],        
+        order:[
+            ['creationDate', 'DESC']
+        ],
+        limit:10,
+        logging:false
+    }).then((instance)=>{
+        res.status(200).send(instance)
+    }).catch((err)=>{
+        res.status(404).send(err)
+    })
+}
+exports.userLogout=((req,res,next)=>{
+    authentication.destroy({
+        where:{
+            [Op.and]:{
+                authToken:req.headers.authorization,
+                userId:req.params.userId
+            }
+        }
+    }).then(()=>{
+        res.send({
+            message:'User Logged out'
+        })
+    }).catch(()=>{
+        res.status(500).send({
+            message:'User cannot be Logged out'
+        })
+    })
+})
+exports.updateUserSettings=((req,res,next)=>{
+    userSettings.update({
+        emailNotifications:req.body.emailNotifications,
+        textNotifications:req.body.textNotifications,
+        pushNotifications:req.body.pushNotifications,
+    },{
+        where:{
+            userId:req.params.userId
+        }
+    }).then((userSettingsRes)=>{
+        userSettings.findOne({
+            where:{
+                userId:req.params.userId
+            }
+        }).then((resp)=>{
+            res.status(200).send({
+                userSettings:resp
+            }
+            )
+        })
+    })
+})
+exports.getUserSettings=((req,res,next)=>{
+    userSettings.findOne({
+        where:{
+            userId:req.params.userId
+        }
+    }).then((userSettings)=>{
+        if(userSettings){
+            res.status(200).send({
+                userSettings
+            })
+        }else{
+            res.status(404).send({
+                message:'Settings not found'
+            })
+        }
+    })
+})

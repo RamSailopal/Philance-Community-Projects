@@ -1,5 +1,5 @@
 export const countryOptions = [
-	{ key: 'af', value:'', flag: '', text: 'Select Country' },
+	{ key: '0', value:'', flag: '', text: 'Select Country' },
 	{ key: 'af', value:'Afghanistan', flag: 'af', text: 'Afghanistan' },
 	{ key: 'ax', value: 'Aland Islands', flag: 'ax', text: 'Aland Islands' },
 	{ key: 'al', value: 'Albania', flag: 'al', text: 'Albania' },

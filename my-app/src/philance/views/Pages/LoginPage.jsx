@@ -6,7 +6,6 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import InputAdornment from "@material-ui/core/InputAdornment";
 
 // @material-ui/icons
-import Face from "@material-ui/icons/Face";
 import Email from "@material-ui/icons/Email";
 import LockOutline from "@material-ui/icons/LockOutline";
 import { NavLink } from "react-router-dom";
@@ -25,7 +24,6 @@ import {connect} from 'react-redux'
 import {emailChanged, passwordChanged, loginUser, textChanged} from '../../actions/login'
 
 import loginPageStyle from "assets/jss/material-dashboard-pro-react/views/loginPageStyle.jsx";
-import { Target } from "react-popper";
 
 class LoginPage extends React.Component {
 
@@ -137,7 +135,7 @@ onButtonPress() {
                     </CardActions>
                     <CardActions className={classes.justifyContentCenter}>
                     <NavLink to="/forgotPassword">
-                      <Button color="info" simple size="small">
+                      <Button color="info" simple size="sm">
                         Forgot Password?
                       </Button>
                     </NavLink>
@@ -145,7 +143,7 @@ onButtonPress() {
                   </CardBody>
                   <CardFooter className={classes.justifyContentCenter}>
                     Don't have an account?
-                    <Button onClick={()=>{this.props.history.push("/register")}} color="info" simple size="small">
+                    <Button onClick={()=>{this.props.history.push("/register")}} color="info" simple size="sm">
                       Sign Up
                     </Button>
                   </CardFooter>

@@ -26,7 +26,6 @@ export default (state = INITIAL_STATE, action) => {
     switch (action.type) {
         case ANY_PROFILE_GET_USER_INFO:
         const a=hostname();
-        console.log('IMPOPOPSOFDPOF',action.payload)
         return {
             ...state,
             email: action.payload.email,

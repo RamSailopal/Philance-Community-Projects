@@ -23,7 +23,6 @@ let container= {
     zIndex: 9,
 }
 const Loader = (props) => {
-    console.log(props)
     const { classes } = props;
     if (props.loader === true) {
         return (

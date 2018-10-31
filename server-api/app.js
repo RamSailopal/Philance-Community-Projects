@@ -3,7 +3,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var bodyParser = require("body-parser");
+var bodyParser = require('body-parser');
+const { initializeChatSocket } = require('./messages/messages.socket');
 
 const routes = require('./routes');
 const http = require('http');
@@ -24,13 +25,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
+  res.header('Access-Control-Allow-Origin', '*');
   res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, authorization, refreshtoken'
   );
-  if (req.method === "OPTIONS") {
-    res.header("Access-Control-Allow-Methods", "PUT, POST, GET");
+  if (req.method === 'OPTIONS') {
+    res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE');
     return res.status(200).json({});
   }
   next();
@@ -58,15 +59,21 @@ app.use(function(req, res, next) {
 // });
 app.use((error, req, res, next) => {
   res.status(error.status || 500);
-  console.error(error)
+  console.error(error);
   res.json({
-      error: {
-          message: error
-      }
+    error: {
+      message: error,
+    },
   });
 });
 
 server = http.createServer(app);
+initializeChatSocket(server);
+
+/**
+ * Initialize Socket IO Connection
+ */
+
 server.listen(port, '0.0.0.0', () => {
   console.log('\n*** Server started on port %d ***\n', port);
 });

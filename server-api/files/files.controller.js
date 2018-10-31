@@ -7,8 +7,10 @@ const ProjectsController = require('../projects/projects.controller');
 const Sequelize = require('sequelize');
 const sequelize = require('../util/dbconnection');
 const moment = require('moment');
+const projectAttachments = require('../projects/project.attachments.model');
 
 exports.filesUpload = (req, res, next) => {
+console.log(req.file);
 
     switch(JSON.parse(req.body.param).uploadType){
 
@@ -16,8 +18,23 @@ exports.filesUpload = (req, res, next) => {
             UserController.updateUserImage(req,res,next)
         }
         break;
+        case 'projectTaskFiles':{
+            ProjectsController.projectTasksFileUploaded(req,res,next)
+        }
+        break;
         case 'startProjectFiles':{
-            sequelize.query(`INSERT INTO philance.project_attachments (project_id,name,attachment,creation_date,created_by,last_updated_date,last_updated_by) VALUES (${JSON.parse(req.body.param).userInfo.projectId},'name','${req.file.path}','${new Date()}',${JSON.parse(req.body.param).userInfo.userId},'${new Date()}',${JSON.parse(req.body.param).userInfo.userId})`)
+            // sequelize.query(`INSERT INTO philance.project_attachments () VALUES ()`)
+            projectAttachments.create({
+                projectId: JSON.parse(req.body.param).userInfo.projectId,
+                name: req.file.filename,
+                originalName: req.file.originalname,
+                attachment:`/philance/projects/files/${JSON.parse(req.body.param).userInfo.projectId}${req.file.filename}`, 
+                creationDate:new Date(), 
+                attachmentPath:req.file.path, 
+                createdBy:JSON.parse(req.body.param).userInfo.userId,
+                lastUpdatedDate: new Date(),
+                lastUpdatedBy: JSON.parse(req.body.param).userInfo.userId
+            })
             .then(()=>{
                 res.status(200).send({
                     filepath:mediaHost()+req.file.filename

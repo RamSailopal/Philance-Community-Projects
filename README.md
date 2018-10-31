@@ -44,9 +44,9 @@ To get started with the development process, please look at [this Wiki page](htt
 ## License
 Copyright 2018 Philance, Inc.
 
-Licensed under the Apache License, Version 2.0 (the "License").
+Licensed under the GNU Affero General Public License v3.0 (the "License").
 You may not use this program except in compliance with the License.
-You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+You may obtain a copy of the License at http://www.gnu.org/licenses/agpl-3.0.html
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 

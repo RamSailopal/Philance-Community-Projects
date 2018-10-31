@@ -9,7 +9,6 @@ import {
     EMAIL_EMPTY,
     FIELDS_EMPTY,
     USER_PROFILE_GET_USER_INFO,
-    LOGOUT_USER
 } from '../types'
 
 import axios from 'axios'
@@ -81,8 +80,8 @@ export const loginUser = ({email, password}) => {
             if(status===200){
                 dispatch({
                     type: LOGIN_USER_SUCCESS,
-                    userId: response.data.userId,
-                    payload: response.data.token
+                    payload: response.data,
+                    email:email
                 })
                     axios.post(hostname()+'/philance/users/search', {
                         email: email  
@@ -107,9 +106,4 @@ export const loginUser = ({email, password}) => {
                 dispatch({type: LOGIN_NETWORK_ERROR})
         });
     }   
-}
-export const logout=()=>{
-    return {
-        type: LOGOUT_USER
-    }
 }

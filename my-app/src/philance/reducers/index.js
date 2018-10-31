@@ -11,6 +11,12 @@ import ApplyProjectReducer from './ApplyProjectReducer'
 import FindProjectReducer from './FindProjectReducer';
 import CandidateReviewReducer from './CandidateReviewReducer';
 import PublicProfileReducer from './PublicProfileReducer';
+import ProjectApplicantReducer from './ProjectApplicantReducer';
+import UserSettingsReducer from './UserSettingsReducer';
+import CreateTaskReducer from './CreateTaskReducer';
+import TasksReducer from './TasksReducer';
+import TasksDetailsReducer from './TasksDetailsReducer';
+import ProjectChatReducer from './ProjectChatReducer';
 
 export default combineReducers({
     auth: AuthReducer,
@@ -24,5 +30,11 @@ export default combineReducers({
     mypro: MyProjectReducer,
     proDetails: ProjectDetailsReducer,
     applypro: ApplyProjectReducer,
-    publicUserPage: PublicProfileReducer
+    publicUserPage: PublicProfileReducer,
+    viewProjectApplication: ProjectApplicantReducer,
+    userSettings: UserSettingsReducer,
+    createTask: CreateTaskReducer,
+    projectTasks: TasksReducer,
+    projectChat: ProjectChatReducer,
+    projectTaskDetails: TasksDetailsReducer,
 });

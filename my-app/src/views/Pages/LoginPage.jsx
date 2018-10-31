@@ -43,7 +43,6 @@ class LoginPage extends React.Component {
   }
 
   toggleLoader = () => {
-    console.log('working')
     this.setState({
       loader: !this.state.loader
     });

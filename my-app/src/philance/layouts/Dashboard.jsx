@@ -14,7 +14,6 @@ import Header from "../components/Header/Header/Header";
 import Footer from "philance/components/Footer/Footer.jsx";
 import Sidebar from "./Sidebar";
 
-import dashboardRoutes from "routes/dashboard.jsx";
 import { pvtSidebarRoutes, pvtPagesRoutes } from "philance/routes/pages.jsx";
 import appStyle from "assets/jss/material-dashboard-pro-react/layouts/dashboardStyle.jsx";
 
@@ -24,10 +23,9 @@ import image from "assets/img/sidebar-2.jpg";
 import logo from "../assets/logos/philancelogo.png";
 import logoText from "../assets/logos/Philance-logo-text.png";
 import { getCommonInfo } from "../actions/common";
-import { getUserInfo } from "../actions/userProfile";
-import { logout } from "../actions/login";
-import { hostname } from "../../config";
-
+import { getUserInfo,getUserSettings,getNotifications,refreshAuthToken } from "../actions/userProfile";
+import { logout } from "../actions/userProfile";
+import { storeLocal } from "../helpers/helper";
 
 const switchRoutes =(isRegistered)=> (
   <Switch>
@@ -78,7 +76,7 @@ class Dashboard extends React.Component {
     return this.props.location.pathname !== "/maps/full-screen-maps";
   }
   componentDidMount() {
-    console.log(this.props.isLoggedIn, this.props.isRegistered)
+    window.addEventListener('beforeUnload',this.handlewindowclose)
     if (navigator.platform.indexOf("Win") > -1) {
       ps = new PerfectScrollbar(this.refs.mainPanel, {
         suppressScrollX: true,
@@ -88,8 +86,24 @@ class Dashboard extends React.Component {
     }
     this.props.getCommonInfo()
     this.props.getUserInfo(this.props.currentEmail)
+    this.props.getUserSettings({userId:this.props.userId})
+    //call notification api
+    var a=setInterval(() => {
+      this.props.getNotifications(this.props.userId,this.props.currentNotifications)
+    }, 5000);
+      setInterval(() => {
+        //refresh auth token
+        this.props.refreshAuthToken({
+          userId:this.props.userId,
+          authToken:this.props.authToken,
+          refreshToken:this.props.refreshToken
+        })
+      }, ((50000)));
+    this.setState({interval:a})
   }
+
   componentWillUnmount() {
+    clearInterval(this.state.interval)
     if (navigator.platform.indexOf("Win") > -1) {
       ps.destroy();
     }
@@ -127,7 +141,11 @@ class Dashboard extends React.Component {
           color="blue"
           bgColor="black"
           miniActive={this.state.miniActive}
-          onClickOnLogout={()=>this.props.logout()}
+          onClickOnLogout={()=>this.props.logout({
+            authToken:this.props.authToken,
+            userId:this.props.userId,
+            refreshToken:this.props.refreshToken
+          })}
           userProfileAvatar={this.props.userProfileAvatar}
           displayName={this.props.displayImage}
           {...rest}
@@ -163,6 +181,10 @@ const mapStateToProps =state=> {
     userProfileAvatar: state.user.userImageUrl,
     displayImage:state.user.displayImage,
     displayName:state.user.name,
+    userId:state.user.userId,
+    currentNotifications:state.user.notifications,
+    authToken: state.auth.authToken,
+    refreshToken : state.auth.refreshToken
   }
 }
 
@@ -170,4 +192,4 @@ Dashboard.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default connect(mapStateToProps,{getCommonInfo,getUserInfo,logout})(withStyles(appStyle)(Dashboard));
+export default connect(mapStateToProps,{getCommonInfo,refreshAuthToken,getUserSettings,getNotifications,getUserInfo,logout})(withStyles(appStyle)(Dashboard));

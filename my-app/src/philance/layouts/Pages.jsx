@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Switch, Route, Redirect } from "react-router-dom";
 import { connect } from 'react-redux'
-import cx from "classnames";
+
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
 
@@ -10,32 +10,16 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import PublicPagesHeader from "philance/components/Header/PublicPagesHeader.jsx";
 import Footer from "philance/components/Footer/Footer.jsx";
 
-import { pagesRoutes, pvtPagesRoutes } from "philance/routes/pages.jsx";
+import { pagesRoutes } from "philance/routes/pages.jsx";
 
 import pagesStyle from "assets/jss/material-dashboard-pro-react/layouts/pagesStyle.jsx";
 
 import Dashboard from '../layouts/Dashboard'
 import bgImagePub from "philance/assets/img/philance-bg3.jpeg";
 
-import {myProject} from '../actions/myProject'
+import { myProject } from '../actions/myProject'
 
 // var ps;
-
-const switchRoutes = (
-  <Switch>
-    {pvtPagesRoutes.map((prop, key) => {
-      if (prop.redirect)
-        return <Redirect from={prop.path} to={prop.pathTo} key={key} />;
-      if (prop.collapse)
-        return prop.views.map((prop, key) => {
-          return (
-            <Route path={prop.path} component={prop.component} key={key} />
-          );
-        });
-      return <Route path={prop.path} component={prop.component} key={key} />;
-    })}
-  </Switch>
-);
 
 class Pages extends React.Component {
   getRoute() {
@@ -62,18 +46,11 @@ class Pages extends React.Component {
   render() {
 
     const { classes, ...rest } = this.props;
-    const mainPanel =
-      classes.mainPanel +
-      " " +
-      cx({
-        [classes.mainPanelSidebarMini]: this.state.miniActive,
-        [classes.mainPanelWithPerfectScrollbar]:
-          navigator.platform.indexOf("Win") > -1
-      });
     if (this.props.isLoggedIn) {
       return (
-        <Dashboard {...rest}/>
-      )}
+        <Dashboard {...rest} />
+      )
+    }
 
     else {
       //display public pages
@@ -122,4 +99,4 @@ Pages.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default connect(mapStateToProps, {myProject})(withStyles(pagesStyle)(Pages));
+export default connect(mapStateToProps, { myProject })(withStyles(pagesStyle)(Pages));

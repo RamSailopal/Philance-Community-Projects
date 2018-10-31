@@ -6,4 +6,5 @@ module.exports = function (app) {
     app.use('/philance/projects', require('./projects'));
     app.use('/philance/lookups', require('./lookups'));
     app.use('/philance/files', require('./files'));
+    // app.use('/philance/notifications', require('./notifications'));
 };
