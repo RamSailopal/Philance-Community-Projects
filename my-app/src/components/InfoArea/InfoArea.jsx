@@ -14,7 +14,7 @@ function InfoArea({ ...props }) {
         <props.icon className={classes.icon} />
       </div>
       <div className={classes.descriptionWrapper}>
-        <h4 className={classes.title}>{title}</h4>
+        <h4 className={classes.title}><b>{title}</b></h4>
         <p className={classes.description}>{description}</p>
       </div>
     </div>

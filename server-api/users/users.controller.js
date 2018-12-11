@@ -10,6 +10,7 @@ var userNotifications = require("./user.notifications.model");
 var projects = require("../projects/projects.model");
 var projectDetails = require("../projects/project.details.model");
 var projectTeam = require("../projects/projects.team.model");
+var projectAttachments = require("../projects/project.attachments.model");
 const sequelize = require('../util/dbconnection');
 const Op = sequelize.Op;
 const Sequelize = require('sequelize');
@@ -449,12 +450,16 @@ exports.getProjects = (req, res, next) => {
     // }
     // )
     projects.findAll({
-        include:{
+        include:[
+		{
+			model: projectAttachments,
+		},
+		{
             model:projectTeam,
             where:{
                 userId:req.params.userId
-            }
-        }
+            },
+		}]
     }).then((_projs)=>{
         res.status(200).send(_projs)
     })

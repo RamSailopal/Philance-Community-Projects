@@ -19,7 +19,12 @@ import {
     PROJECT_DETAILS_INTERESTS_CHANGED,
     PROJECT_APPLICANT_DETAILS_GET_DETAILS,
     PROJECT_DETAILS_FILES_CHANGED,
-    PROJECT_DETAILS_CLEAR_FILES
+    PROJECT_DETAILS_CLEAR_FILES,
+	PROJECT_DETAILS_BUDGET_FORMAT,
+	PROJECT_DETAILS_STARTEND,
+	PROJECT_DETAILS_VOLERR,
+	PROJECT_DETAILS_FREEERR,
+	PROJECT_DETAILS_FIELDS_EMPTY
 } from '../types'
 
 export const removeToaster =()=> {
@@ -128,7 +133,55 @@ export const budgetChanged = text => {
   }
   
 export const updateProject =({name, status, zipCode, interests, country, description, volunteers, freelancers, budget, startDate, endDate, id, userId},loaderCallback)=> {
-    let impactCategories = []
+ 
+   
+   if ( name === '' || description === '' || zipCode === '' || country === '' || interests === '') {
+	loaderCallback(false)
+    return {
+      type: PROJECT_DETAILS_FIELDS_EMPTY
+    }
+  } 
+  
+  
+   if ( ! budget.match('^[0-9]{1,6}[.][0-9]{2}$')) {
+    loaderCallback(false)
+    return {
+      type: PROJECT_DETAILS_BUDGET_FORMAT
+    }
+  } 
+  
+  
+  if ( ! freelancers.match('^[0-9]{1,3}$') && ! volunteers.match('^[0-9]{1,3}$') ) {
+    loaderCallback(false)
+    return {
+      type: PROJECT_DETAILS_FREEERR
+    }
+  } 
+   
+  if ( startDate === "" ) {
+    loaderCallback(false)
+    return {
+      type: PROJECT_DETAILS_FIELDS_EMPTY
+    }
+  }
+  
+  if ( endDate === "" ) {
+    loaderCallback(false)
+    return {
+      type: PROJECT_DETAILS_FIELDS_EMPTY
+    }
+  }
+  
+  
+  if ( new Date(endDate) < new Date(startDate) ) {
+    loaderCallback(false)
+    return {
+      type: PROJECT_DETAILS_STARTEND
+    }
+  } 
+  
+  
+	let impactCategories = []
     interests.map((element, prop)=>{
     return(
         impactCategories.push({  

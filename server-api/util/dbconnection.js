@@ -13,7 +13,7 @@ const Sequelize = require('sequelize');
 //   });
 
 const sequelize = new Sequelize('philance', 'philance', 'ph1ldb', {
-  host: 'localhost',
+  host: process.env.mysqladd,
   dialect: 'mysql',
   operatorsAliases: true,
   pool: {

@@ -102,14 +102,21 @@ export const createProjectTask = ({
   userId
 }, uploadCallback, loaderCallback) => {
 
-  if (
-    name === ''
-  ) {
+  if ( name === '' ) {
     loaderCallback(false)
     return {
       type: PROJECT_TASKS_FIELDS_EMPTY
     }
   }
+  
+  if ( startDate > endDate ) {
+    loaderCallback(false)
+    return {
+      type: PROJECT_TASKS_FIELDS_EMPTY
+    }
+  }
+  
+  
   return dispatch => {
     dispatch({ type: PROJECT_TASKS })
     axios.post(hostname() + `/philance/projects/${projectId}/tasks`, {
@@ -203,6 +210,9 @@ export const uploadFiles = (metadata, files,callback) => {
 
 }
 export const setTaskDetails=(tasks,id,callback)=>{
+  
+  
+  
   var task={}
   for(var i=0;i<tasks.length;i++){
     if(tasks[i].taskId==id){

@@ -24,7 +24,7 @@ const registerPageStyle = {
     ...container,
     position: "relative",
     zIndex: "3",
-    paddingTop: "23vh"
+    paddingTop: "10vh"
   },
   cardSignup: {
     borderRadius: "6px",
@@ -33,6 +33,10 @@ const registerPageStyle = {
     marginBottom: "100px",
     padding: "40px 0px",
     marginTop: "1vh"
+  },
+  newz: {
+    height: "707px",
+	width: "100%"
   },
   center: {
     textAlign: "center"

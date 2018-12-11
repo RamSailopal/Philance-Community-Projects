@@ -29,7 +29,8 @@ router.delete("/files/:projectId/uploads/:fileName", projectsController.deletePr
 // This is called when one wants to create project related tasks
 router.post("/:projectId/tasks", projectsController.createProjectTask);
 router.put("/:projectId/tasks/:taskId", projectsController.updateProjectTask);
-router.delete("/:projectId/tasks/:taskId/files/:fileName", projectsController.deleteProjectTaskAttachment);
+router.get("/:projectId/tasks/:taskId/files/uploads/:fileName", projectsController.getProjectTaskAttachments);
+router.delete("/:projectId/tasks/:taskId/files/uploads/:fileName", projectsController.deleteProjectTaskAttachment);
 
 
 module.exports = router;

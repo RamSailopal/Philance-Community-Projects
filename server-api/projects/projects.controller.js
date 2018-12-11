@@ -268,9 +268,10 @@ exports.getProjects = (req, res, next) => {
     }
     var _sql2 = 'SELECT projects.*, details.name FROM philance.projects as projects INNER JOIN philance.project_details as details ON projects.project_id=details.project_id where projects.country=\'Afghanistan\' AND (details.name=\'Elderly\' OR details.name=\'Other\' )'
     var _sql = ''
-    _sql = _impactCategories.length != 0 ? _sql + 'SELECT projects.*, details.name FROM philance.projects as projects   ' : 'SELECT projects.* FROM philance.projects as projects   ';
-    _sql = _impactCategories.length != 0 ? _sql + ' INNER JOIN philance.project_details as details ON projects.project_id=details.project_id   ' : _sql;
+    _sql = _impactCategories.length != 0 ? _sql + 'SELECT projects.*, attach.original_name, attach.attachment, details.name FROM philance.projects as projects   ' : 'SELECT projects.*, attach.original_name, attach.attachment FROM philance.projects as projects LEFT JOIN philance.project_attachments as attach ON projects.project_id=attach.project_id AND attach.original_name LIKE ' + `'ProjectImage.%'   `;
+    _sql = _impactCategories.length != 0 ? _sql + ' INNER JOIN philance.project_details as details ON projects.project_id=details.project_id LEFT JOIN philance.project_attachments as attach ON projects.project_id=attach.project_id   ' : _sql;
     _sql = _sql + 'where ';
+	
     _sql = _country ? _sql + `projects.country = '${_country}'   AND ` : _sql;
     _sql = _projectStatus ? _sql + `projects.status = '${_projectStatus}'   AND ` : _sql;
     _sql = _volunteers ? _sql + `projects.volunteers > 0   AND ` : _sql;
@@ -376,12 +377,15 @@ exports.getProjectById = (req, res, next) => {
             nested: true,
             duplicating: false,
             required: false,
+			
         },
         {
             model: projectAttachments,
             nested: true,
             include: {
-                model: users
+                model: users,
+				attributes: ['userId', 'firstName', 'lastName','organization','title','rate','auth_src','status','interests','location','description','country']
+				
             }
         },
         {
@@ -396,10 +400,13 @@ exports.getProjectById = (req, res, next) => {
             required: false,
             include: [{
                 model: users,
-                as: "author"
-            }, {
+                as: "author",
+				attributes: ['userId', 'firstName', 'lastName','organization','title','rate','auth_src','status','interests','location','description','country']
+            }, 
+			{
                 model: users,
-                as: "assignee"
+                as: "assignee",
+				attributes: ['userId', 'firstName', 'lastName','organization','title','rate','auth_src','status','interests','location','description','country']
             },
             {
                 model: taskAttachments,
@@ -421,6 +428,7 @@ exports.getProjectById = (req, res, next) => {
                 model: users,
                 required: true,
                 nested: true,
+				attributes: ['userId','firstName','lastName','organization','title','rate','auth_src','status','createdBy','interests','location','description','country']
             }, //, {attributes: ['fname' ,'lname', 'email'] }//, where : {userId : projectTeam.userId}}
             ]
         }
@@ -604,7 +612,7 @@ exports.resourceListForReview = (req, res, next) => {
             model: users,
             nested: false,
             duplicating: false,
-            attributes: ['userId', 'firstName', 'lastName', 'email']
+            attributes: ['userId', 'firstName', 'lastName']
         }, {
             model: projects,
             nested: false,
@@ -722,7 +730,7 @@ exports.resourceApproveOrReject = (req, res, next) => {
                 model: users,
                 nested: false,
                 duplicating: false,
-                attributes: ['userId', 'firstName', 'lastName', 'email']
+                attributes: ['userId', 'firstName', 'lastName']
             }]
         }).then(function (_projectTeam) {
             res.status(200).json({
@@ -806,6 +814,22 @@ exports.deleteProjectAttachment = (req, res, next) => {
         }
     }).then((response) => {
         res.sendStatus(200)
+    })
+}
+
+exports.getProjectTaskAttachments = (req, res, next) => {
+    taskAttachments.findOne({
+        where: {
+            [Op.and]: {
+                projectId: req.params.projectId,
+				taskId: req.params.taskId,
+                attachment: `/philance/projects/${req.params.projectId}/tasks/${req.params.taskId}/files/uploads/${req.params.fileName}`,
+            }
+        }
+    }).then((instance) => {
+        res.sendFile(instance.attachmentPath)
+    }).catch((err) => {
+        res.status(404).send(err)
     })
 }
 

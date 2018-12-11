@@ -17,7 +17,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 // @material-ui/icons
 import ViewList from "@material-ui/icons/ViewList";
-import Assignment from "@material-ui/icons/Assignment";
+import Assignment from "@material-ui/icons/Search";
 import Slide from "@material-ui/core/Slide";
 import Close from "@material-ui/icons/Close";
 // core components
@@ -32,6 +32,8 @@ import CustomInput from "components/CustomInput/CustomInput.jsx";
 import InterestsDropdown from "../../components/DoubleDropdown/InterestsDropdown";
 import CountryDropdown from "../../components/DoubleDropdown/CountryDropdown";
 import projectSearchStyle from "philance/views/PageStyles/ProjectSearchStyles.jsx";
+import imag from "philance/assets/img/Helpingothers4.jpg";
+import { hostname } from "../../../config";
 import {
   locationChanged,
   resourceChanged,
@@ -42,6 +44,7 @@ import {
   findProjectUnmount,
   findProjects,
 } from "../../actions/findProject";
+
 import Loader from "../../components/Loader/Loader"
 import { getProjectById, idStored } from '../../actions/projectDetails'
 import { getProjectCandidateReviewList } from '../../actions/candidateReview'
@@ -89,6 +92,26 @@ class ProjectSearch extends React.Component {
       loader: false,
       data: []
     };
+  }
+  
+  getimg(id) {
+    var { classes } = this.props
+	this.props.getProjectById({ id: id }, () => {})
+	var fndimag="/static/media/Helpingothers4.023cec80.jpg";
+	if (this.props.projectAttachments) { 
+					this.props.projectAttachments.map((value, key) => {
+						var attbits=this.props.projectAttachments[key].originalName.split(".")
+						if (attbits[0] === "ProjectImage") {
+							fndimag=hostname() + this.props.projectAttachments[key].attachment
+						}
+					})
+					
+	}
+	else {
+			var attbits=""
+			fndimag='/static/media/Helpingothers4.023cec80.jpg'
+	}
+	return fndimag
   }
 
   componentWillUnmount() {
@@ -416,19 +439,29 @@ class ProjectSearch extends React.Component {
                 <GridContainer>
                   <GridItem xs={12} sm={12}>
                     <ReactTable style={{ overflow: "none" }}
-                      data={
+					  data={
                           this.props.tableData.map((element) => {
                             let startDate = new Date(element.start_date);
                             let endDate = new Date(element.end_date);
                             startDate = startDate.toDateString()
                             endDate = endDate.toDateString()
+							let imag1 = element.attachment
+							if ( imag1 === null ) {
+								imag1=imag
+							}
+							else {
+								imag1 = hostname() + imag1
+							}
                             return {
+							  Imag: 
+                                <span><img src={imag1} height="100px" width="200px"></img></span>
+							  ,
                               project_name: element.project_name,
+							  location: element.zip_code,
                               status: element.status,
                               startDate: startDate,
                               endDate: endDate,
                               Close: "",
-                              Complete: "",
                               Action: <span>
                                 <Tooltip
                                   title="Details"
@@ -456,12 +489,25 @@ class ProjectSearch extends React.Component {
                           })
                       }
                       columns={[
+					   {
+                          Header: <strong></strong>,
+                          accessor: "Imag",
+                          sortable: false,
+						  width: 200
+                        },
                         {
                           Header: <strong>Name</strong>,
                           accessor: "project_name",
                           filterable: true,
-                          filterMethod: this.columnFilter
-                        },
+                          filterMethod: this.columnFilter,
+						  width: 100
+						},
+						{
+                          Header: <strong>City/Zip Code</strong>,
+                          accessor: "location",
+                          filterable: true,
+                          filterMethod: this.columnFilter,
+						},
                         {
                           Header: <strong>Status</strong>,
                           accessor: "status",
@@ -526,7 +572,8 @@ const mapStateToProps = state => {
     country: state.findProject.country,
     textChanged: state.findProject.textChanged,
     interestOptions: state.common.interestOptions,
-    resourceTypeOptions: state.findProject.resourceTypeOptions
+    resourceTypeOptions: state.findProject.resourceTypeOptions,
+	projectAttachments: state.proDetails.projectAttachments
   }
 }
 

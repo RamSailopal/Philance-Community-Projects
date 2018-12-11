@@ -23,6 +23,8 @@ import CardHeader from "components/Card/CardHeader.jsx";
 import CardText from "components/Card/CardText.jsx";
 import CardBody from "components/Card/CardBody.jsx";
 import Delete from "@material-ui/icons/Delete";
+import CardIcon from "components/Card/CardIcon.jsx";
+import Assignment from "@material-ui/icons/Create";
 
 
 // styles for buttons on sweetalert
@@ -75,13 +77,14 @@ class StartProject extends React.Component {
       name: '',
       description: '',
       freelancers: '',
+	  volunteers: '',
       interests: '',
       loader: false,
       noticeModal: false,
       volunteerStatus: true,
       freeLanceStatus: true,
-      volunteers: null,
-      freeLancers: null,
+      volunteers: 0,
+      freeLancers: 0,
       startDate: null,
       validName: false,
       files: [],
@@ -96,7 +99,10 @@ class StartProject extends React.Component {
       validEndDate: false,
       validVolunteers: false,
       validFreelancers: false,
+	  
     };
+	
+	
     this.myRef = React.createRef();
     this.fileInput = React.createRef();
   }
@@ -200,6 +206,9 @@ class StartProject extends React.Component {
     if (text === "") {
       this.validate("Budget")
     }
+	else if (!text.match('^[0-9]{1,6}[.][0-9]{2}$')) {
+		this.validate("Budget")
+	}
     else {
       await this.setState({ validBudget: false })
       this.props.budgetChanged(text)
@@ -216,6 +225,7 @@ class StartProject extends React.Component {
     await this.props.filesChanged(files, async () => {
       await files ? Array.from(this.props.files).map((value, key) => {
         if (Array.from(files)[key]) {
+          if (this.props.files[key].size < 10485760) { 		
           a =
             [<span className={classes.customFont}>
               {this.props.files[key].name}
@@ -228,6 +238,20 @@ class StartProject extends React.Component {
             </Button>]
 
           data.push(a)
+		  }
+		  else {
+			 a = [<span className={classes.customFont}>
+              <font color="red">{"The size of the file is bigger than 10MB"}</font>
+            </span>
+            ]  
+			  data.push(a);
+			  setTimeout(
+					function() {
+								this.fileSplicer(this.props.files,key);
+								}
+								.bind(this),5000);
+		  } 	  
+		    
 
         }
       }) : null
@@ -240,10 +264,16 @@ class StartProject extends React.Component {
 
   }
 
-  onEndDateChange = async (text) => {
+  onEndDateChange = async (text) => { 
+    const {
+            startDate
+                   } = this.props
     if (text === undefined) {
       this.validate("startDate")
     }
+	else if (text < this.props.startDate) {
+	  this.validate("endDate")
+	}
     else {
       await this.setState({ validEndDate: false })
       this.props.endDateChanged(text)
@@ -256,11 +286,19 @@ class StartProject extends React.Component {
   }
 
   onFreeLancersChange = async (text) => {
-    if (text === "") {
+    const {
+            volunteers
+                   } = this.props
+    if (text === "" && this.props.volunteers === "") {
       this.validate("Freelancers")
       this.props.freelancersChanged(text)
       this.props.textChanged()
     }
+	else if (!text.match('^[0-9]{1,3}$') && !this.props.volunteers.match('^[0-9]{1,3}$')) {
+	  this.validate("Freelancers")
+      this.props.freelancersChanged(text)
+      this.props.textChanged()	
+	}
     else {
       await this.setState({ validFreelancers: false })
       this.props.freelancersChanged(text)
@@ -268,7 +306,7 @@ class StartProject extends React.Component {
     }
   }
 
-  onStartDateChange = async (text) => {
+  onStartDateChange = async (text) => {   
     if (text === undefined) {
       this.validate("startDate")
     }
@@ -279,11 +317,19 @@ class StartProject extends React.Component {
     }
   }
   onVolunteersChange = async (text) => {
-    if (text === "") {
+    const {
+            freelancers
+                   } = this.props
+    if (text === "" && this.props.freelancers ==="" ) {
       this.validate("Volunteers")
       this.props.volunteersChanged(text)
       this.props.textChanged()
     }
+	else if (!text.match('^[0-9]{1,3}$') && !this.props.freelancers.match('^[0-9]{1,3}$')) {
+	  this.validate("Volunteers")
+      this.props.volunteersChanged(text)
+      this.props.textChanged()
+	}	
     else {
       await this.setState({ validVolunteers: false })
       this.props.volunteersChanged(text)
@@ -327,11 +373,15 @@ class StartProject extends React.Component {
     const { classes } = this.props;
     return (
       <GridContainer className={this.props.isLoggedIn ? classes.justifyContentCenter : classes.container}>
-        {this.props.requestCompleted ? <Toaster display={this.props.requestCompleted} message={'Project has been created'} /> : null}
+        {this.props.requestCompleted ? <Toaster display={this.props.requestCompleted} message={'Project has been created - Please wait'} /> : null }
+		{this.props.requestCompleted ? <meta http-equiv={'refresh'} content={'3'}/> : null }
         <Loader loader={this.state.loader} />
         <GridItem xs={12} sm={12} md={10}>
           <Card>
             <CardHeader color="info" text>
+			 <CardIcon color="info">
+                  <Assignment />
+                </CardIcon>
               <CardText color="info">
                 <h4>Start a project to help others OR ask for help</h4>
               </CardText>
@@ -370,7 +420,9 @@ class StartProject extends React.Component {
                         placeholder: "Enter a Project Description",
                         onChange: e => {
                           this.onDescriptionChange(e.target.value)
-                        }
+                        },
+						multiline: true,
+                        rows: 5
                       }}
                     />
                   </GridItem>
@@ -390,14 +442,14 @@ class StartProject extends React.Component {
                 <GridContainer spacing={8}>
                   <GridItem xs={6} style={{}}>
                     <CustomInput
-                      labelText="Project Zip Code"
+                      labelText="Project Zip Code/City"
                       id="projectLocation"
                       error={this.state.validZipCode}
                       formControlProps={{
                         fullWidth: true
                       }}
                       inputProps={{
-                        placeholder: "Enter zip code of location where it took place",
+                        placeholder: "Enter zip code/city of location where project is taking place",
                         onChange: e => {
                           this.onZipCodeChange(e.target.value)
                         }
@@ -555,6 +607,10 @@ class StartProject extends React.Component {
                               <Datetime
                                 timeFormat={false}
                                 onChange={date => this.onStartDateChange(date._d)}
+								isValidDate={ function( current ){
+											  return current.isAfter( Datetime.moment().subtract( 1, 'day' ) )
+												}
+											}
                               />
                             </GridItem>
                             <GridItem xs={3}>
@@ -588,6 +644,10 @@ class StartProject extends React.Component {
                                 style={{'z-index':'999 !important'}}
                                 timeFormat={false}
                                 onChange={date => this.onEndDateChange(date._d)}
+								isValidDate={ function( current ){
+											  return current.isAfter( Datetime.moment().subtract( 1, 'day' ) )
+												}
+											}
                               />
                             </GridItem>
                             <GridItem xs={3}>
@@ -609,7 +669,7 @@ class StartProject extends React.Component {
                         fullWidth: true
                       }}
                       inputProps={{
-                        placeholder: "Enter Estimated Budget (USD)",
+                        placeholder: "Enter Estimated Budget i.e. 123.00",
                         onChange: e => {
                           this.onBudgetChange(e.target.value)
                         }
@@ -640,6 +700,10 @@ class StartProject extends React.Component {
                           <Button color="info" onClick={() => this.handleClick()}>
                             <Icon name='upload' />Select Files{'\t\t\t'}
                           </Button>
+						  <br></br>
+							<br></br>
+							<br></br>
+							<font>Attach an image with the name ProjectImage to associate a picture with your project</font>
                         </GridItem>
                         <GridItem xs={12}>
                           {
@@ -710,6 +774,7 @@ class StartProject extends React.Component {
                         id="notice-modal-slide-title"
                         disableTypography
                         className={classes.modalHeader}
+						style={{ height: "60px" }}
                       >
                         <Button
                           justIcon
@@ -728,7 +793,7 @@ class StartProject extends React.Component {
                         className={classes.modalBody}
                       >
                         <p style={{ fontSize: "16px" }}>
-                          Please Login to Start a Project
+                          <b>Please Login to Start a Project</b>
                           </p>
                       </DialogContent>
                       <DialogActions
@@ -748,7 +813,7 @@ class StartProject extends React.Component {
                           </Button>
                       </DialogActions>
                     </Dialog>
-                    <Button onClick={() => {
+                    <Button id="Sayve" onClick={() => {
                       if (!this.props.isLoggedIn) {
                         this.handleClickOpen("noticeModal")
                       } else {
@@ -789,7 +854,7 @@ class StartProject extends React.Component {
                                 projectId: projectId
                               }
                             },
-                            this.props.files,
+                            files,
                           )
                         }, (flag) => {
                           this.toggleLoader(flag)
@@ -824,12 +889,25 @@ class StartProject extends React.Component {
                         if (this.props.zipCode === "") {
                           this.setState({ validZipCode: true })
                         }
-                        if (this.props.volunteers === "") {
+                        if (this.props.volunteers === "" && this.props.freelancers === "") {
                           this.setState({ validVolunteers: true })
                         }
-                        if (this.props.freelancers === "") {
+						if (!this.props.volunteers.match('^[0-9]{1,3}$') && !this.props.freelancers.match('^[0-9]{1,3}$')) {
+						  this.setState({ validVolunteers: true })
+						}	
+                        if (this.props.freelancers === "" && this.props.volunteers === "") {
                           this.setState({ validFreelancers: true })
                         }
+						if (!this.props.freelancers.match('^[0-9]{1,3}$') && !this.props.volunteers.match('^[0-9]{1,3}$')) {
+						  this.setState({ validFreelancers: true })
+						}	
+						if (!this.props.budget.match('^[0-9]{1,6}[.][0-9]{2}$')) {
+							this.setState({ validBudget: true })
+						}
+						if (this.props.startDate > this.props.endDate) {
+							this.setState({ validstartDate: true })
+							this.setState({ validstartDate: true })
+						}
                       }
                     }}
 

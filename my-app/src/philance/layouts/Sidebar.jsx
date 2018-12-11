@@ -14,6 +14,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import Hidden from "@material-ui/core/Hidden";
 import Collapse from "@material-ui/core/Collapse";
+import image from "philance/assets/img/team-hands-in1.jpg";
 
 // core components
 import HeaderLinks from "components/Header/HeaderLinks.jsx";
@@ -82,7 +83,6 @@ class Sidebar extends React.Component {
       classes,
       color,
       logo,
-      image,
       logoText,
       routes,
       bgColor,

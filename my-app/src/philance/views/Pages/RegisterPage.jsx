@@ -73,18 +73,21 @@ onButtonPress() {
                       icon={LaunchIcon}
                       iconColor="success"
                     />
+					<br></br>
                     <InfoArea
                       title="Manage Your Project"
                       description="Use the project management and collaboration tools available in the Philance platform to successfully execute your project. Your project team could be from your local community or from across the world!"
                       icon={Timeline}
                       iconColor="success"
                     />
+					<br></br>
                     <InfoArea
                       title="Work on an Existing Project"
                       description="Sign up as a volunteer or a freelancer to work on an existing social impact project posted by someone else. Contribute your time and expertise to start making a difference today in this world!"
                       icon={Group}
                       iconColor="success"
                     />
+					<br></br>
                   </GridItem>
                   <GridItem xs={12} sm={8} md={5}>
                     <div className={classes.center}>

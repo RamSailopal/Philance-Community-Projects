@@ -40,6 +40,8 @@ import ChatBox from "./ChatBox";
 let chat = socketIOClient.connect(`${hostname()}/chat`);
 var userImages={}
 class ProjectChat extends React.Component {
+
+
   state = {
     messages: [],
     message:''
@@ -115,6 +117,8 @@ _handleKeyPress=(e)=>{
     })
   }
 }
+
+
 render() {
   const { classes } = this.props;
   return (
@@ -237,6 +241,7 @@ render() {
                     message:''
                   })
                 }}>send</Button>
+				<Button onClick={() => {window.open("https://meet.jit.si/PhiLance_" + this.props.projectId,"jitsi","location=no")}}>Video Conference</Button>
               </GridItem>
             </GridContainer>
                 </Card>
@@ -247,6 +252,8 @@ render() {
   );
 }
 }
+
+
 
 ProjectChat.propTypes = {
 classes: PropTypes.object.isRequired

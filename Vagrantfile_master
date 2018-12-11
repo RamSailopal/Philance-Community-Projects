@@ -25,7 +25,11 @@ Vagrant.configure("2") do |config|
 	  sudo chmod +x /opt/openproject/public/Philance/frontend-test/*.sh
 	  sudo chmod +x /opt/openproject/public/Philance/frontend-test/*.py
 	  sudo chmod +x /opt/openproject/public/Philance/dev-support/Windows/*.sh
+	  sudo mkdir /opt/openproject/public/media/uploads
+	  sudo chmod 777 /opt/openproject/public/media/uploads
 	  /opt/openproject/public/Philance/hostch.sh
+	  export mysqladd="localhost"
+	  export pass=$(awk '/root_password/ { print $2 }' /etc/openproject/installer.dat)
 	  /opt/openproject/public/Philance/mysql.sh
 	  /opt/openproject/public/Philance/devlibraries.sh
 	  sudo mount --bind /opt/openproject/public/Philance/my-app/src /opt/openproject/public/philance-app/src
@@ -34,9 +38,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", run: "always", inline: <<-SHELL 
       sudo mount --bind /opt/openproject/public/Philance/my-app/src /opt/openproject/public/philance-app/src
       sudo mount --bind /opt/openproject/public/Philance/my-app/public /opt/openproject/public/philance-app/public
-	  sudo systemctl start docker
-	  /opt/openproject/public/Philance/rocket.sh
-	  cd /opt/openproject/public/philance-app;sudo npm start &
-	  cd /opt/openproject/public/Philance/server-api;sudo node app.js > /opt/openproject/public/Philance/server-api/server-api.log 2>&1 &
+	  cd /opt/openproject/public/philance-app;sudo bash -c 'export REACT_APP_ADDRSS="http://localhost:3001"&&npm start &'
+	  cd /opt/openproject/public/Philance/server-api;sudo bash -c 'export mysqladd="localhost"&&node app.js > /opt/openproject/public/Philance/server-api/server-api.log 2>&1 &'
   SHELL
 end

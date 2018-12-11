@@ -93,7 +93,7 @@ class Profile extends React.Component {
                   </GridItem>
                   <GridItem xs={12} sm={12} md={12}>
                     <CustomInput
-                      labelText="Your Zip Code"
+                      labelText="Your Zip Code/City"
                       id="postal-code"
                       inputProps={{
                         disabled:true,

@@ -3,6 +3,6 @@ export const hostname = () => {
         return 'https://philance.zapto.org'
     }
     else{
-        return 'http://localhost:3001'
+        return process.env.REACT_APP_ADDRSS
     }
 }

@@ -17,7 +17,7 @@ import ProjectApplicantPage from "philance/views/Pages/ProjectApplicantPage.jsx"
 
 // @material-ui/icons
 import HomeIcon from "@material-ui/icons/Home";
-import LaunchIcon from "@material-ui/icons/Launch";
+import LaunchIcon from "@material-ui/icons/Create";
 import SearchIcon from "@material-ui/icons/Search";
 import HelpIcon from "@material-ui/icons/Help";
 import FingerprintIcon from "@material-ui/icons/Fingerprint";
@@ -226,14 +226,14 @@ export const pvtSidebarRoutes = [
   //   icon: NotificationsIcon,
   //   component: ProfileSettings
   // },
-  {
-    path: "/messages",
-    name: "Messages",
-    short: "Messages",
-    mini: "MP",
-    icon: MessageIcon,
-    component: MessagesPage
-  },
+//  {
+//    path: "/messages",
+//    name: "Messages",
+//    short: "Messages",
+//    mini: "MP",
+//    icon: MessageIcon,
+//    component: MessagesPage
+//  },
   {
     redirect: true,
     path: "/",
@@ -315,14 +315,14 @@ export const pvtPagesRoutes = [
     icon: NotificationsIcon,
     component: ProfileSettings
   },
-  {
-    path: "/messages",
-    name: "Messages",
-    short: "Messages",
-    mini: "MP",
-    icon: MessageIcon,
-    component: MessagesPage
-  },
+ // {
+ //   path: "/messages",
+ //   name: "Messages",
+ //   short: "Messages",
+ //   mini: "MP",
+ //   icon: MessageIcon,
+ //   component: MessagesPage
+ // },
   {
     path: "/projectCandidateReview/:id",
     name: "Project Candidate Review",

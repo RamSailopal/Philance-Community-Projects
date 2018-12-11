@@ -103,14 +103,20 @@ export const createProjectTask = ({
   userId
 }, uploadCallback, loaderCallback) => {
 
-  if (
-    name === ''
-  ) {
+  if ( name === '' ) {
     loaderCallback(false)
     return {
       type: PROJECT_TASK_DETAILS_FIELDS_EMPTY
     }
   }
+  
+  if ( startDate > endDate ) {
+    loaderCallback(false)
+    return {
+      type: PROJECT_TASK_DETAILS_FIELDS_EMPTY
+    }
+  }
+  
   return dispatch => {
     dispatch({ type: PROJECT_TASK_DETAILS })
     axios.post(hostname() + `/philance/projects/${projectId}/tasks`, {
@@ -160,7 +166,19 @@ export const updateTaskDetails = ({
   priority,
   projectId,
   userId
+  
 }, loaderCallback) => {
+   
+ 
+  
+  if ( new Date(startDate) > new Date(endDate) ) {
+	loaderCallback(false)
+    return {
+      type: PROJECT_TASK_DETAILS_FIELDS_EMPTY
+    }
+  }
+  
+  else {
 
   return dispatch => {
     dispatch({ type: PROJECT_TASK_DETAILS })
@@ -199,6 +217,7 @@ export const updateTaskDetails = ({
         }
       });
   }
+ }
 }
 
 export const projectTasksUnmount = () => {

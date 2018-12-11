@@ -17,7 +17,12 @@ import {
     PROJECT_DETAILS_INTERESTS_CHANGED,
     LOGOUT_USER,
     PROJECT_DETAILS_FILES_CHANGED,
-    PROJECT_DETAILS_CLEAR_FILES
+    PROJECT_DETAILS_CLEAR_FILES,
+	PROJECT_DETAILS_BUDGET_FORMAT,
+	PROJECT_DETAILS_STARTEND,
+	PROJECT_DETAILS_VOLERR,
+	PROJECT_DETAILS_FREEERR,
+	PROJECT_DETAILS_FIELDS_EMPTY
 } from '../actions/types'
 
 const INITIAL_STATE = {
@@ -40,6 +45,7 @@ const INITIAL_STATE = {
     files: [],
     projectTeam:[],
     chatGroup:[],
+	text: 'Project Successfully Updated'
 }
 
 export default (state = INITIAL_STATE, action) => {
@@ -107,7 +113,8 @@ export default (state = INITIAL_STATE, action) => {
 
         case PROJECT_DETAILS_UPDATE_SUCESS:
             return { ...state,
-                toast: true
+                toast: true,
+				text: "Project Details Updated Successfully"
             }
 
         case PROJECT_DETAILS_REMOVE_TOASTER:
@@ -124,6 +131,18 @@ export default (state = INITIAL_STATE, action) => {
             return { ...state,
                 interests: action.payload
             }
+			
+			
+		case PROJECT_DETAILS_FIELDS_EMPTY:
+            return{...state, text: 'All Fields Are Required'}
+		case PROJECT_DETAILS_BUDGET_FORMAT:
+            return{...state, text: 'Budget Format Error'}
+		case PROJECT_DETAILS_STARTEND:
+		     return{...state, text: 'End Date Must be After Start Date'}
+		case PROJECT_DETAILS_VOLERR:
+		     return{...state, text: 'Volunteers format error'}
+	    case PROJECT_DETAILS_FREEERR:
+		     return{...state, text: 'Volunteers/Freelancers format error'}
 
         case PROJECT_DETAILS_GET_DETAILS:
             return {
@@ -148,7 +167,8 @@ export default (state = INITIAL_STATE, action) => {
 
         case PROJECT_DETAILS_CHANGED:
             return {
-                ...state
+                ...state,
+				text: 'Details Successfully'
             }
         case LOGOUT_USER:
             return {

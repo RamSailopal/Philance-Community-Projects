@@ -16,7 +16,11 @@ import {
   START_PROJECT_FILES_UPLOAD_FAILED,
   START_PROJECT_FILES_UPLOAD_SUCCESS,
   START_PROJECT_COUNTRY_CHANGED,
-  START_PROJECT_INTERESTS_CHANGED
+  START_PROJECT_INTERESTS_CHANGED,
+  START_PROJECT_BUDGET_FORMAT,
+  START_PROJECT_STARTEND,
+  START_PROJECT_VOLERR,
+  START_PROJECT_FREEERR
 } from '../types'
 
 import axios from 'axios'
@@ -117,14 +121,75 @@ export const startProject = ({
   files
 }, uploadCallback, loaderCallback) => {
 
-  if (
-    name === ''
-  ) {
+  if ( name === '' || description === '' || zipCode === '' || country === '' || interests === '') {
+	loaderCallback(false)
+    return {
+      type: START_PROJECT_FIELDS_EMPTY
+    }
+  } 
+  
+  if ( budget === null ) {
+	budget=""
+  }
+  
+  if ( freelancers === null ) {
+	freelancers="0"
+ }
+  
+  else if ( freelancers === "" ) {
+        freelancers="0"
+  }
+
+ 
+  if ( volunteers === null ) {
+	volunteers="0"
+  }
+  
+  else if ( freelancers === "" ) {
+        freelancers="0"
+  }
+
+  
+   if ( ! budget.match('^[0-9]{1,6}[.][0-9]{2}$')) {
+    loaderCallback(false)
+    return {
+      type: START_PROJECT_BUDGET_FORMAT
+    }
+  } 
+  
+  
+  if ( ! freelancers.match('^[0-9]{1,3}$') && ! volunteers.match('^[0-9]{1,3}$') ) {
+    loaderCallback(false)
+    return {
+      type: START_PROJECT_FREEERR
+    }
+  } 
+   
+  if ( startDate === "" ) {
     loaderCallback(false)
     return {
       type: START_PROJECT_FIELDS_EMPTY
     }
-  } var projectDetails = []
+  }
+  
+  if ( endDate === "" ) {
+    loaderCallback(false)
+    return {
+      type: START_PROJECT_FIELDS_EMPTY
+    }
+  }
+  
+  
+  if ( endDate < startDate ) {
+    loaderCallback(false)
+    return {
+      type: START_PROJECT_STARTEND
+    }
+  } 
+  
+  
+  
+  var projectDetails = []
   var interestsArray = interests
   for (var i = 0; i < interestsArray.length; i++) {
     projectDetails.push({

@@ -157,9 +157,6 @@ export const registerUser = ({ firstName, lastName, email, password }) =>
                 
             )
             .catch(error=>{
-                if(error){
-                    alert(error)
-                }
                 if(error.response.status==null){
                 const status = error.response.status
                 if (status === 409)

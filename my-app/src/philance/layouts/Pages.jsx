@@ -15,7 +15,7 @@ import { pagesRoutes } from "philance/routes/pages.jsx";
 import pagesStyle from "assets/jss/material-dashboard-pro-react/layouts/pagesStyle.jsx";
 
 import Dashboard from '../layouts/Dashboard'
-import bgImagePub from "philance/assets/img/philance-bg3.jpeg";
+import bgImagePub from "philance/assets/img/team-hands-in1.jpg";
 
 import { myProject } from '../actions/myProject'
 
@@ -58,6 +58,10 @@ class Pages extends React.Component {
         <div>
           <PublicPagesHeader {...rest} />
           <div className={classes.wrapper} ref="wrapper">
+		  <br></br>
+		  <br></br>
+		  <br></br>
+		  <br></br>
             <div className={classes.fullPage}>
               <Switch>
                 {pagesRoutes.map((prop, key) => {

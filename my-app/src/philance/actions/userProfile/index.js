@@ -212,10 +212,14 @@ export const getUserById =(id,authToken)=> {
 }
 
 export const updateProfile = ({ name, email, password, contact, country, postalCode, description, organization, title, interests, currentEmail, userId }) => {
-    if(email === ''
-    || name === '' 
-    
-) {
+    if(email === ''|| name === '' ) 
+	{
+    return {
+        type: USER_PROFILE_FIELDS_EMPTY
+    }
+}
+if (!contact.match('[0-9]+'))
+	{
     return {
         type: USER_PROFILE_FIELDS_EMPTY
     }

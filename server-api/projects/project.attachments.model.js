@@ -62,13 +62,13 @@ const projectAttachments = sequelize.define('project_attachments', {
         timestamps: false,
         freezeTableName: true
     },
-    // {
-    //     classMethods: {
-    //         associate: function(models) {
-    //             projectAttachments.belongsTo(models.projects, {foreignKey: 'project_id'})
-    //         }
-    //       }
-    // },
+    {
+         classMethods: {
+             associate: function(models) {
+                 projectAttachments.belongsTo(models.projects, {foreignKey: 'project_id'})
+             }
+           }
+    },
     {
     instanceMethods: {
         toJSON: function () {

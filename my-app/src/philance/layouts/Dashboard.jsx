@@ -150,7 +150,7 @@ class Dashboard extends React.Component {
           displayName={this.props.displayImage}
           {...rest}
         />
-        <div className={mainPanel} ref="mainPanel">
+        <div className={mainPanel} ref="mainPanel" style={{ backgroundColor: "#fed034" }} >
           <Header
             sidebarMinimize={this.sidebarMinimize.bind(this)}
             miniActive={this.state.miniActive}

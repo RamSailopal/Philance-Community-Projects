@@ -16,7 +16,11 @@ import {
     START_PROJECT_FILES_UPLOAD_SUCCESS,
     START_PROJECT_FILES_UPLOAD_FAILED,
     START_PROJECT_COUNTRY_CHANGED,
-    START_PROJECT_INTERESTS_CHANGED
+    START_PROJECT_INTERESTS_CHANGED,
+	START_PROJECT_BUDGET_FORMAT,
+	START_PROJECT_STARTEND,
+	START_PROJECT_VOLERR,
+	START_PROJECT_FREEERR
 } from '../actions/types'
 
 const INITIAL_STATE = {
@@ -39,7 +43,8 @@ const INITIAL_STATE = {
 export default (state = INITIAL_STATE, action) => {
     switch(action.type) {
         case START_PROJECT_FILES_UPLOAD_SUCCESS:
-            return {...state, uploadStatus: 'Files Uploaded and Project has been created!'}
+            return {...state, 
+			        uploadStatus: 'Files Uploaded and Project has been created!'}
         case START_PROJECT_FILES_UPLOAD_FAILED:
             return {...state, uploadStatus: 'Upload Failed'}
         case START_PROJECT:
@@ -66,10 +71,30 @@ export default (state = INITIAL_STATE, action) => {
             return{...state, files: action.payload}
         case START_PROJECT_FIELDS_EMPTY:
             return{...state, text: 'ALL FIELDS REQUIRED'}
+		case START_PROJECT_BUDGET_FORMAT:
+            return{...state, text: 'BUDGET FORMAT ERROR'}
+		case START_PROJECT_STARTEND:
+		     return{...state, text: 'END DATE MUST BE AFTER START DATE'}
+		case START_PROJECT_VOLERR:
+		     return{...state, text: 'VOLUNTEERS NUMBER FORMAT ERROR'}
+	    case START_PROJECT_FREEERR:
+		     return{...state, text: 'VOLUNTEERS/FREELANCERS NUMBER FORMAT ERROR'}
         case START_PROJECT_NETWORK_ERROR:
             return{...state, text: 'NETWORK ERROR'}
         case START_PROJECT_REQUEST_SUCCESS:
-            return{...state, requestCompleted: true}
+            return{...state,
+                   name: '',
+				description: '',
+                zipCode: '',
+                country:'',
+                volunteers: '',
+                interests: '',
+                freelancers: '',
+                startDate: '',
+                endDate: '',
+                budget: '',
+                files: [],		
+			       requestCompleted: true}
         case START_PROJECT_INTERESTS_CHANGED:
             return{...state, interests:action.payload}
         case START_PROJECT_UNMOUNT:
@@ -85,7 +110,17 @@ export default (state = INITIAL_STATE, action) => {
                 startDate: '',
                 endDate: '',
                 budget: '',
-                files:'',
+                files: [],
+				interests:action.payload,
+				name:action.payload,
+				description:action.payload,
+				zipCode:action.payload,
+				country:action.payload,
+				volunteers:action.payload,
+				freelancers:action.payload,
+				startDate:action.payload,
+				endDate:action.payload,
+				budget:action.payload,
                 requestCompleted: false,
                 text: 'CREATE A PROJECT',
                 uploadStatus:'NOT_INITIATED',

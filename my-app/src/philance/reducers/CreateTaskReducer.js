@@ -49,7 +49,7 @@ export default (state = INITIAL_STATE, action) => {
         case PROJECT_TASKS_FILES_CHANGED:
             return{...state, files: action.payload}
         case PROJECT_TASKS_FIELDS_EMPTY:
-            return{...state, text: 'ALL FIELDS REQUIRED'}
+            return{...state, text: 'PLEASE CHECK FIELDS'}
         case PROJECT_TASKS_NETWORK_ERROR:
             return{...state, text: 'NETWORK ERROR'}
         case PROJECT_TASKS_REQUEST_SUCCESS:

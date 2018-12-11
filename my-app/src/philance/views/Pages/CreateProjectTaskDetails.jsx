@@ -13,6 +13,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Slide from "@material-ui/core/Slide";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
+import Toaster from '../../components/Toaster/Toaster';
 
 // core components
 import GridContainer from "components/Grid/GridContainer.jsx";
@@ -69,6 +70,8 @@ var data=[]
 function Transition(props) {
   return <Slide direction="down" {...props} />;
 }
+
+
 class CreateProjectTasksDetails extends React.Component {
   constructor(props) {
     super(props);
@@ -227,6 +230,8 @@ class CreateProjectTasksDetails extends React.Component {
     await this.props.filesChanged(files,async()=>{
       await files?Array.from(this.props.files).map((value,key)=>{
         if(Array.from(files)[key]){
+		  if (this.props.files[key].size < 10485760)
+          {			  
           a=
             [<span className={classes.customFont}>
               {this.props.files[key].name}
@@ -237,9 +242,20 @@ class CreateProjectTasksDetails extends React.Component {
               }}>
               <Delete/>
             </Button>]       
-
               data.push(a)
-
+		  }
+		  else {
+		       a = [<span className={classes.customFont}>
+              <font color="red">{"The size of the file is bigger than 10MB"}</font>
+            </span>
+            ]  
+			  data.push(a);
+			  setTimeout(
+					function() {
+								this.fileSplicer(this.props.files,key);
+								}
+								.bind(this),5000);
+		  } 	  
         }
       }):null
     })
@@ -253,8 +269,11 @@ class CreateProjectTasksDetails extends React.Component {
 
   onEndDateChange = async (text) => {
     if (text === undefined) {
-      this.validate("startDate")
+      this.validate("endDate")
     }
+	else if ( text < this.props.startDate ) {
+		this.validate("endDate")
+	}
     else {
       await this.setState({ validEndDate: false })
       this.props.endDateChanged(text)
@@ -327,7 +346,9 @@ class CreateProjectTasksDetails extends React.Component {
       render() {
         const { classes } = this.props;
         return (
+		
           <GridContainer className={this.props.isLoggedIn ? classes.justifyContentCenter : classes.container}>
+		   
             <Loader loader={this.state.loader} />
             <GridItem xs={12} sm={12} md={10}>
               <Card>
@@ -364,7 +385,9 @@ class CreateProjectTasksDetails extends React.Component {
                             placeholder: "Enter a Task Description",
                             onChange: e => {
                               this.onDescriptionChange(e.target.value)
-                            }
+                            },
+							multiline: true,
+							rows: 5
                           }}
                         />
                       </GridItem>
@@ -453,7 +476,7 @@ class CreateProjectTasksDetails extends React.Component {
                               >
                               Choose Assignee
                             </MenuItem>
-                           {
+						   {
                             this.props.projectTeam.map((prop, key) => {
                               if(prop.status=="ACCEPTED"){
                                 return (
@@ -551,6 +574,10 @@ class CreateProjectTasksDetails extends React.Component {
                                   <Datetime
                                     timeFormat={false}
                                     onChange={date => this.onStartDateChange(date._d)}
+									isValidDate={ function( current ){
+											  return current.isAfter( Datetime.moment().subtract( 1, 'day' ) )
+												}
+											}
                                   />
                                 </GridItem>
                                 <GridItem xs={3}>
@@ -583,6 +610,10 @@ class CreateProjectTasksDetails extends React.Component {
                                   <Datetime
                                     timeFormat={false}
                                     onChange={date => this.onEndDateChange(date._d)}
+									isValidDate={ function( current ){
+											  return current.isAfter( Datetime.moment().subtract( 1, 'day' ) )
+												}
+											}
                                   />
                                 </GridItem>
                                 <GridItem xs={3}>
@@ -725,6 +756,9 @@ class CreateProjectTasksDetails extends React.Component {
                             if (this.props.endDate === "") {
                               this.setState({ validEndDate: true })
                             }
+							if (this.props.endDate < this.props.startDate) {
+                              this.setState({ validEndDate: true })
+                            }
                           
                         }}
 
@@ -748,6 +782,7 @@ class CreateProjectTasksDetails extends React.Component {
                 </CardBody>
               </Card>
             </GridItem>
+			 <Toaster display={this.state.validEndDate} message={"End date is BEFORE start date"} />
           </GridContainer>
         );
       }

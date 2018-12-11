@@ -17,6 +17,7 @@ import GridContainer from "components/Grid/GridContainer.jsx"
 import GridItem from "components/Grid/GridItem.jsx"
 import Card from "components/Card/Card.jsx"
 import CardBody from "components/Card/CardBody.jsx"
+import imag from "philance/assets/img/Helpingothers4.jpg";
 
 // redux
 import { connect } from 'react-redux'
@@ -26,6 +27,7 @@ import { getProjectCandidateReviewList } from '../../actions/candidateReview'
 
 import Loader from "../../components/Loader/Loader"
 //import publicHomePageStyle from "./PublicHomePageStyle";
+import { hostname } from "../../../config";
 
 const styles = theme => ({
   root: {
@@ -60,7 +62,8 @@ class MyProjectsPage extends React.Component {
       activePage: 1,
       loading: false,
       loader: false,
-      data: []
+      data: [],
+	  fndimag: ''
     }
   }
 
@@ -78,6 +81,26 @@ class MyProjectsPage extends React.Component {
     this.renderProjects()
   }
 
+    getimg(att) {
+     const { classes } = this.props;
+     var fownd="0";	
+     var fndimag="/static/media/Helpingothers4.023cec80.jpg";
+	if (att) {
+					att.map((value, key) => {
+						var attbits=att[key].originalName.split(".")
+						if (attbits[0] === "ProjectImage") {
+							fndimag=hostname() + att[key].attachment
+						}
+					})
+					
+	}
+	else {
+			var attbits=""
+			fndimag='/static/media/Helpingothers4.023cec80.jpg'
+	}
+	return fndimag
+  }
+  
   color(i) {
     if (i === 1) return '#dbebf6'
   }
@@ -99,6 +122,8 @@ class MyProjectsPage extends React.Component {
         startDate = startDate.toDateString()
         endDate = endDate.toDateString()
         let sample = {
+		  Imag: 
+               <span><img src={this.getimg(element.project_attachments)} height="100px" width="200px"></img></span>,
           project_name: element.projectName,
           status: element.status,
           startDate: startDate,
@@ -165,11 +190,18 @@ class MyProjectsPage extends React.Component {
                 <ReactTable style={{ overflow: "none" }}
                   data={this.state.data}
                   columns={[
+				    {
+                          Header: <strong></strong>,
+                          accessor: "Imag",
+                          sortable: false,
+						  width:200
+                        },
                     {
                       Header: <strong>Name</strong>,
                       accessor: "project_name",
                       filterable: true,
-                      filterMethod: this.columnFilter
+                      filterMethod: this.columnFilter,
+					  width:100
                     },
                     {
                       Header: <strong>Status</strong>,
@@ -222,7 +254,8 @@ const mapStateToProps = state => {
     response: state.mypro.response,
     length: state.mypro.length,
     list: state.mypro.list,
-    id: state.auth.userId
+    id: state.auth.userId,
+	projectAttachments: state.proDetails.projectAttachments
   }
 }
 

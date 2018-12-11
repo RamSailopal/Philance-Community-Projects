@@ -55,6 +55,14 @@ import Toaster from "../../components/Toaster/Toaster";
 
 class UserProfile extends React.Component {
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      messag: '',
+      emailval: false
+    }
+  }
+  
   onCountryChanged(text) {
     store.dispatch(countryChanged(text))
     store.dispatch(textChanged())
@@ -71,6 +79,7 @@ class UserProfile extends React.Component {
     }
   }
   onEmailChange(text) {
+    
     this.props.emailChanged(text)
     this.props.textChanged()
   }
@@ -134,8 +143,27 @@ class UserProfile extends React.Component {
       title,
       interests,
       currentEmail,
-      userId
+      userId,
     } = this.props
+	
+	var validator = require("email-validator");
+    if (!validator.validate(this.props.email)) {
+		this.setState ({
+		    messag:"The email format is incorrect",
+		    emailval:true
+		})
+	}
+	else {
+		this.setState({ messag:"",
+			  emailval:false
+		})
+	}
+	if (!this.props.contact.match('[0-9]+')) {
+		this.setState ({
+		    messag:"Phone numbers should contain numbers only",
+		    emailval:true
+		})
+	}
     this.props.updateProfile({
       name,
       email,
@@ -158,6 +186,7 @@ class UserProfile extends React.Component {
     return (
         <GridContainer justify="center">
         {this.props.update?<Toaster display={this.props.update} message={'Your Changes have been Saved Successfully'}/>:null}<br/>
+		{this.state.emailval?<Toaster display={this.state.emailval} message={this.state.messag}/>:null}<br/>
           <h4 className={classes.welcomeHeading}>
           <Toaster display={this.props.showToast} header={'Welcome to Philance! Please take a few moments to complete your User Profile and you can then post a project or join an existing project.'}/><br/>
           </h4>
@@ -261,7 +290,7 @@ class UserProfile extends React.Component {
                   </GridItem>
                   <GridItem xs={12} sm={12} md={12}>
                     <CustomInput
-                      labelText="Your Zip Code"
+                      labelText="Your Zip Code/City"
                       id="postal-code"
                       inputProps={{
                         value: this.props.postalCode
@@ -469,11 +498,11 @@ UserProfile.propTypes = {
 
 const mapStateToProps = state => {
   return {
-    contact: state.user.contact,
+    contact: state.user.contact===null?'':state.user.contact,
     email: state.user.email,
     currentEmail: state.auth.email===""?state.reg.email:state.auth.email,
     country: state.user.country,
-    postalCode: state.user.postalCode,
+    postalCode: state.user.postalCode===null?"":state.user.postalCode,
     description: state.user.description,
     text: state.user.text,
     showToast: state.reg.showToast,
@@ -491,7 +520,7 @@ const mapStateToProps = state => {
     filesSelected:state.common.filesSelected,
     userImageFile:state.user.userImageFile,
     displayImage:state.user.displayImage,
-    imageRefresh:state.user.imageRefresh
+    imageRefresh:state.user.imageRefresh,
   }
 }
 

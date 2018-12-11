@@ -9,6 +9,7 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import CardIcon from "components/Card/CardIcon.jsx";
 import Assignment from "@material-ui/icons/Assignment";
+import { hostname } from "../../../config";
 
 // core components
 import GridContainer from "components/Grid/GridContainer.jsx";
@@ -86,6 +87,7 @@ class ProjectTaskDetails extends React.Component {
       validName: false,
       isDisabled: true,
       isUpdated: false,
+	  messag: '',
       files:[],
       data:[],
       validBudget: false,
@@ -220,6 +222,8 @@ class ProjectTaskDetails extends React.Component {
     await this.props.filesChanged(files,async()=>{
       await files?Array.from(this.props.files).map((value,key)=>{
         if(Array.from(files)[key]){
+			if (this.props.files[key].size < 10485760)
+          {			
           a=
           [<span className={classes.customFont}>
               {this.props.files[key].name}
@@ -232,7 +236,19 @@ class ProjectTaskDetails extends React.Component {
             </Button>]       
 
 data.push(a)
-
+ }
+		  else {
+		       a = [<span className={classes.customFont}>
+              <font color="red">{"The size of the file is bigger than 10MB"}</font>
+            </span>
+            ]  
+			  data.push(a);
+			  setTimeout(
+					function() {
+								this.fileSplicer(this.props.files,key);
+								}
+								.bind(this),5000);
+		  } 	 
 }
 }):null
 })
@@ -244,15 +260,29 @@ data=[]
 
 }
 
-onEndDateChange = async (text) => {
-  if (text === undefined) {
-    this.validate("startDate")
-  }
-  else {
-    await this.setState({ validEndDate: false })
-    this.props.endDateChanged(text)
+onEndDateChange = async (text) => {		   
+	if (text === undefined) {
+      this.validate("endDate")
+    }
+	else if ( text < this.props.startDate ) {
+		this.validate("endDate")
+	}
+    else {
+      await this.setState({ validEndDate: false })
+      this.props.endDateChanged(text)
+      this.props.textChanged()
+    }
+ this.state={ endDate: text };
+   const {
+			endDate
+                   } = this.props
+		
+ }
+ 
+ onDescriptionChange(text) {
+    this.props.descriptionChanged(text)
     this.props.textChanged()
-  }
+	
 }
 onDescriptionChange(text) {
   this.props.descriptionChanged(text)
@@ -318,11 +348,32 @@ handleClick() {
   
   this.refs.fileInput.click();
 }
+
+ taskbutcol(creatby,userid) {
+	if (userid == creatby) {
+			var col="info" 
+	}
+	else {
+		    var col="secondary"
+	}
+	return col
+  }
+  
+  taskbutdis(creatby,userid) {
+	if (userid == creatby) {
+			var stat="" 
+	}
+	else {
+		    var stat="disabled"
+	}
+	return stat
+ }
+
 render() {
   const { classes } = this.props;
   return (
     <GridContainer className={this.props.isLoggedIn ? classes.justifyContentCenter : classes.container}>
-        <Toaster display={this.state.isUpdated} message={'Task Successfully updated'} />
+        <Toaster display={this.state.isUpdated} message={this.state.messag} />
             <Loader loader={this.state.loader} />
             <GridItem xs={12} sm={12} md={10}>
               <Card>
@@ -349,7 +400,7 @@ render() {
                           Go To Project Tasks
                       </Button>}
                   {/* </NavLink> */}
-                      <Button color="info" round className={classes.marginRight} onClick={async () => {
+                      <Button color={this.taskbutcol(this.props.createBy,this.props.userId)} disabled={this.taskbutdis(this.props.createBy,this.props.userId)} round className={classes.marginRight} onClick={async () => {
                         const {
                           taskName,
                           description,
@@ -403,17 +454,24 @@ render() {
                                   this.props.projectTasksUnmount()
                                   this.props.history.push('/project-details/tasks')
                                 }  
-                                setTimeout(() => {
+									
+								    if (new Date(this.props.endDate) < new Date(this.props.startDate)) {
+										
+										setTimeout(() => {
                                 this.props.getProjectById({id:this.props.projectId},()=>{
                                   this.props.setTaskDetails(
                                       this.props.projectTasks,
                                       this.props.match.params.id
                                     )
-
-                                    this.toggleLoader(flag);
-                                    this.setState({
-                                      isUpdated:true
-                                    })
+									
+									
+										 this.toggleLoader(flag);
+										 this.setState({
+											isUpdated:true,
+											messag: 'End Date needs to be AFTER start date'
+										})
+									
+									
                                     if(this.state.status=="Archived"){
                                       // this.props.history.push('/project-details/tasks')
                                     }else{
@@ -425,31 +483,62 @@ render() {
                                     }
                                   })
                                 }, 1000);
+										
+									}
+								else {	
+                                setTimeout(() => {
+                                this.props.getProjectById({id:this.props.projectId},()=>{
+                                  this.props.setTaskDetails(
+                                      this.props.projectTasks,
+                                      this.props.match.params.id
+                                    )
+									
+									
+										 this.toggleLoader(flag);
+										 this.setState({
+											isUpdated:true,
+											messag: 'Task Details Amended Successfully'
+										})
+									
+									
+                                    if(this.state.status=="Archived"){
+                                      // this.props.history.push('/project-details/tasks')
+                                    }else{
+                                      setTimeout(() => {
+                                        this.setState({
+                                          isUpdated:false
+                                        })
+                                      }, 5000);
+                                    }
+                                  })
+                                }, 1000);
+								}
                               }
                             )
                           })
                           // store.dispatch({ type: PROJECT_DETAILS_UPDATE_SUCESS })
                         }
-                      }}
-                        color="info">
+					  }}
+                       >
                         {this.state.isDisabled ? 'EDIT' : 'SAVE'}
                       </Button>
                       {!this.state.isDisabled ?null:
                       <Button color="info" round className={classes.marginRight} onClick={async () => {
                         this.props.history.goBack()
                       }}
+					    
                         color="info">
                         Go Back
                       </Button>}
                       {this.state.isDisabled ?null:
                       <Button color="info" round className={classes.marginRight} onClick={async () => {
-                        this.props.setTaskDetails(
-                          this.props.projectTasks,
-                          this.props.match.params.id
-                        )
                         this.setState({
                           isDisabled:true
                         })
+						this.props.setTaskDetails(
+                          this.props.projectTasks,
+                          this.props.match.params.id
+                        )
                       }}
                         color="info">
                         Cancel
@@ -492,7 +581,9 @@ render() {
                             onChange: e => {
                               this.onDescriptionChange(e.target.value)
                             },
-                            disabled: this.state.isDisabled
+                            disabled: this.state.isDisabled,
+							multiline: true,
+							rows: 5
                           }}
                         />
                       </GridItem>
@@ -683,6 +774,10 @@ render() {
                                     onChange={date => this.onStartDateChange(date._d)}
                                     value={new Date(this.props.startDate).toDateString()}
                                     // defaultValue={new Date}
+									isValidDate={ function( current ){
+											  return current.isAfter( Datetime.moment().subtract( 1, 'day' ) )
+												}
+											}
                                   />
                                 </GridItem>
                                 <GridItem xs={3}>
@@ -719,6 +814,10 @@ render() {
                                       value:new Date(this.props.endDate).toDateString(),
                                       disabled: this.state.isDisabled
                                     }}
+									isValidDate={ function( current ){
+											  return current.isAfter( Datetime.moment().subtract( 1, 'day' ) )
+												}
+											}
                                   />
                                 </GridItem>
                                 <GridItem xs={3}>
@@ -769,7 +868,7 @@ render() {
                                             fixedHeader={true}
                                             tableHeaderStyle={{borderRight: '40px solid transparent'}}
                                             tableData={
-                                              this.state.files
+                                              this.state.tableData
                                             }
                                             customHeadCellClasses={[
                                               classes.description,
@@ -821,7 +920,7 @@ render() {
                                     tableData={
                                       this.props.taskAttachments.map((value,key)=>{
                                         return [<span className={classes.customFont}>
-                                          {this.props.taskAttachments[key].originalName}
+                                          <a href={hostname() + this.props.taskAttachments[key].attachment} target="_blank">{this.props.taskAttachments[key].originalName}</a>
                                         </span>,
                                         this.state.isDisabled?null:<Button simple justIcon color='danger' onClick={() => {
                                           //call delete action
@@ -898,12 +997,14 @@ render() {
         status: state.projectTaskDetails.status,
         priority: state.projectTaskDetails.priority,
         projectTasks: state.proDetails.projectTasks,
+		createBy: state.proDetails.createdBy,
         userId: state.user.userId,
         isLoggedIn: state.auth.isLoggedIn,
         userId: state.auth.userId,
         projectId: state.proDetails.id,
         projectTeam: state.proDetails.projectTeam,
         isUpdated: state.projectTaskDetails.isUpdated,
+		messag: state.projectTaskDetails.messag,
         taskAttachments: state.projectTaskDetails.taskAttachments,
       }
     }

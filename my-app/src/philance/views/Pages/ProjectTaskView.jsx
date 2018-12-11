@@ -17,7 +17,8 @@ import GridContainer from "components/Grid/GridContainer.jsx"
 import GridItem from "components/Grid/GridItem.jsx"
 import Card from "components/Card/Card.jsx"
 import CardBody from "components/Card/CardBody.jsx"
-
+import Chart from 'react-google-charts';
+import Component from "react-component-component";
 // redux
 import { connect } from 'react-redux'
 import { myProject, storeList } from '../../actions/myProject'
@@ -62,7 +63,11 @@ class ProjectTaskView extends React.Component {
       loading: false,
       loader: false,
       data: []
+	  
     }
+	this.props = {
+       chartData: []
+	}
   }
 
   componentDidMount() {
@@ -88,6 +93,60 @@ class ProjectTaskView extends React.Component {
       loader: flag
     });
   }
+  
+  chrtDat(projectTasks) {
+        var chartData= [[ { type: 'string', label: 'Task ID' },
+      { type: 'string', label: 'Task Name' },
+      { type: 'date', label: 'Start Date' },
+      { type: 'date', label: 'End Date' },
+      { type: 'number', label: 'Duration' },
+      { type: 'number', label: 'Percent Complete' },
+      { type: 'string', label: 'Dependencies' },]]
+		projectTasks.map((value,key)=>{
+		 chartData.push(
+	  [
+		 value.taskId, 
+		 value.taskName,
+		 new Date(value.startDate),
+		 new Date(value.endDate), 
+		 null, 
+		 100,
+		 null,])
+	  })
+	  if ( chartData[2] == null ) {
+		chartData.push(
+	  [
+		 null, 
+		 null,
+		 new Date(null), 
+		 new Date(null),
+		 null,
+		 null, 
+		 null,])
+	  }
+	
+	  return chartData
+}
+
+  taskbutcol(creatby,userid) {
+	if (userid == creatby) {
+			var col="info" 
+	}
+	else {
+		    var col="secondary"
+	}
+	return col
+  }
+  
+  taskbutdis(creatby,userid) {
+	if (userid == creatby) {
+			var stat="" 
+	}
+	else {
+		    var stat="disabled"
+	}
+	return stat
+ }
 
   renderData(){
     const { classes } = this.props;
@@ -166,13 +225,25 @@ class ProjectTaskView extends React.Component {
               <CardBody>
         <GridContainer align="right" direction="column">
           <GridItem style={{ marginRight: 45 }}>
-          {/* <NavLink to={`/project-details/:projectId/tasks/create`}> */}
-              <Button color="info" round className={classes.marginRight} onClick={() => {
-                    this.props.history.push('tasks/create')
-                
-              }}>
+          
+		   
+		   {/* <NavLink to={`/project-details/:projectId/tasks/create`}> */}
+              <Button 
+			  
+			  color={this.taskbutcol(this.props.createdBy,this.props.id)}
+			  
+			  disabled={this.taskbutdis(this.props.createdBy,this.props.id)}
+			  
+			  round className={classes.marginRight} 
+			  
+			  onClick={() => {
+                    if ( this.props.id == this.props.createdBy) {
+						this.props.history.push('tasks/create')
+					}
+			  }}
+			  >
                   + Create Task
-              </Button>
+              </Button> 
           {/* </NavLink> */}
           </GridItem>
           <br/><br/><br/>
@@ -181,14 +252,14 @@ class ProjectTaskView extends React.Component {
                   data={
                     this.props.projectTasks.map((value,key)=>{
                       return{
-                        taskId:value.taskId,
+						taskId:value.taskId,
                         task_name:
                         <Tooltip title={value.taskName} classes={{ tooltip: classes.lightTooltip }}>          
                         <span>{value.taskName}</span>
                         </Tooltip>,
                         status:value.status,
-                        startDate:new Date(value.creationDate).toDateString(),
-                        endDate:new Date(value.creationDate).toDateString(),
+                        startDate:new Date(value.startDate).toDateString(),
+                        endDate:new Date(value.endDate).toDateString(),
                         assignee:value.assignee.firstName+' '+value.assignee.lastName,
                         author:value.author.firstName+' '+value.author.lastName,
                         priority:value.priority,
@@ -202,7 +273,8 @@ class ProjectTaskView extends React.Component {
                             <ViewList/>
                           </Button>
                         </Tooltip>
-                      }
+                      
+					  }
                     
                     })
                   }
@@ -260,7 +332,29 @@ class ProjectTaskView extends React.Component {
                   showPaginationBottom={false}
                   className="-striped -highlight"
                 />
-                
+                										<br></br>
+										<br></br>
+		<h3><b>Gantt Chart</b></h3>
+	
+<Chart
+  width={'100%'}
+  height={'400px'}
+  chartType="Gantt"
+  loader={<div>Loading Chart</div>}
+  data={this.chrtDat(this.props.projectTasks)}
+   options={{
+    gantt: {
+      criticalPathEnabled: false,
+      innerGridHorizLine: {
+        stroke: '#c6d9ec',
+        strokeWidth: 2,
+      },
+      innerGridTrack: { fill: '#ffffff' },
+      innerGridDarkTrack: { fill: '#ffffff' },
+    },
+  }}
+  rootProps={{ 'data-testid': '1' }}
+/>
               </CardBody>
             </Card>
           </GridItem>
@@ -277,6 +371,7 @@ const mapStateToProps = state => {
     response: state.projectTasks.response,
     projectTasks: state.proDetails.projectTasks,
     projectId: state.proDetails.id,
+	createdBy: state.proDetails.createdBy,
     id: state.auth.userId,
   }
 }

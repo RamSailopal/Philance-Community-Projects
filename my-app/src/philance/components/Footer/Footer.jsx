@@ -36,19 +36,19 @@ function Footer({ ...props }) {
               </a>
             </ListItem>
             <ListItem className={classes.inlineBlock}>
-              <a href="http://philance.org/faq/" target="_" className={block}>
+              <a href="http://philance.org/faq/" target="_blank" className={block}>
                 FAQ
               </a>
             </ListItem>
             <ListItem className={classes.inlineBlock}>
-              <a href="http://philance.org/about/" target="_" className={block}>
+              <a href="http://philance.org/about/" target="_blank" className={block}>
                 About Us
               </a>
             </ListItem>
             <ListItem className={classes.inlineBlock}>
               <a
                 href="http://philance.org/contact/"
-                target="_"
+				target="_blank"
                 className={block}
               >
                 Contact Us

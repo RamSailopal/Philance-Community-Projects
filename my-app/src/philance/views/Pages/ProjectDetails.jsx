@@ -81,8 +81,30 @@ class ProjectDetails extends React.Component {
     };
     this.myRef = React.createRef(); this.fileInput = React.createRef();
 
-
   }
+  
+  getimg() {
+     const { classes } = this.props;
+     var fownd="0";	
+     var fndimag="/static/media/Helpingothers4.023cec80.jpg";
+	if (this.props.projectAttachments) {
+					this.props.projectAttachments.map((value, key) => {
+						var attbits=this.props.projectAttachments[key].originalName.split(".")
+						if (attbits[0] === "ProjectImage") {
+							fndimag=hostname() + this.props.projectAttachments[key].attachment
+						}
+					})
+					
+	}
+	else {
+			var attbits=""
+			fndimag='/static/media/Helpingothers4.023cec80.jpg'
+	}
+	return fndimag
+  }
+  
+  
+  
   fileSplicer = async (files, key) => {
     var a = [];
     await Array.from(files).map((value, index) => {
@@ -104,6 +126,7 @@ class ProjectDetails extends React.Component {
     await this.props.filesChanged(files, async () => {
       await files ? Array.from(this.props.files).map((value, key) => {
         if (Array.from(files)[key]) {
+		  if (this.props.files[key].size < 10485760) {
           a =
             [<span className={classes.customFont}>
               {this.props.files[key].name}
@@ -116,7 +139,19 @@ class ProjectDetails extends React.Component {
             </Button>]
 
           data.push(a)
-
+		  }
+		  else {
+			 a = [<span className={classes.customFont}>
+              <font color="red">{"The size of the file is bigger than 10MB"}</font>
+            </span>
+            ]  
+			  data.push(a);
+			  setTimeout(
+					function() {
+								this.fileSplicer(this.props.files,key);
+								}
+								.bind(this),5000);
+		  } 	 
         }
       }) : null
     })
@@ -131,6 +166,10 @@ class ProjectDetails extends React.Component {
 
     this.refs.fileInput.click();
   }
+  
+  
+  
+  
   warningWithConfirmMessage(callback,{title,confirmBtnText,cancelBtnText}) {
     this.setState({
       alert: (
@@ -163,6 +202,7 @@ class ProjectDetails extends React.Component {
   componentWillReceiveProps() {
     this.updateTable()
   }
+  
   updateTable() {
     var { classes } = this.props
     var b = [];
@@ -221,7 +261,7 @@ class ProjectDetails extends React.Component {
     })
     this.props.getProjectById({ id: this.props.id }, () => { })
   }
-  autoCloseAlert() {
+  autoCloseAlert(messag) {
     this.setState({
       alert: (
         <SweetAlert
@@ -234,7 +274,7 @@ class ProjectDetails extends React.Component {
           }
         >
         <h4>
-        Your changes have been saved!
+        {messag}
         </h4>
         </SweetAlert>
       )
@@ -297,9 +337,8 @@ class ProjectDetails extends React.Component {
     cb?cb():null
   }
   render() {
-
     const { classes } = this.props;
-    return (
+	return (
       <GridContainer className={this.props.isLoggedIn ? classes.justifyContentCenter : classes.container}>
         <Loader loader={this.state.loader} />
         <GridItem xs={12} sm={12} md={10}>
@@ -307,6 +346,11 @@ class ProjectDetails extends React.Component {
         <br/>
             <CardBody>
               <form>
+			  <GridContainer align="left" direction="column">
+			      <GridItem>
+				              <img src={this.getimg()} height="200px" width="400px"/>
+				  </GridItem>
+			  </GridContainer>
                 <GridContainer align="right" direction="column">
                   <GridItem>
                     {this.props.userId == this.props.createdBy ?
@@ -326,13 +370,31 @@ class ProjectDetails extends React.Component {
                           id,
                           userId
                         } = this.props
-                        if (this.state.isDisabled) {
+						if ( this.props.name === '' || this.props.description === '' || this.props.zipCode === '' || this.props.country === '' || this.props.interests === '') {
+		this.autoCloseAlert('Fields cannot be blank')
+  } 
+  
+  
+   else if ( ! this.props.budget.match('^[0-9]{1,6}[.][0-9]{2}$')) {
+		this.autoCloseAlert('Budget format error')
+  } 
+  
+  
+  else if ( ! this.props.freelancers.match('^[0-9]{1,3}$') || ! this.props.volunteers.match('^[0-9]{1,3}$') ) {
+		this.autoCloseAlert('Volunteers/Freelancers format error')
+  } 
+   
+  else if ( new Date(this.props.endDate) < new Date(this.props.startDate) ) {
+		this.autoCloseAlert('End Date cannot be BEFORE Start Date')
+  } 
+                        else if (this.state.isDisabled) {
                           this.setState({ isDisabled: false }, () => { this.updateTable() })
                           this.props.removeToaster()
                         }
                         else {
                           this.toggleLoader(true);
                           this.setState({ isDisabled: true }, () => { this.updateTable() })
+						  
                           await this.props.updateProject({
                             name,
                             status,
@@ -362,7 +424,7 @@ class ProjectDetails extends React.Component {
                                 this.props.getProjectById({ id: this.props.id }, () => {
                                   this.toggleLoader(false);
                                   this.updateTable()
-                                  this.autoCloseAlert()
+                                  //this.autoCloseAlert()
                                   //clear present uploads
                                   this.props.clearFiles()
                                 })
@@ -370,13 +432,14 @@ class ProjectDetails extends React.Component {
                             ):
                             this.toggleLoader(false,()=>{
                                 console.log('autoClosing')
-                                this.autoCloseAlert()
+								//this.autoCloseAlert()
                               }):this.toggleLoader(false,()=>{
                                   console.log('autoClosing')
-                                  this.autoCloseAlert()
+								  //this.autoCloseAlert()
                                 })
                           })
                           store.dispatch({ type: PROJECT_DETAILS_UPDATE_SUCESS })
+						  this.autoCloseAlert('Project Updated Successfully')
                         }
                         this.updateTable()
                       }}
@@ -463,7 +526,9 @@ class ProjectDetails extends React.Component {
                         onChange: e => {
                           this.onDescriptionChange(e.target.value)
                         },
-                        disabled: this.state.isDisabled
+                        disabled: this.state.isDisabled,
+						multiline: true,
+                        rows: 5
                       }}
                     />
                   </GridItem>
@@ -471,14 +536,14 @@ class ProjectDetails extends React.Component {
                 <GridContainer>
                   <GridItem xs={12} sm={12} md={6}>
                     <CustomInput
-                      labelText="Project Location Zip"
+                      labelText="Project Location Zip/City"
                       id="projectLocation"
                       formControlProps={{
                         fullWidth: true
                       }}
                       inputProps={{
                         value: this.props.zipCode,
-                        placeholder: "Enter zip code of location where it took place",
+                        placeholder: "Enter zip code/city of location where it took place",
                         onChange: e => {
                           this.onZipCodeChange(e.target.value)
                         },
@@ -522,6 +587,10 @@ class ProjectDetails extends React.Component {
                           <Datetime
                             timeFormat={false}
                             onChange={date => this.onStartDateChange(date._d)}
+							isValidDate={ function( current ){
+											  return current.isAfter( Datetime.moment().subtract( 1, 'day' ) )
+												}
+											}
                             inputProps={{
                               value: new Date(this.props.startDate).toDateString(),
                               disabled: this.state.isDisabled
@@ -545,6 +614,10 @@ class ProjectDetails extends React.Component {
                           <Datetime
                             timeFormat={false}
                             onChange={date => this.onEndDateChange(date._d)}
+							isValidDate={ function( current ){
+											  return current.isAfter( Datetime.moment().subtract( 1, 'day' ) )
+												}
+											}
                             inputProps={{
                               value: new Date(this.props.endDate).toDateString(),
                               disabled: this.state.isDisabled
@@ -586,7 +659,7 @@ class ProjectDetails extends React.Component {
                       }}
                       inputProps={{
                         value: this.props.budget,
-                        placeholder: "Enter Estimated Budget (USD)",
+                        placeholder: "Enter Estimated Budget i.e. 123.00",
                         onChange: e => {
                           this.onBudgetChange(e.target.value)
                         },
@@ -689,6 +762,10 @@ class ProjectDetails extends React.Component {
                             <Button color="info" onClick={() => this.handleClick()}>
                               <Icon name='upload' />Select Files{'\t\t\t'}
                             </Button>
+							<br></br>
+							<br></br>
+							<br></br>
+							<font>Attach an image with the name ProjectImage to associate a picture with your project</font>
                           </GridItem>
                           <GridItem xs={12}>
                             {
@@ -859,7 +936,8 @@ const mapStateToProps = state => {
     requestCompleted: state.start.requestCompleted,
     createdBy: state.proDetails.createdBy,
     projectAttachments: state.proDetails.projectAttachments,
-    userId: state.auth.userId
+    userId: state.auth.userId,
+	text: state.proDetails.text
   }
 }
 
