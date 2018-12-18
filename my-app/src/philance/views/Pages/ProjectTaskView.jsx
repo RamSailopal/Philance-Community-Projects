@@ -113,7 +113,7 @@ class ProjectTaskView extends React.Component {
 		 100,
 		 null,])
 	  })
-	  if ( chartData[2] == null ) {
+	  if ( chartData[1] == null ) {
 		chartData.push(
 	  [
 		 null, 
