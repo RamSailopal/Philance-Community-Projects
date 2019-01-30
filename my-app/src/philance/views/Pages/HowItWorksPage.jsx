@@ -189,7 +189,7 @@ class HowItWorksPage extends React.Component {
 								<ul><b> What does the platform offer? </b></ul>
 								<br></br>
 								<ul>The platform offers a "pool of resources" essential to complete social impact projects and make a "real change".</ul>
-								<ul>These resources range from online project management tools to online collaboration tools,
+								<ul>These resources range from online project management tools, online collaboration tools,
 								a world wide database of individuals keen to work on impact projects, a world wide database of businesses keen to offer
 								funding and resources.</ul>
 								<br></br>
@@ -198,10 +198,10 @@ class HowItWorksPage extends React.Component {
 								<br></br>
 								<ul>Those managing social impact projects can receive an income from successfully completing projects.</ul>
 								<ul>Those working on projects can earn an income from the hours worked.</ul>
-								<ul>Those contributing funding and resources can earn positive feedback from the publicity we generate.</ul>
+								<ul>Those contributing funding and resources can earn positive feeback from the publicity we generate.</ul>
 								<ul>Overall everybody benefits from the redistributed skills and income. Those who consider themselves from more affluent demographics
 								can contribute to projects that benefit those from poorer communities.
-								Those in poorer communities can work on issues they know the most about and are exposed to at first hand.</ul>
+								Those in poorer communities can work on issues they are know the most about and are exposed to at first hand.</ul>
 								<br></br>
 								<ul><b> How much does it cost to sign up? </b></ul>
 								<br></br>
