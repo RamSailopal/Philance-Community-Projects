@@ -12,7 +12,7 @@ import CardBody from "components/Card/CardBody.jsx";
 import CardAvatar from "components/Card/CardAvatar.jsx";
 import CardFooter from "components/Card/CardFooter.jsx";
 
-import avatar from "assets/img/faces/avatar.jpg";
+import avatar from "assets/img/faces/UpdateProfileAvatarIcon.png";
 
 import lockScreenPageStyle from "assets/jss/material-dashboard-pro-react/views/lockScreenPageStyle.jsx";
 

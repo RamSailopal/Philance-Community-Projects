@@ -12,7 +12,7 @@ then
 	echo "Running ALL tests ..."
 	echo
 	echo
-	nosetests $(cat /opt/openproject/public/Philance/frontend-test/runningorder.txt) --with-html --html-report=/opt/openproject/public/Philance/frontend-test/test.html
+	nosetests -v $(cat /opt/openproject/public/Philance/frontend-test/runningorder.txt) --with-html --html-report=/opt/openproject/public/Philance/frontend-test/test.html
 else
 	echo "Running tests for $1"
 	echo

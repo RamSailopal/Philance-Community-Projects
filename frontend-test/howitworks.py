@@ -25,6 +25,7 @@ class UntitledTestCase(unittest.TestCase):
         driver = self.driver
         driver.get("http://127.0.0.1:3000")
         driver.find_element_by_xpath("//div[@id='root']/div/header/div/div[2]/ul/li[4]/a/div").click()
+	time.sleep(1)
         try: self.assertEqual("How It Works", driver.find_element_by_xpath("//div[@id='root']/div/div/div/div/div/div/div/div/h2").text)
         except AssertionError as e: self.verificationErrors.append(str(e))
         try: self.assertEqual("POST A PROJECT", driver.find_element_by_xpath("//button[@type='button']").text)
@@ -32,11 +33,15 @@ class UntitledTestCase(unittest.TestCase):
         try: self.assertEqual("WORK ON A PROJECT", driver.find_element_by_xpath("(//button[@type='button'])[2]").text)
         except AssertionError as e: self.verificationErrors.append(str(e))
         driver.find_element_by_xpath("//button[@type='button']").click()
+	time.sleep(1)
         driver.find_element_by_xpath("//div[@id='root']/div/div/div/div/div/div/div/div[2]/div/div[2]/div/div/div/div/span/p/ul/li[5]").click()
+	time.sleep(1)
         try: self.assertEqual("Start the project and use PhiLance's project management tools to track tasks, milestones, resources and deliverables.", driver.find_element_by_xpath("//div[@id='root']/div/div/div/div/div/div/div/div[2]/div/div[2]/div/div/div/div/span/p/ul/li[5]").text)
         except AssertionError as e: self.verificationErrors.append(str(e))
         driver.find_element_by_xpath("(//button[@type='button'])[2]").click()
+	time.sleep(1)
         driver.find_element_by_xpath("//div[@id='root']/div/div/div/div/div/div/div/div[2]/div/div[2]/div/div/div[2]/div/span/p/ul/li[3]").click()
+	time.sleep(1)
         try: self.assertEqual("Browse projects using a variety of search criteria such as location, start date, budget, impact area, keywords, etc.", driver.find_element_by_xpath("//div[@id='root']/div/div/div/div/div/div/div/div[2]/div/div[2]/div/div/div[2]/div/span/p/ul/li[3]").text)
         except AssertionError as e: self.verificationErrors.append(str(e))
 

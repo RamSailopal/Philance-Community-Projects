@@ -21,28 +21,38 @@ import CardHeader from "components/Card/CardHeader.jsx";
 import CardFooter from "components/Card/CardFooter.jsx";
 
 import loginPageStyle from "assets/jss/material-dashboard-pro-react/views/loginPageStyle.jsx";
+import Loader from "../../philance/components/Loader/Loader"
 
 class LoginPage extends React.Component {
   constructor(props) {
     super(props);
     // we use this to make the card to appear after the page has been rendered
     this.state = {
-      cardAnimaton: "cardHidden"
+      cardAnimaton: "cardHidden",
+      loader: true
     };
   }
   componentDidMount() {
     // we add a hidden class to the card and after 700 ms we delete it and the transition appears
     setTimeout(
-      function() {
+      function () {
         this.setState({ cardAnimaton: "" });
       }.bind(this),
       700
     );
   }
+
+  toggleLoader = () => {
+    this.setState({
+      loader: !this.state.loader
+    });
+  }
+
   render() {
     const { classes } = this.props;
     return (
       <div className={classes.content}>
+        <Loader loader={this.state.loader} />
         <div className={classes.container}>
           <GridContainer justify="center">
             <GridItem xs={12} sm={6} md={4}>

@@ -98,6 +98,26 @@ const users = sequelize.define('users', {
         type: Sequelize.STRING,
         field: 'location'
     },
+    description: {
+        type: Sequelize.STRING,
+        field: 'description'
+    },
+    country: {
+        type: Sequelize.STRING,
+        field: 'country'
+    },
+    zipCode: {
+        type: Sequelize.STRING,
+        field: 'zip_code'
+    },
+    userProfileImageUrl:{
+        type: Sequelize.STRING,
+        field: 'user_profile_image_url'
+    },
+    userProfileImagePath:{
+        type: Sequelize.STRING,
+        field: 'user_profile_image_path'
+    }
 },
     {
         timestamps: false,

@@ -11,6 +11,8 @@ import {
     REGISTER_USER,
     REGISTER_USER_SUCCESS,
     WEAK_PASSWORD,
+    REMOVE_REGISTER_TOAST,
+    LOGOUT_USER
 } from '../actions/types'
 
 const INITIAL_STATE = {
@@ -19,6 +21,7 @@ const INITIAL_STATE = {
     firstName: '',
     lastName: '',
     registered : false,
+    showToast: false,
     error: 'GET STARTED'
 }
 
@@ -45,10 +48,22 @@ export default (state = INITIAL_STATE, action) => {
         case WEAK_PASSWORD:
             return {...state, error: 'WEAK PASSWORD'}
         case REGISTER_USER_SUCCESS:
-            return {...state, registered: true}
+            return {...state, registered: true, showToast: true}
         case REGISTRATION_PENDING:
             return {...state, error: 'LOADING...'}
+        case REMOVE_REGISTER_TOAST:
+            return {...state, showToast: false}
+        case LOGOUT_USER:
+            return {
+                email: '',
+                password: '',
+                firstName: '',
+                lastName: '',
+                registered : false,
+                showToast: false,
+                error: 'GET STARTED'
+            }
         default:
-        return state
+            return state
     }
 }

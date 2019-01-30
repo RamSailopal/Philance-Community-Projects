@@ -1,19 +1,25 @@
 import React from "react";
-import ReactTable from "react-table";
-//import Axios from "axios";
+import { connect } from 'react-redux'
 import PropTypes from "prop-types";
+import ReactTable from "react-table";
 
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
-
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import InputLabel from "@material-ui/core/InputLabel";
 import FormControl from "@material-ui/core/FormControl";
+import Tooltip from '@material-ui/core/Tooltip';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 // @material-ui/icons
-import Assignment from "@material-ui/icons/Assignment";
-
+import ViewList from "@material-ui/icons/ViewList";
+import Assignment from "@material-ui/icons/Search";
+import Slide from "@material-ui/core/Slide";
+import Close from "@material-ui/icons/Close";
 // core components
 import GridContainer from "components/Grid/GridContainer.jsx";
 import GridItem from "components/Grid/GridItem.jsx";
@@ -23,85 +29,181 @@ import CardBody from "components/Card/CardBody.jsx";
 import CardIcon from "components/Card/CardIcon.jsx";
 import CardHeader from "components/Card/CardHeader.jsx";
 import CustomInput from "components/CustomInput/CustomInput.jsx";
-
+import InterestsDropdown from "../../components/DoubleDropdown/InterestsDropdown";
+import CountryDropdown from "../../components/DoubleDropdown/CountryDropdown";
 import projectSearchStyle from "philance/views/PageStyles/ProjectSearchStyles.jsx";
-import extendedFormsStyle from "assets/jss/material-dashboard-pro-react/views/extendedFormsStyle.jsx";
+import imag from "philance/assets/img/Helpingothers4.jpg";
+import { hostname } from "../../../config";
+import {
+  locationChanged,
+  resourceChanged,
+  projectStatusChanged,
+  impactCategoriesChanged,
+  countryChanged,
+  keywordChanged,
+  findProjectUnmount,
+  findProjects,
+} from "../../actions/findProject";
+
+import Loader from "../../components/Loader/Loader"
+import { getProjectById, idStored } from '../../actions/projectDetails'
+import { getProjectCandidateReviewList } from '../../actions/candidateReview'
+
+import store from "../../store/store";
+const styles = theme => ({
+  ...projectSearchStyle,
+  root: {
+    width: '100%',
+    marginTop: theme.spacing.unit * 1,
+    overflowX: 'auto',
+  },
+  table: {
+    minWidth: 700,
+  },
+  row: {
+    '&:nth-of-type(odd)': {
+      backgroundColor: theme.palette.background.default,
+    },
+  },
+  progress: {
+    margin: theme.spacing.unit * 2,
+  },
+  lightTooltip: {
+    background: theme.palette.common.white,
+    color: theme.palette.text.primary,
+    boxShadow: theme.shadows[1],
+    fontSize: 13,
+  }
+})
+function Transition(props) {
+  return <Slide direction="down" {...props} />;
+}
 
 class ProjectSearch extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       tableData: [],
-      skillsNeeded: [],
       impactCategory: [],
       yourLocation: "",
       resourceType: "0",
       projectStatus: "0",
-      distanceFromYou: "0"
+      distanceFromYou: "0",
+      loader: false,
+      data: []
     };
   }
-
-  // @todo populate UI with init data from the backend
-  componentDidMount() {
-    console.log("mounted");
-    /*
-    Axios.get("/project/search/init", {
-      baseURL: "http://localhost:3001"
-    })
-      .then(response => {
-        // @todo UI init data from backend, use to populate Select boxes
-        console.log(response.data);
-      })
-      .catch(error => {
-        console.log(error);
-      });
-      */
+  
+  getimg(id) {
+    var { classes } = this.props
+	this.props.getProjectById({ id: id }, () => {})
+	var fndimag="/static/media/Helpingothers4.023cec80.jpg";
+	if (this.props.projectAttachments) { 
+					this.props.projectAttachments.map((value, key) => {
+						var attbits=this.props.projectAttachments[key].originalName.split(".")
+						if (attbits[0] === "ProjectImage") {
+							fndimag=hostname() + this.props.projectAttachments[key].attachment
+						}
+					})
+					
+	}
+	else {
+			var attbits=""
+			fndimag='/static/media/Helpingothers4.023cec80.jpg'
+	}
+	return fndimag
   }
 
-  handleSingle = event => {
-    this.setState({ [event.target.name]: event.target.value });
+  componentWillUnmount() {
+    this.props.findProjectUnmount()
+  }
+
+  onLocationChange = text => {
+    this.props.locationChanged(text)
+  }
+
+  onCountryChanged = (text) => {
+    store.dispatch(countryChanged(text))
+  }
+
+  handleResourceType = event => {
+    this.props.resourceChanged(event.target.value)
   };
 
-  handleMultiple = event => {
-    this.setState({ [event.target.name]: event.target.value });
+  handleProjectStatus = event => {
+    this.props.projectStatusChanged(event.target.value)
   };
 
-  columnFilter(filter, row, column) {
-    const id = filter.pivotId || filter.id;
-    return row[id] !== undefined
-      ? String(row[id])
-          .toLowerCase()
-          .includes(filter.value.toLowerCase())
-      : true;
+  handleImpactCategory = value => {
+    this.props.impactCategoriesChanged(value)
+  };
+
+  onCountryChange = text => {
+    this.props.countryChanged(text)
+  }
+
+  onKeywordChange = text => {
+    this.props.keywordChanged(text)
+  }
+
+  color(i) {
+    if (i === 1) return '#dbebf6'
+  }
+
+  toggleLoader = async (flag) => {
+    await this.setState({
+      loader: flag
+    });
+  }
+  handleClickOpen(modal) {
+    var x = [];
+    x[modal] = true;
+    this.setState(x);
+  }
+
+  handleClose(modal) {
+    var x = [];
+    x[modal] = false;
+    this.setState(x);
   }
 
   findProjects() {
-    let filterParams = this.state;
-    filterParams.tableData = [];
-    /*
-    Axios.get("/project", {
-      baseURL: "http://localhost:3001",
-      params: filterParams
-    })
-      .then(response => {
-        console.log(response);
-        this.setState({ tableData: response.data });
-      })
-      .catch(error => {
-        console.log(error);
-      });
-    */
+    this.toggleLoader(true);
+    const {
+      impactCategories,
+      yourLocation,
+      country,
+      keyword,
+      projectStatus,
+      resourceType
+    } = this.props
+    this.props.findProjects(
+      {
+        impactCategories,
+        yourLocation,
+        country,
+        keyword,
+        projectStatus,
+        resourceType
+      }, (flag) => {
+        this.toggleLoader(flag) 
+      }
+    )
   }
-
+  state = {
+    noticeModal: false
+  }
   render() {
     const { classes } = this.props;
+
     return (
-      <div className={classes.container}>
-        <GridContainer>
-          <GridItem xs={12} sm={12}>
+      <GridContainer className={this.props.isLoggedIn ? null : classes.container}>
+        <Loader loader={this.state.loader} />
+        <GridContainer justify="center">
+          <GridItem xs={12} sm={12} md={10}>
             <Card>
-              <CardHeader color="rose" icon>
-                <CardIcon color="rose">
+              <CardHeader color="info" icon>
+                <CardIcon color="info">
                   <Assignment />
                 </CardIcon>
                 <h4 className={classes.cardIconTitle}>Find Projects</h4>
@@ -109,232 +211,32 @@ class ProjectSearch extends React.Component {
               <CardBody>
                 <form>
                   <GridContainer>
-                    <GridItem xs={6} sm={4} md={3} lg={3}>
-                      <CustomInput
-                        labelText="Your Location"
-                        id="project-name"
-                        formControlProps={{
-                          fullWidth: true
-                        }}
-                        inputProps={{
-                          type: "text",
-                          name: "yourLocation",
-                          onChange: e => {
-                            this.setState({ [e.target.name]: e.target.value });
-                            console.log(this.state);
-                          }
-                        }}
-                      />
+                    <GridItem xs={12} sm={12} md={6} style={{ marginTop: 30 }}>
+                      <CountryDropdown onCountryChanged={this.onCountryChanged} defaultValue={this.props.userCountry} />
                     </GridItem>
-                    <GridItem xs={6} sm={4} md={3} lg={3}>
-                      <FormControl
-                        fullWidth
-                        className={classes.selectFormControl}
-                      >
-                        <InputLabel
-                          htmlFor="distance-from-you"
-                          className={classes.selectLabel}
-                        >
-                          Distance From You
-                        </InputLabel>
-                        <Select
-                          value={this.state.distanceFromYou}
-                          onChange={this.handleSingle}
-                          MenuProps={{ className: classes.selectMenu }}
-                          classes={{ select: classes.select }}
-                          inputProps={{
-                            name: "distanceFromYou",
-                            id: "distance-from-you"
-                          }}
-                        >
-                          <MenuItem
-                            disabled
-                            classes={{
-                              root: classes.selectMenuItem
-                            }}
-                          >
-                            Choose Distance From You
-                          </MenuItem>
-                          <MenuItem
-                            classes={{
-                              root: classes.selectMenuItem,
-                              selected: classes.selectMenuItemSelected
-                            }}
-                            value="0"
-                          >
-                            Any
-                          </MenuItem>
-                          <MenuItem
-                            classes={{
-                              root: classes.selectMenuItem,
-                              selected: classes.selectMenuItemSelected
-                            }}
-                            value="1"
-                          >
-                            Within 5 miles
-                          </MenuItem>
-                          <MenuItem
-                            classes={{
-                              root: classes.selectMenuItem,
-                              selected: classes.selectMenuItemSelected
-                            }}
-                            value="2"
-                          >
-                            Within 10 miles
-                          </MenuItem>
-                          <MenuItem
-                            classes={{
-                              root: classes.selectMenuItem,
-                              selected: classes.selectMenuItemSelected
-                            }}
-                            value="3"
-                          >
-                            Within 25 miles
-                          </MenuItem>
-                        </Select>
-                      </FormControl>
-                    </GridItem>
-                    <GridItem xs={8} sm={6} md={4} lg={4}>
-                      <CustomInput
-                        labelText="Keywords/Hashtags"
-                        id="keywords"
-                        formControlProps={{
-                          fullWidth: true
-                        }}
-                        inputProps={{
-                          type: "text",
-                          name: "keywordsHashtags",
-                          onChange: e => {
-                            this.setState({ [e.target.name]: e.target.value });
-                            console.log(this.state);
+                    <GridItem xs={12} sm={12} md={6} style={{ marginTop: 30 }}>
+                      <InterestsDropdown
+                        onInterestsChange={
+                          async (e, { value }) => {
+                            await this.setState({ value: value })
+                            if (!this.state.value) {
+                              await this.setState({
+                                valid: true
+                              })
+                              this.handleImpactCategory(value)
+                            }
+                            else {
+                              await this.setState({ valid: false })
+                              this.handleImpactCategory(value)
+                            }
                           }
-                        }}
-                      />
+                        }
+                        interestOptions={this.props.interestOptions} defaultValue={this.props.impactCategories} />
                     </GridItem>
                   </GridContainer>
                   <br />
                   <GridContainer>
-                    <GridItem xs={6} sm={4} md={3} lg={3}>
-                      <FormControl
-                        fullWidth
-                        className={classes.selectFormControl}
-                      >
-                        <InputLabel
-                          htmlFor="skills-needed"
-                          className={classes.selectLabel}
-                        >
-                          Skills Needed
-                        </InputLabel>
-                        <Select
-                          multiple
-                          value={this.state.skillsNeeded}
-                          onChange={this.handleMultiple}
-                          MenuProps={{ className: classes.selectMenu }}
-                          classes={{ select: classes.select }}
-                          inputProps={{
-                            name: "skillsNeeded",
-                            id: "skills-needed"
-                          }}
-                        >
-                          <MenuItem
-                            disabled
-                            classes={{
-                              root: classes.selectMenuItem
-                            }}
-                          >
-                            Choose Skills Needed
-                          </MenuItem>
-                          <MenuItem
-                            classes={{
-                              root: classes.selectMenuItem,
-                              selected: classes.selectMenuItemSelected
-                            }}
-                            value="1"
-                          >
-                            IT
-                          </MenuItem>
-                          <MenuItem
-                            classes={{
-                              root: classes.selectMenuItem,
-                              selected: classes.selectMenuItemSelected
-                            }}
-                            value="2"
-                          >
-                            Communication
-                          </MenuItem>
-                          <MenuItem
-                            classes={{
-                              root: classes.selectMenuItem,
-                              selected: classes.selectMenuItemSelected
-                            }}
-                            value="3"
-                          >
-                            Accounting
-                          </MenuItem>
-                        </Select>
-                      </FormControl>
-                    </GridItem>
-                    <GridItem xs={6} sm={4} md={3} lg={3}>
-                      <FormControl
-                        fullWidth
-                        className={classes.selectFormControl}
-                      >
-                        <InputLabel
-                          htmlFor="impact-category"
-                          className={classes.selectLabel}
-                        >
-                          Impact Category
-                        </InputLabel>
-                        <Select
-                          multiple
-                          value={this.state.impactCategory}
-                          onChange={this.handleMultiple}
-                          MenuProps={{ className: classes.selectMenu }}
-                          classes={{ select: classes.select }}
-                          inputProps={{
-                            name: "impactCategory",
-                            id: "impact-category"
-                          }}
-                        >
-                          <MenuItem
-                            disabled
-                            classes={{
-                              root: classes.selectMenuItem
-                            }}
-                          >
-                            Choose Impact Category
-                          </MenuItem>
-                          <MenuItem
-                            classes={{
-                              root: classes.selectMenuItem,
-                              selected: classes.selectMenuItemSelected
-                            }}
-                            value="1"
-                          >
-                            Community
-                          </MenuItem>
-                          <MenuItem
-                            classes={{
-                              root: classes.selectMenuItem,
-                              selected: classes.selectMenuItemSelected
-                            }}
-                            value="2"
-                          >
-                            Elderly
-                          </MenuItem>
-                          <MenuItem
-                            classes={{
-                              root: classes.selectMenuItem,
-                              selected: classes.selectMenuItemSelected
-                            }}
-                            value="3"
-                          >
-                            Homeless
-                          </MenuItem>
-                        </Select>
-                      </FormControl>
-                    </GridItem>
-                    <GridItem xs={6} sm={4} md={3} lg={3}>
+                    <GridItem xs={12} sm={12} md={6}>
                       <FormControl
                         fullWidth
                         className={classes.selectFormControl}
@@ -346,8 +248,8 @@ class ProjectSearch extends React.Component {
                           Resource Type
                         </InputLabel>
                         <Select
-                          value={this.state.resourceType}
-                          onChange={this.handleSingle}
+                          value={this.props.resourceType}
+                          onChange={this.handleResourceType}
                           MenuProps={{ className: classes.selectMenu }}
                           classes={{ select: classes.select }}
                           inputProps={{
@@ -363,37 +265,26 @@ class ProjectSearch extends React.Component {
                           >
                             Choose Resource Type
                           </MenuItem>
-                          <MenuItem
-                            classes={{
-                              root: classes.selectMenuItem,
-                              selected: classes.selectMenuItemSelected
-                            }}
-                            value="0"
-                          >
-                            Any
-                          </MenuItem>
-                          <MenuItem
-                            classes={{
-                              root: classes.selectMenuItem,
-                              selected: classes.selectMenuItemSelected
-                            }}
-                            value="1"
-                          >
-                            Needs Volunteers
-                          </MenuItem>
-                          <MenuItem
-                            classes={{
-                              root: classes.selectMenuItem,
-                              selected: classes.selectMenuItemSelected
-                            }}
-                            value="2"
-                          >
-                            Needs Freelancers
-                          </MenuItem>
+                          {
+                            ['Needs Volunteers', 'Needs Freelancers', 'Any'].map((prop, key) => {
+                              return (
+                                <MenuItem
+                                  classes={{
+                                    root: classes.selectMenuItem,
+                                    selected: classes.selectMenuItemSelected
+                                  }}
+                                  value={prop}
+                                  key={key}
+                                >
+                                  {prop}
+                                </MenuItem>
+                              );
+                            })
+                          }
                         </Select>
                       </FormControl>
                     </GridItem>
-                    <GridItem xs={6} sm={4} md={3} lg={3}>
+                    <GridItem xs={12} sm={12} md={6}>
                       <FormControl
                         fullWidth
                         className={classes.selectFormControl}
@@ -405,8 +296,8 @@ class ProjectSearch extends React.Component {
                           Project Status
                         </InputLabel>
                         <Select
-                          value={this.state.projectStatus}
-                          onChange={this.handleSingle}
+                          value={this.props.projectStatus}
+                          onChange={this.handleProjectStatus}
                           MenuProps={{ className: classes.selectMenu }}
                           classes={{ select: classes.select }}
                           inputProps={{
@@ -422,51 +313,115 @@ class ProjectSearch extends React.Component {
                           >
                             Choose Project Status
                           </MenuItem>
-                          <MenuItem
-                            classes={{
-                              root: classes.selectMenuItem,
-                              selected: classes.selectMenuItemSelected
-                            }}
-                            value="0"
-                          >
-                            Any
-                          </MenuItem>
-                          <MenuItem
-                            classes={{
-                              root: classes.selectMenuItem,
-                              selected: classes.selectMenuItemSelected
-                            }}
-                            value="1"
-                          >
-                            Active
-                          </MenuItem>
-                          <MenuItem
-                            classes={{
-                              root: classes.selectMenuItem,
-                              selected: classes.selectMenuItemSelected
-                            }}
-                            value="2"
-                          >
-                            Closed
-                          </MenuItem>
-                          <MenuItem
-                            classes={{
-                              root: classes.selectMenuItem,
-                              selected: classes.selectMenuItemSelected
-                            }}
-                            value="3"
-                          >
-                            Future
-                          </MenuItem>
+                          {
+                            ['ACTIVE', 'CLOSED', 'ANY'].map((prop, key) => {
+                              return (
+                                <MenuItem
+                                  classes={{
+                                    root: classes.selectMenuItem,
+                                    selected: classes.selectMenuItemSelected
+                                  }}
+                                  value={prop}
+                                  key={key}
+                                >
+                                  {prop}
+                                </MenuItem>
+                              )
+                            })
+                          }
                         </Select>
                       </FormControl>
                     </GridItem>
                   </GridContainer>
+                  <GridContainer>
+                    <GridItem xs={12} sm={12} md={12}>
+                      <CustomInput
+                        labelText="Comma seperated keywords"
+                        id="keywords"
+                        formControlProps={{
+                          fullWidth: true
+                        }}
+                        inputProps={{
+                          type: "text",
+                          name: "keywordsHashtags",
+                          onChange: e => {
+                            this.onKeywordChange(e.target.value)
+                          }
+                        }}
+                      />
+                    </GridItem>
+                  </GridContainer>
                   <br />
+                  {
+                    //ui part of modal
+                  }
+                  <GridContainer justify="center">
+                    <GridItem
+                      xs={12}
+                      sm={12}
+                      md={12}
+                      className={classes.center}
+                    >
+                      <Dialog
+                        classes={{
+                          root: classes.center + " " + classes.modalRoot,
+                          paper: classes.modal
+                        }}
+                        open={this.state.noticeModal}
+                        TransitionComponent={Transition}
+                        keepMounted
+                        onClose={() => this.handleClose("noticeModal")}
+                        aria-labelledby="notice-modal-slide-title"
+                        aria-describedby="notice-modal-slide-description"
+                      >
+                        <DialogTitle
+                          id="notice-modal-slide-title"
+                          disableTypography
+                          className={classes.modalHeader}
+                        >
+                          <Button
+                            justIcon
+                            className={classes.modalCloseButton}
+                            key="close"
+                            style={{ float: "right" }}
+                            aria-label="Close"
+                            color="transparent"
+                            onClick={() => this.handleClose("noticeModal")}
+                          >
+                            <Close className={classes.modalClose} />
+                          </Button>
+                        </DialogTitle>
+                        <DialogContent
+                          id="notice-modal-slide-description"
+                          className={classes.modalBody}
+                        >
+                          <p style={{ fontSize: "16px" }}>
+                            Please Login to View Project Details
+                          </p>
+                        </DialogContent>
+                        <DialogActions
+                          className={
+                            classes.modalFooter +
+                            " " +
+                            classes.modalFooterCenter
+                          }
+                        >
+                          <Button
+                            onClick={() => this.props.history.push('/login')}
+                            color="info"
+                            round
+                            className={classes.center}
+                          >
+                            Go to Login
+                          </Button>
+                        </DialogActions>
+                      </Dialog>
+                    </GridItem>
+                  </GridContainer>
                   <br />
                   <GridContainer>
                     <GridItem>
-                      <Button color="rose" onClick={() => this.findProjects()}>
+                      <Button color="info" onClick={() => this.findProjects()}>
                         Find
                       </Button>
                     </GridItem>
@@ -477,42 +432,125 @@ class ProjectSearch extends React.Component {
           </GridItem>
         </GridContainer>
 
-        <GridContainer>
-          <GridItem xs={12} sm={12}>
+        <GridContainer justify="center">
+          <GridItem xs={12} sm={12} md={10}>
             <Card>
-              <CardBody>
-                <ReactTable
-                  data={this.state.tableData}
-                  columns={[
-                    {
-                      Header: "Name",
-                      accessor: "name",
-                      filterable: true,
-                      filterMethod: this.columnFilter
-                    },
-                    {
-                      Header: "Description",
-                      accessor: "description",
-                      filterable: true,
-                      filterMethod: this.columnFilter
-                    },
-                    {
-                      Header: "Location",
-                      accessor: "location",
-                      filterable: true,
-                      filterMethod: this.columnFilter
-                    }
-                  ]}
-                  defaultPageSize={5}
-                  showPaginationTop
-                  showPaginationBottom={false}
-                  className="-striped -highlight"
-                />
+              <CardBody >
+                <GridContainer>
+                  <GridItem xs={12} sm={12}>
+                    <ReactTable style={{ overflow: "none" }}
+					  data={
+                          this.props.tableData.map((element) => {
+                            let startDate = new Date(element.start_date);
+                            let endDate = new Date(element.end_date);
+                            startDate = startDate.toDateString()
+                            endDate = endDate.toDateString()
+							let imag1 = element.attachment
+							if ( imag1 === null ) {
+								imag1=imag
+							}
+							else {
+								imag1 = hostname() + imag1
+							}
+                            return {
+							  Imag: 
+                                <span><img src={imag1} height="100px" width="200px"></img></span>
+							  ,
+                              project_name: element.project_name,
+							  location: element.zip_code,
+                              status: element.status,
+                              startDate: startDate,
+                              endDate: endDate,
+                              Close: "",
+                              Action: <span>
+                                <Tooltip
+                                  title="Details"
+                                  classes={{ tooltip: classes.lightTooltip }}
+                                >
+                                  <Button
+                                    round
+                                    justIcon
+                                    simple
+                                    onClick={() => {
+                                      let id = element.project_id
+                                      this.toggleLoader(true)
+                                      this.props.getProjectById({ id }, (flag) => {
+                                        this.toggleLoader(flag)
+                                        this.props.history.push(`/project-details/info`)
+                                        this.props.idStored(element.project_id)
+                                      })
+                                    }}
+                                    color="info"
+                                    className="like"
+                                  ><ViewList /></Button>
+                                </Tooltip>
+                              </span>
+                            }
+                          })
+                      }
+                      columns={[
+					   {
+                          Header: <strong></strong>,
+                          accessor: "Imag",
+                          sortable: false,
+						  width: 200
+                        },
+                        {
+                          Header: <strong>Name</strong>,
+                          accessor: "project_name",
+                          filterable: true,
+                          filterMethod: this.columnFilter,
+						  width: 100
+						},
+						{
+                          Header: <strong>City/Zip Code</strong>,
+                          accessor: "location",
+                          filterable: true,
+                          filterMethod: this.columnFilter,
+						},
+                        {
+                          Header: <strong>Status</strong>,
+                          accessor: "status",
+                          filterable: true,
+                          filterMethod: this.columnFilter
+                        },
+                        {
+                          Header: <strong>Start</strong>,
+                          accessor: "startDate",
+                          filterable: true,
+                          filterMethod: this.columnFilter
+                        },
+                        {
+                          Header: <strong>Target End</strong>,
+                          accessor: "endDate",
+                          filterable: true,
+                          filterMethod: this.columnFilter
+                        },
+                        {
+                          Header: <strong>Close</strong>,
+                          accessor: "Close",
+                          filterable: true,
+                          filterMethod: this.columnFilter
+                        },
+                        {
+                          Header: <strong></strong>,
+                          accessor: "Action",
+                          sortable: false,
+                        }
+                      ]}
+                      defaultPageSize={5}
+                      showPaginationTop
+                      showPaginationBottom={false}
+                      className="-striped -highlight"
+                    />
+                  </GridItem>
+                </GridContainer>
               </CardBody>
             </Card>
           </GridItem>
         </GridContainer>
-      </div>
+      </GridContainer>
+
     );
   }
 }
@@ -521,5 +559,35 @@ ProjectSearch.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-const myObj = withStyles(extendedFormsStyle)(ProjectSearch);
-export default withStyles(projectSearchStyle)(myObj);
+const mapStateToProps = state => {
+  return {
+    isLoggedIn: state.auth.isLoggedIn,
+    tableData: state.findProject.tableData,
+    impactCategories: state.findProject.impactCategories,
+    yourLocation: state.findProject.yourLocation,
+    resourceType: state.findProject.resourceType,
+    projectStatus: state.findProject.projectStatus,
+    distanceFromYou: state.findProject.distanceFromYou,
+    keyword: state.findProject.keyword,
+    country: state.findProject.country,
+    textChanged: state.findProject.textChanged,
+    interestOptions: state.common.interestOptions,
+    resourceTypeOptions: state.findProject.resourceTypeOptions,
+	projectAttachments: state.proDetails.projectAttachments
+  }
+}
+
+
+export default connect(mapStateToProps, {
+  getProjectCandidateReviewList,
+  locationChanged,
+  resourceChanged,
+  projectStatusChanged,
+  impactCategoriesChanged,
+  countryChanged,
+  findProjectUnmount,
+  keywordChanged,
+  findProjects,
+  getProjectById,
+  idStored
+})(withStyles(styles)(ProjectSearch));

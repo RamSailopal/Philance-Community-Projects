@@ -6,8 +6,6 @@ var commonLookups = require("./lookups.model");
  */
 exports.getLookupDetails = (req, res, next) => {
 
-    console.log (req.params.lookupType);
-
     var _lookupCode = ((req.params.lookupType != 'ALL') ? req.params.lookupType : '%');
     commonLookups.findAll({
         where: { lookupType: { $like: _lookupCode }}}).then((_lookups) => {

@@ -1,0 +1,46 @@
+#
+#       AUTHOR - Raman Sailopal
+#
+#       docker compose yml file for Philance front-end/back-end mysql microservices stack
+#
+version: "2"
+services:
+ philance:
+   image: docker.io/philance/philance-frontend
+   environment:
+     - REACT_APP_ADDRSS=http://$hostaddy:3001
+   ports:
+      - 3000:3000
+   volumes:
+      - $repopath:/opt/openproject/public/Philance
+      - $repopath/my-app/public:/opt/openproject/public/philance-app/public
+      - $repopath/my-app/src:/opt/openproject/public/philance-app/src
+   networks:
+      - new
+   mem_limit: 1G
+ philance-api:
+   image: docker.io/philance/philance-api
+   environment:
+     - mysqladd=mysql
+     - pass=ph1ldb
+   ports:
+      - 3001:3001
+   volumes:
+      - $repopath:/opt/openproject/public/Philance
+      - $mediapath:/opt/openproject/public/media/uploads
+   networks:
+      - new
+ mysql:
+  image: docker.io/mysql:5.7
+  environment:
+     - MYSQL_ROOT_HOST=%
+     - MYSQL_USER=philance
+     - MYSQL_ROOT_PASSWORD=ph1ldb
+     - MYSQL_ALLOW_EMPTY=yes
+     - MYSQL_DATABASE=philance
+  networks:
+     - new
+
+
+networks:
+    new:

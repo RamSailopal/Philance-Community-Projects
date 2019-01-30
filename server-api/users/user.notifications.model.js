@@ -29,6 +29,10 @@ const userNotifications = sequelize.define('user_notifications', {
         type: Sequelize.STRING,
         field: 'push'
     },
+    message: {
+        type: Sequelize.STRING,
+        field: 'message'
+    },
    creationDate: {
         type: Sequelize.DATE,
         field: 'creation_date'
@@ -49,13 +53,6 @@ const userNotifications = sequelize.define('user_notifications', {
     {
         timestamps: false,
         freezeTableName: true
-    },
-    {
-        classMethods: {
-            associate: function (models) {
-                userNotifications.hasOne(models.users, { foreignKey: 'user_id' })
-            }
-        }
     },
     {
         instanceMethods: {

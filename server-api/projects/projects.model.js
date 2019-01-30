@@ -25,7 +25,7 @@ const projects = sequelize.define('projects', {
         field: 'Project_name',
         allowNull: false
     },
-    decription: {
+    description: {
         type: Sequelize.BLOB,
         field: 'description'
     },
@@ -41,8 +41,7 @@ const projects = sequelize.define('projects', {
     },
     location: {
         type: Sequelize.STRING,
-        field: 'location',
-        allowNull: false
+        field: 'location'
     },
     startDate: {
         type: Sequelize.DATE,
@@ -55,8 +54,7 @@ const projects = sequelize.define('projects', {
     },
     estimatedBudget: {
         type: Sequelize.DOUBLE,
-        field: 'estimated_budget',
-        allowNull: false
+        field: 'estimated_budget'
     },
     creationDate: {
         type: Sequelize.DATE,
@@ -67,10 +65,17 @@ const projects = sequelize.define('projects', {
         type: Sequelize.INTEGER,
         field: 'created_by'
     },
+    country: {
+        type: Sequelize.STRING,
+        field: 'country'
+    },
+    zipCode: {
+        type: Sequelize.STRING,
+        field: 'zip_code'
+    },
     lastUpdatedDate: {
         type: Sequelize.DATE,
         field: 'last_updated_date',
-        defaultValue: Sequelize.NOW
     },
     lastUpdatedBy: {
         type: Sequelize.INTEGER,

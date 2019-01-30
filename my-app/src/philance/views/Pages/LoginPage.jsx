@@ -6,9 +6,9 @@ import withStyles from "@material-ui/core/styles/withStyles";
 import InputAdornment from "@material-ui/core/InputAdornment";
 
 // @material-ui/icons
-import Face from "@material-ui/icons/Face";
 import Email from "@material-ui/icons/Email";
 import LockOutline from "@material-ui/icons/LockOutline";
+import { NavLink } from "react-router-dom";
 
 // core components
 import GridContainer from "components/Grid/GridContainer.jsx";
@@ -24,7 +24,6 @@ import {connect} from 'react-redux'
 import {emailChanged, passwordChanged, loginUser, textChanged} from '../../actions/login'
 
 import loginPageStyle from "assets/jss/material-dashboard-pro-react/views/loginPageStyle.jsx";
-import { Target } from "react-popper";
 
 class LoginPage extends React.Component {
 
@@ -41,6 +40,7 @@ onPasswordChange(text) {
 onButtonPress() {
     const {email, password} = this.props;
     this.props.loginUser({email, password})
+    
 }
 
   constructor(props) {
@@ -131,16 +131,19 @@ onButtonPress() {
                       <Button round color="info" justify="center" onClick={()=>this.onButtonPress()}>
                         {this.props.error}
                       </Button>
+                      {this.props.isLoggedin?()=>{this.props.history.push("/home")}:null}
                     </CardActions>
                     <CardActions className={classes.justifyContentCenter}>
-                      <Button color="info" simple size="small">
+                    <NavLink to="/forgotPassword">
+                      <Button color="info" simple size="sm">
                         Forgot Password?
                       </Button>
+                    </NavLink>
                     </CardActions>
                   </CardBody>
                   <CardFooter className={classes.justifyContentCenter}>
                     Don't have an account?
-                    <Button color="info" simple size="small">
+                    <Button onClick={()=>{this.props.history.push("/register")}} color="info" simple size="sm">
                       Sign Up
                     </Button>
                   </CardFooter>

@@ -25,12 +25,15 @@ class UntitledTestCase(unittest.TestCase):
         driver = self.driver
         driver.get("http://127.0.0.1:3000")
         driver.find_element_by_xpath("//div[@id='root']/div/header/div/div[2]/ul/li[2]/a/div").click()
+	time.sleep(1)
         try: self.assertEqual("Start a project to help others OR ask for help", driver.find_element_by_xpath("//div[@id='root']/div/div/div/div/div/div/div/div/div/h4").text)
         except AssertionError as e: self.verificationErrors.append(str(e)) 
 	driver.find_element_by_xpath("(//input[@value=''])[6]").click()
+	time.sleep(1)
 	try: self.assertEqual("SU", driver.find_element_by_xpath("//div[@id='root']/div/div/div/div/div/div/div/div[2]/form/div[7]/div[2]/div/div[2]/div/div/div/div/table/thead/tr[2]/th").text)
         except AssertionError as e: self.verificationErrors.append(str(e))
         driver.find_element_by_xpath("(//input[@value=''])[7]").click()
+	time.sleep(1)
         try: self.assertEqual("SU", driver.find_element_by_xpath("//div[@id='root']/div/div/div/div/div/div/div/div[2]/form/div[7]/div[3]/div/div[2]/div/div/div/div/table/thead/tr[2]/th").text)
         except AssertionError as e: self.verificationErrors.append(str(e))
 
