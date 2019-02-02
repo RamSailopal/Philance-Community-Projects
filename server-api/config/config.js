@@ -21,12 +21,12 @@ var config={
     production:{
         unsecure:{
             protocol:'http://',
-            host:'philance.hopto.org',
+            host:'philance.ddns.net',
             port:''
         },
         secure:{
             protocol:'https://',
-            host:'philance.hopto.org',
+            host:'philance.ddns.net',
             port:''
         },
     },
