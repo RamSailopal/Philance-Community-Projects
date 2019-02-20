@@ -198,10 +198,10 @@ class HowItWorksPage extends React.Component {
 								<br></br>
 								<ul>Those managing social impact projects can receive an income from successfully completing projects.</ul>
 								<ul>Those working on projects can earn an income from the hours worked.</ul>
-								<ul>Those contributing funding and resources can earn positive feeback from the publicity we generate.</ul>
+								<ul>Those contributing funding and resources can earn positive feedback from the publicity we generate.</ul>
 								<ul>Overall everybody benefits from the redistributed skills and income. Those who consider themselves from more affluent demographics
 								can contribute to projects that benefit those from poorer communities.
-								Those in poorer communities can work on issues they are know the most about and are exposed to at first hand.</ul>
+								Those in poorer communities can work on issues they know the most about and are exposed to at first hand.</ul>
 								<br></br>
 								<ul><b> How much does it cost to sign up? </b></ul>
 								<br></br>
