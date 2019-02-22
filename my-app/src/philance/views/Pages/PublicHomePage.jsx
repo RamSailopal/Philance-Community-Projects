@@ -65,7 +65,7 @@ class PublicHomePage extends React.Component {
         <GridContainer justify="center">
           <GridItem xs={12} sm={12} md={10} lg={10}>
             <Card className={classes.cardSignup}>
-              <h2 className={classes.cardTitle}><b><font face="impact">The Job Creation Platform for Impoverished Communities</font></b></h2>
+              <h2 className={classes.cardTitle}><b><font face="impact">Unleash the Power of Community</font></b></h2>
               <CardBody>
                 <GridContainer justify="center">
                   <GridItem xs={12} sm={12} md={5}>
@@ -100,7 +100,7 @@ class PublicHomePage extends React.Component {
                   <GridItem xs={12} sm={8} md={5}>
                     <InfoArea
                       // classes={classes}
-                      title="Animated Video about PhiLance"
+                      title="Watch and Learn"
                       description="Watch this brief 1 min video to see how you can use the PhiLance platform and become a changemaker."
                       icon={Video}
                       iconColor="rose"
@@ -135,9 +135,9 @@ class PublicHomePage extends React.Component {
                    <div>
 				   <p align="left" className={classes.newz}>
 				       <br></br>
-					  <h3><strong>Nov 2018 - Trial platform launch</strong></h3>
+					  <h3><strong>March 2019 - Platform launch</strong></h3>
 					   <br></br>
-					  <font size="2">We are pleased to announce that we have officially launched the first version of the PhiLance platform.</font>
+					  <font size="2">We are pleased to announce that we have officially launched the PhiLance platform.</font>
 					  <br></br>
 					  <br></br>
 					  <font size="2">Please take the time to first sign up and create your profile. You can then manage or, apply to work on your first project</font>

@@ -17,6 +17,7 @@ import Email from "@material-ui/icons/Email";
 import LockOutline from "@material-ui/icons/LockOutline";
 import Face from "@material-ui/icons/Face";
 import LaunchIcon from "@material-ui/icons/Launch";
+import PersonAddIcon from "@material-ui/icons/PersonAdd";
 
 // core components
 import GridContainer from "components/Grid/GridContainer.jsx";
@@ -26,6 +27,9 @@ import CustomInput from "components/CustomInput/CustomInput.jsx";
 import InfoArea from "components/InfoArea/InfoArea.jsx";
 import Card from "components/Card/Card.jsx";
 import CardBody from "components/Card/CardBody.jsx";
+import CardIcon from "components/Card/CardIcon.jsx";
+import CardHeader from "components/Card/CardHeader.jsx";
+
 
 import registerPageStyle from "assets/jss/material-dashboard-pro-react/views/registerPageStyle";
 
@@ -62,8 +66,13 @@ onButtonPress() {
         <div className={classes.container}>
         <GridContainer justify="center">
           <GridItem xs={12} sm={12} md={10}>
-            <Card className={classes.cardSignup}>
-              <h2 className={classes.cardTitle}>Join Philance and ...</h2>
+            <Card>
+			  <CardHeader color="info" icon>
+                <CardIcon color="info">
+                  <PersonAddIcon />
+                </CardIcon>
+              </CardHeader>
+              <h2 className={classes.cardTitle}><font face="impact" size="6">Join Philance and ...</font></h2>
               <CardBody>
                 <GridContainer justify="center">
                   <GridItem xs={12} sm={12} md={5}>

@@ -19,6 +19,7 @@ import { Label } from 'semantic-ui-react';
 import Table from "components/Table/Table.jsx";
 import SweetAlert from "react-bootstrap-sweetalert";
 import Delete from "@material-ui/icons/Delete";
+import { Hashtag } from 'react-twitter-widgets';
 
 import FormControl from "@material-ui/core/FormControl";
 import { Dropdown } from 'semantic-ui-react'
@@ -61,6 +62,8 @@ import Loader from "../../components/Loader/Loader"
 import Toaster from "../../components/Toaster/Toaster";
 import { hostname } from "../../../config";
 import extendedTablesStyle from "assets/jss/material-dashboard-pro-react/views/extendedTablesStyle.jsx";
+import CustomLinearProgress from "components/CustomLinearProgress/CustomLinearProgress.jsx";
+
 const style = {
   ...extendedTablesStyle,
   ...startProjectPageStyle,
@@ -339,18 +342,55 @@ class ProjectDetails extends React.Component {
   render() {
     const { classes } = this.props;
 	return (
-      <GridContainer className={this.props.isLoggedIn ? classes.justifyContentCenter : classes.container}>
+	<GridContainer className={this.props.isLoggedIn ? classes.justifyContentCenter : classes.container}>
+        <Loader loader={this.state.loader} />
+	   <GridItem xs={12} sm={12} md={10}>
+          <Card>
+        <br/>
+            <CardBody>
+			  <GridContainer align="left" direction="column">
+			      <GridItem xs={12} sm={12}>
+							  <img src={this.getimg()} height="400px" width="100%"/>
+					</GridItem>
+					<br></br>
+					<br></br>
+					<GridItem xs={12} sm={12}>
+							  <p align="left"><strong><font face="impact" size="6">Project Overview</font></strong>
+							   <br></br>
+							   <br></br>
+							    <br></br>
+							   <br></br>
+							   <font size="5">0.00 of {this.props.budget} budget</font>
+							   <CustomLinearProgress
+								variant="determinate"
+								color="info"
+								value={0}
+							  />
+							  <br></br>
+							   <font size="5">0 of {this.props.volunteers} volunteers</font>
+							   <CustomLinearProgress
+								variant="determinate"
+								color="success"
+								value={0}
+							  />
+							  <br></br>
+							   <font size="5">0 of {this.props.freelancers} freelancers</font>
+							   <CustomLinearProgress
+								variant="determinate"
+								color="warning"
+								value={0}
+								/>
+								</p>
+				  </GridItem>
+			  </GridContainer>
+			  </CardBody>
+			</Card>
+		</GridItem>
         <Loader loader={this.state.loader} />
         <GridItem xs={12} sm={12} md={10}>
           <Card>
         <br/>
             <CardBody>
-              <form>
-			  <GridContainer align="left" direction="column">
-			      <GridItem>
-				              <img src={this.getimg()} height="200px" width="400px"/>
-				  </GridItem>
-			  </GridContainer>
                 <GridContainer align="right" direction="column">
                   <GridItem>
                     {this.props.userId == this.props.createdBy ?
@@ -906,11 +946,49 @@ class ProjectDetails extends React.Component {
                   }
                 </GridContainer>
                 <br />
-              </form>
             </CardBody>
           </Card>
-        </GridItem>
-      </GridContainer>
+        </GridItem>	
+      <GridItem xs={12} sm={12} md={10}>
+          <Card>
+        <br/>
+            <CardBody>
+			  <GridContainer align="left" direction="column">
+			      <GridItem xs={12} sm={12}>
+							<p align="left"><font face="impact" size="6">Location</font></p>
+							<p align="center"><br></br><iframe src={ "https://nominatim.openstreetmap.org/search?q=" + this.props.zipCode } height="800" width="100%"></iframe></p>  
+					</GridItem>
+			  </GridContainer>
+			  </CardBody>
+			</Card>
+		</GridItem>
+		 <GridItem xs={12} sm={12} md={10}>
+            <Card>
+			 <CardBody>
+			  <GridContainer align="left" direction="column">
+			<br></br>
+			<br></br>
+			<p align="center">
+			<font face="impact" size="6">Social Media</font>
+			</p>
+			<br></br>
+			<br></br>
+			<p align="center">
+			<font face="impact" size="4">Your hashtag for this project is</font><a class="twitter-timeline" target="_blank" href={ "https://twitter.com/hashtag/PhiLance_" + this.props.name.replace(/ /g,"_") + "?src=hash"}><font face="impact" size="4" color="blue">{" #" + "PhiLance_" + this.props.name.replace(/ /g,"_") }</font></a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+			</p>
+			<br></br>
+			<p align="center">
+            <Hashtag
+				hashtag={"PhiLance_" + this.props.name.replace(/ /g,"_") }
+				options={{size:"large"}}
+				/>
+			</p>
+			<br></br>
+			 </GridContainer>
+			  </CardBody>
+			</Card>
+          </GridItem>
+	  </GridContainer>
     );
   }
 }

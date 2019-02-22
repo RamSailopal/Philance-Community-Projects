@@ -73,6 +73,14 @@ export const dashboardRoutes = [
     component: RegisterPage
   },
   {
+    path: "/aboutus",
+    name: "About Us",
+    short: "About US",
+    mini: "AU",
+    icon: HelpIcon,
+    component: AboutUs
+  },
+  {
     redirect: true,
     path: "/",
     pathTo: "/home",

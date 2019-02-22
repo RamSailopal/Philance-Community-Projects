@@ -5,6 +5,7 @@ import ProjectSearch from "philance/views/Pages/ProjectSearchPage.jsx";
 import HowItWorksPage from "philance/views/Pages/HowItWorksPage.jsx";
 import RegisterPage from "philance/views/Pages/RegisterPage.jsx";
 import LoginPage from "philance/views/Pages/LoginPage.jsx";
+import AboutUs from "philance/views/Pages/AboutUs.jsx";
 import MyProjectsPage from "philance/views/Pages/MyProjectsPage.jsx";
 import NotificationsPage from "philance/views/Pages/NotificationsPage.jsx";
 import MessagesPage from "philance/views/Pages/MessagesPage.jsx";
@@ -94,6 +95,14 @@ export const pagesRoutes = [
     component: RegisterPage
   },
   {
+    path: "/aboutus",
+    name: "About Us",
+    short: "About US",
+    mini: "AU",
+    icon: HelpIcon,
+    component: AboutUs
+  },
+  {
     path: "/forgotPassword",
     name: "Forgot Password",
     short: "Forgot Password",
@@ -167,6 +176,14 @@ export const headerRoutes = [
     mini: "RP",
     icon: PersonAddIcon,
     component: RegisterPage
+  },
+  {
+    path: "/aboutus",
+    name: "About Us",
+    short: "About US",
+    mini: "AU",
+    icon: HelpIcon,
+    component: AboutUs
   },
   {
     redirect: true,

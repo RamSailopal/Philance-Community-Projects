@@ -181,27 +181,32 @@ class HowItWorksPage extends React.Component {
                                 <ul>This platform is for ANYONE who wants to work on a social impact project.</ul>
 								<ul>You could identify yourself as an individual/organization in a poorer community who sees
 								a social requirement that you feel could be tackled through a project that you manage yourself.</ul>
-								<ul>You could be an individual who is looking to work on these projects as a volunteer
+								<ul>You could be an individual who is looking to work on these projects as a volunteer,
 								or a freelancer looking to earn an income.</ul>
 								<ul>You could be a local business looking to donate resources to the project.{" "}</ul>
 								<ul>You could be a local business/government looking to donate funding to the project.{" "}</ul>
-								<br></br>
-								<ul><b> What does the platform offer? </b></ul>
-								<br></br>
-								<ul>The platform offers a "pool of resources" essential to complete social impact projects and make a "real change".</ul>
-								<ul>These resources range from online project management tools, online collaboration tools,
-								a world wide database of individuals keen to work on impact projects, a world wide database of businesses keen to offer
-								funding and resources.</ul>
 								<br></br>
 								<br></br>
 								<ul><b> Who benefits from the platform? </b></ul>
 								<br></br>
 								<ul>Those managing social impact projects can receive an income from successfully completing projects.</ul>
 								<ul>Those working on projects can earn an income from the hours worked.</ul>
-								<ul>Those contributing funding and resources can earn positive feedback from the publicity we generate.</ul>
+								<ul>Those contributing funding and resources can earn positive feeback from the publicity we generate.</ul>
 								<ul>Overall everybody benefits from the redistributed skills and income. Those who consider themselves from more affluent demographics
 								can contribute to projects that benefit those from poorer communities.
 								Those in poorer communities can work on issues they know the most about and are exposed to at first hand.</ul>
+								<br></br>
+								<ul><b> What are some of the features of the PhiLance platform? </b></ul>
+								<br></br>
+								<ul>The ability to sign up on the platform as a voluneer or freelancer</ul>
+								<ul>The ability to post projects</ul>
+								<ul>Crowdfunding</ul>
+								<ul>Project/Task management</ul>
+								<ul>Analytics</ul>
+								<br></br>
+								<ul><b> Who owns the software behind the PhiLance platform? </b></ul>
+								<br></br>
+								<ul>The PhiLance platform is open-source software. <a href="https://github.com/Philance/Philance" target="_blank">Here is the link to the open source project for PhiLance on GitHub.</a> Please consider contributing to the development of this platform if you have software design and development skills.</ul>
 								<br></br>
 								<ul><b> How much does it cost to sign up? </b></ul>
 								<br></br>
@@ -211,6 +216,10 @@ class HowItWorksPage extends React.Component {
 								<br></br>
 								<ul>All personal information stored is secured in accordance with international data protection standards.
 								Any information shared will be related to running/completed projects and will not be of a "personal" nature.</ul>
+								<br></br>
+								<ul><b> How do I get involved in the project and its mission? </b></ul>
+								<br></br>
+								<ul>Reach out to us at info@philance.org</ul>
 								<br></br>
 								<br></br>
 						  </p>
