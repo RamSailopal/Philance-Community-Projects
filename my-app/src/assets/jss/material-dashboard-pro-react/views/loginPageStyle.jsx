@@ -22,6 +22,18 @@ const loginPageStyle = {
     position: "relative",
     zIndex: "4"
   },
+  fontClass1: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    fontFamily: "Aleo,Georgia,serif",
+    transform: "translate(-50%, -50%)",
+    "&:hover": {
+      opacity: 1,
+      color: "#ff7b00"
+    },
+    fontSize: "4rem"
+  },
   justifyContentCenter: {
     justifyContent: "center !important"
   },

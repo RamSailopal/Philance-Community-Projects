@@ -26,7 +26,8 @@ const userProfileStyles = {
     textAlign: "center"
   },
   description: {
-    color: "#999999"
+    color: "#999999",
+    fontSize:'14px'
   },
   updateProfileButton: {
     alignItems: "center"
@@ -47,6 +48,7 @@ const userProfileStyles = {
     "@media (min-width: 992px)": {
       float: "left"
     }
-  }
+  },
+ 
 };
 export default userProfileStyles;

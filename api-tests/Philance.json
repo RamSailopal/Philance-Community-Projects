@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "8b19edae-2582-4492-94bb-82200fa99094",
+		"_postman_id": "3984d74b-2bdf-4532-a9b0-433fb724b57c",
 		"name": "Philance",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -392,7 +392,7 @@
 						"exec": [
 							"tests[\"Status code is 200\"] = responseCode.code === 200;",
 							"var jsonData = JSON.parse(responseBody);",
-							"tests[\"status\"] = jsonData.project[0].status === \"ACTIVE\";",
+							"tests[\"status\"] = jsonData.project[0].status === \"UNPUBLISHED\";",
 							"tests[\"projectName\"] = jsonData.project[0].projectName === \"Create Project for Test Apply\";",
 							"tests[\"volunteers\"] = jsonData.project[0].volunteers === \"2\";",
 							"tests[\"freelancers\"] = jsonData.project[0].freelancers === \"6\";",
@@ -439,11 +439,11 @@
 					"listen": "test",
 					"script": {
 						"id": "95316804-dbff-450c-9aac-5b0c5decdcf8",
-						"type": "text/javascript",
 						"exec": [
 							"tests[\"Status code is 200\"] = responseCode.code === 200;",
 							""
-						]
+						],
+						"type": "text/javascript"
 					}
 				}
 			],
@@ -461,7 +461,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{  \n\t\"interests\":[\n\t\t\"other\"\n\t]\n}"
+					"raw": "{  \n\n\t\"activePage\":2,\n\t\"pageSize\":2,\n\t\"obd\":\"DESC\"\n}"
 				},
 				"url": {
 					"raw": "http://localhost:3001/philance/projects/search",
@@ -524,13 +524,11 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "aebb438d-6e57-4aa4-a50e-783a218b647c",
+						"id": "af3390d4-cb5e-4e06-bd96-11e0e8221abe",
 						"exec": [
 							"tests[\"Status code is 200\"] = responseCode.code === 200;",
 							"var jsonData = JSON.parse(responseBody);",
-							"tests[\"project_Id\"] = jsonData[0].projectId === 1;",
-							"tests[\"status\"] = jsonData[0].status === \"ACTIVE\";",
-							"tests[\"created_by\"] = jsonData[0].createdBy === 1;",
+							"",
 							"",
 							""
 						],
@@ -539,14 +537,20 @@
 				}
 			],
 			"request": {
-				"method": "GET",
-				"header": [],
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": ""
+					"raw": "{  \n\t\"activePage\":12,\n\t\"pageSize\":1\n}"
 				},
 				"url": {
-					"raw": "http://localhost:3001/philance/users/1/projects/",
+					"raw": "http://localhost:3001/philance/users/projects/1/projects",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -555,9 +559,9 @@
 					"path": [
 						"philance",
 						"users",
-						"1",
 						"projects",
-						""
+						"1",
+						"projects"
 					]
 				}
 			},
@@ -729,20 +733,12 @@
 					"listen": "test",
 					"script": {
 						"id": "c805aac0-69e4-47fa-b7dc-cc22ead43d91",
-						"type": "text/javascript",
 						"exec": [
 							"tests[\"Status code is 200\"] = responseCode.code === 200;",
 							"var jsonData = JSON.parse(responseBody);",
-							"tests[\"status\"] = jsonData.project[0].status === \"ACTIVE\";",
-							"tests[\"projectName\"] = jsonData.project[0].projectName === \"Create Project From Postman\";",
-							"tests[\"volunteers\"] = jsonData.project[0].volunteers === \"1\";",
-							"tests[\"freelancers\"] = jsonData.project[0].freelancers === \"2\";",
-							"tests[\"location\"] = jsonData.project[0].location === \"Nashua,NH\";",
-							"tests[\"startDate\"] = jsonData.project[0].startDate.includes(\"2018-08-08\");",
-							"tests[\"endDate\"] = jsonData.project[0].endDate.includes('2018-08-31');",
-							"tests[\"estimatedBudget\"] = jsonData.project[0].estimatedBudget === \"10.00\";",
-							"tests[\"createdBy\"] = jsonData.project[0].createdBy === 1;"
-						]
+							""
+						],
+						"type": "text/javascript"
 					}
 				}
 			],
@@ -756,10 +752,10 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{  \r\n   \"projectName\" : \"Create Project From Postman\",\r\n   \"description\" : \"Create Project description From Postman\",\r\n   \"location\":\"Nashua,NH\",\r\n   \"volunteers\":\"1\",\r\n   \"freelancers\":\"2\",\r\n   \"estimatedBudget\":\"10\",\r\n   \"userId\":\"1\",\r\n   \"startDate\" :\"08/08/2018\",\r\n   \"endDate\" :\"08/31/2018\",\r\n   \"projectDetails\":[  \r\n      {  \r\n        \"detailType\": \"SKILLS\",\r\n        \"name\": \"NODE JS Development\",\r\n        \"certificationReq\": \"NO\",\r\n        \"certificationLink\": \"\",\r\n        \"attribute1\" : \"\",\r\n        \"attribute2\" : \"\",\r\n        \"attribute3\" : \"\",\r\n        \"attribute4\" : \"\",\r\n        \"attribute5\" : \"\"\r\n      },\r\n      {  \r\n      \"detailType\": \"IMPACT_CATEGORY\",\r\n        \"name\": \"Other\",\r\n        \"certificationReq\": \"NO\",\r\n        \"certificationLink\": \"\",\r\n        \"attribute1\" : \"\",\r\n        \"attribute2\" : \"\",\r\n        \"attribute3\" : \"\",\r\n        \"attribute4\" : \"\",\r\n        \"attribute5\" : \"\"\r\n      }\r\n   ]\r\n}\r\n"
+					"raw": "{  \r\n   \"fields\":{\r\n   \t\t\"status\" : \"UNPUBLISHED\"\r\n   }\r\n}\r\n"
 				},
 				"url": {
-					"raw": "http://localhost:3001/philance/projects/1",
+					"raw": "http://localhost:3001/philance/projects/4?exclusiveUpdate=true",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -768,7 +764,13 @@
 					"path": [
 						"philance",
 						"projects",
-						"1"
+						"4"
+					],
+					"query": [
+						{
+							"key": "exclusiveUpdate",
+							"value": "true"
+						}
 					]
 				}
 			},
@@ -1115,6 +1117,89 @@
 					]
 				},
 				"description": "This Request fetches users from the database on the basis of the different input factors and their combinations.\ninputs keys- \n{\n\tfname,\n\tlname,\n\tpersonLoc,\n\tskill,\n\tptype\n}\n"
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:3001/philance/projects/updates?p=12",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:3001/philance/projects/updates?p=12",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"philance",
+						"projects",
+						"updates"
+					],
+					"query": [
+						{
+							"key": "p",
+							"value": "12"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:3001/philance/projects/1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c805aac0-69e4-47fa-b7dc-cc22ead43d91",
+						"exec": [
+							"tests[\"Status code is 200\"] = responseCode.code === 200;",
+							"var jsonData = JSON.parse(responseBody);",
+							"tests[\"status\"] = jsonData.project[0].status === \"UNPUBLISHED\";",
+							"tests[\"projectName\"] = jsonData.project[0].projectName === \"Create Project From Postman\";",
+							"tests[\"volunteers\"] = jsonData.project[0].volunteers === \"1\";",
+							"tests[\"freelancers\"] = jsonData.project[0].freelancers === \"2\";",
+							"tests[\"location\"] = jsonData.project[0].location === \"Nashua,NH\";",
+							"tests[\"startDate\"] = jsonData.project[0].startDate.includes(\"2018-08-08\");",
+							"tests[\"endDate\"] = jsonData.project[0].endDate.includes('2018-08-31');",
+							"tests[\"estimatedBudget\"] = jsonData.project[0].estimatedBudget === \"10.00\";",
+							"tests[\"createdBy\"] = jsonData.project[0].createdBy === 1;"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \r\n   \"projectName\" : \"Create Project From Postman\",\r\n   \"description\" : \"Create Project description From Postman\",\r\n   \"location\":\"Nashua,NH\",\r\n   \"volunteers\":\"1\",\r\n   \"freelancers\":\"2\",\r\n   \"estimatedBudget\":\"10\",\r\n   \"userId\":\"1\",\r\n   \"startDate\" :\"08/08/2018\",\r\n   \"endDate\" :\"08/31/2018\",\r\n   \"projectDetails\":[  \r\n      {  \r\n        \"detailType\": \"SKILLS\",\r\n        \"name\": \"NODE JS Development\",\r\n        \"certificationReq\": \"NO\",\r\n        \"certificationLink\": \"\",\r\n        \"attribute1\" : \"\",\r\n        \"attribute2\" : \"\",\r\n        \"attribute3\" : \"\",\r\n        \"attribute4\" : \"\",\r\n        \"attribute5\" : \"\"\r\n      },\r\n      {  \r\n      \"detailType\": \"IMPACT_CATEGORY\",\r\n        \"name\": \"Other\",\r\n        \"certificationReq\": \"NO\",\r\n        \"certificationLink\": \"\",\r\n        \"attribute1\" : \"\",\r\n        \"attribute2\" : \"\",\r\n        \"attribute3\" : \"\",\r\n        \"attribute4\" : \"\",\r\n        \"attribute5\" : \"\"\r\n      }\r\n   ]\r\n}\r\n"
+				},
+				"url": {
+					"raw": "http://localhost:3001/philance/projects/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"philance",
+						"projects",
+						"1"
+					]
+				}
 			},
 			"response": []
 		}

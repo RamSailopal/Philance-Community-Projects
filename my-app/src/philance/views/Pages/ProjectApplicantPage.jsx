@@ -19,11 +19,11 @@ import Toaster from "../../components/Toaster/Toaster";
 import Loader from "../../components/Loader/Loader"
 import CardText from "components/Card/CardText.jsx";
 import Button from "components/CustomButtons/Button.jsx";
-
+import Badge from "components/Badge/Badge.jsx";
 import userProfileStyles from "philance/views/PageStyles/UserProfileStyles.jsx";
 
 import {
-    getUserById
+  getUserById
 } from '../../actions/userProfile'
 import { getApplicantForProject } from "../../actions/projectDetails";
 
@@ -40,13 +40,13 @@ class ProjectApplicant extends React.Component {
   componentWillUnmount() {
   }
   componentDidMount() {
-    
-      this.props.getApplicantForProject({
-          projectId: this.props.match.params.projectId,
-          userId: this.props.match.params.userId
-      },
+
+    this.props.getApplicantForProject({
+      projectId: this.props.match.params.projectId,
+      userId: this.props.match.params.userId
+    },
       () => {
-          //callback
+        //callback
       })
   }
   render() {
@@ -74,36 +74,42 @@ class ProjectApplicant extends React.Component {
                     </Button>
                   </GridItem>
                 </GridContainer>
-                <GridContainer>
+                <GridContainer justify="center">
                   <GridItem xs={5} sm={6} md={9}>
-                    <FormLabel component="legend" style={{ fontSize: 20, fontWeight: '500', color: '#777' }}>
-                      {this.props.projectName}
-                    </FormLabel>
+                    {/* <FormLabel component="legend" style={{ fontSize: 20, fontWeight: '500', color: '#777' }}> */}
+                    <h1 align="center" style={{ padding: '0.25em 0', color: '#3e4b59', fontSize: '2.5em' }}>
+                      <strong>
+                        {this.props.projectName}
+                        <Badge color="success">Active</Badge>
+                      </strong>{" "}
+                    </h1>
+                    {/* {this.props.projectName} */}
+                    {/* </FormLabel> */}
                   </GridItem>
                 </GridContainer>
-                <GridContainer>
+                <GridContainer justify="center">
                   <GridItem xs={12} sm={6}>
-                    <FormLabel component="legend" style={{ fontSize: 15, fontWeight: '400', color: '#777', marginTop: -15 }}>
-                      {this.props.projectDesc}
+                    <FormLabel component="legend" style={{ fontSize: 15, fontWeight: '500', color: '#777', marginTop: -15 }}>
+                      <font size="8">   {this.props.projectDesc}</font>
                     </FormLabel>
                   </GridItem>
                 </GridContainer>
-                <br/><br/>
-                <GridContainer>
+                <br /><br />
+                <GridContainer justify="center">
                   <GridItem xs={12} sm={12} md={6} align="left">
-                  <FormLabel component="legend" style={{ fontSize: 15, fontWeight: '400', color: '#777', marginTop: -15 }}>
-                    <h4><strong>Applicant Message</strong></h4>
+                    <FormLabel component="legend" style={{ fontSize: 15, fontWeight: '400', color: '#777', marginTop: -15 }}>
+                      <h4><strong>Applicant Message</strong></h4>
                     </FormLabel>
-                  <FormLabel component="legend" style={{ fontSize: 15, fontWeight: '400', color: '#777', marginTop: -15 }}>
+                    <FormLabel component="legend" style={{ fontSize: 15, fontWeight: '400', color: '#777', marginTop: -15 }}>
                       {this.props.message}
                     </FormLabel>
                   </GridItem>
                 </GridContainer>
-                <br/>
-                <GridContainer>
+                <br />
+                <GridContainer justify="center">
                   <GridItem xs={12} sm={12} md={6} align="left">
-                  <FormLabel component="legend" style={{ fontSize: 15, fontWeight: '400', color: '#777', marginTop: -15 }}>
-                    <h4><strong>Role: {this.props.applicantRole}</strong></h4>
+                    <FormLabel component="legend" style={{ fontSize: 15, fontWeight: '400', color: '#777', marginTop: -15 }}>
+                      <h4><strong>Role: {this.props.applicantRole}</strong></h4>
                     </FormLabel>
                   </GridItem>
                 </GridContainer>
@@ -115,29 +121,29 @@ class ProjectApplicant extends React.Component {
     );
   }
 
-    
+
 }
 
 ProjectApplicant.propTypes = {
-    classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => {
-    return {
-      projectName: state.viewProjectApplication.projectName,
-      projectDesc: state.viewProjectApplication.projectDesc,
-      applicantRole: state.viewProjectApplication.applicantRole,
-      name: state.viewProjectApplication.name,
-      status: state.viewProjectApplication.status,
-      message: state.viewProjectApplication.message,
-      applicationDate: state.viewProjectApplication.applicationDate,
-      email: state.viewProjectApplication.email,
-      phoneNumber: state.viewProjectApplication.phoneNumber,
-      description: state.viewProjectApplication.description        
-    }
+  return {
+    projectName: state.viewProjectApplication.projectName,
+    projectDesc: state.viewProjectApplication.projectDesc,
+    applicantRole: state.viewProjectApplication.applicantRole,
+    name: state.viewProjectApplication.name,
+    status: state.viewProjectApplication.status,
+    message: state.viewProjectApplication.message,
+    applicationDate: state.viewProjectApplication.applicationDate,
+    email: state.viewProjectApplication.email,
+    phoneNumber: state.viewProjectApplication.phoneNumber,
+    description: state.viewProjectApplication.description
+  }
 }
 
 export default connect(mapStateToProps, {
-    getUserById,
-    getApplicantForProject
+  getUserById,
+  getApplicantForProject
 })(withStyles(userProfileStyles)(ProjectApplicant));

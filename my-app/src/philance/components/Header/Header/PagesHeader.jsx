@@ -41,7 +41,7 @@ class PagesHeader extends React.Component {
   }
   componentDidUpdate(e) {
     if (e.history.location.pathname !== e.location.pathname) {
-      this.setState({open: false});
+      this.setState({ open: false });
     }
   }
   render() {
@@ -52,7 +52,7 @@ class PagesHeader extends React.Component {
     var list = (
       <List className={classes.list}>
         <ListItem className={classes.listItem}>
-          <NavLink to={"/dashboard"} className={classes.navLink}>
+          <NavLink to={"/home"} className={classes.navLink}>
             <ListItemIcon className={classes.listItemIcon}>
               <Dashboard />
             </ListItemIcon>

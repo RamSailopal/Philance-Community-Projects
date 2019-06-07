@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import PerfectScrollbar from "perfect-scrollbar";
 import { NavLink } from "react-router-dom";
 import cx from "classnames";
-
+import { Icon } from 'antd';
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
 import Drawer from "@material-ui/core/Drawer";
@@ -15,14 +15,11 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Hidden from "@material-ui/core/Hidden";
 import Collapse from "@material-ui/core/Collapse";
 import image from "philance/assets/img/team-hands-in1.jpg";
-
+import userProfile from "philance/assets/img/icons/editUser.svg"
 // core components
 import HeaderLinks from "components/Header/HeaderLinks.jsx";
-
 import sidebarStyle from "../assets/styles/sidebarStyle.jsx";
-
 import avatar from "assets/img/faces/UpdateProfileAvatarIcon.png";
-
 var ps;
 
 // We've created this component so we can have a ref to the wrapper of the links that appears in our sidebar.
@@ -135,12 +132,12 @@ class Sidebar extends React.Component {
       <div className={userWrapperClass}>
         <div className={photo}>
 
-          {this.props.displayImage?
-          <img src={this.props.userProfileAvatar?this.props.userProfileAvatar:avatar} className={classes.avatarImg} alt="..." />
-          :
-          <img src={avatar} className={classes.avatarImg} alt="..." />
+          {this.props.displayImage ?
+            <img src={this.props.userProfileAvatar ? this.props.userProfileAvatar : avatar} className={classes.avatarImg} alt="..." />
+            :
+            <img src={avatar} className={classes.avatarImg} alt="..." />
           }
-        
+
         </div>
         <List className={classes.list}>
           <ListItem className={classes.item + " " + classes.userItem}>
@@ -170,13 +167,13 @@ class Sidebar extends React.Component {
               <List className={classes.list + " " + classes.collapseList}>
                 <ListItem className={classes.collapseItem}>
                   <NavLink
-                    to="/profile"
+                    to="/home/profile"
                     className={
                       classes.itemLink + " " + classes.userCollapseLinks
                     }
                   >
                     <span className={collapseItemMini}>
-                      {rtlActive ? "هوع" : "EP"}
+                      {rtlActive ? "هوع" : <img src={userProfile} width="20" height="20" />}
                     </span>
                     <ListItemText
                       primary={
@@ -189,7 +186,7 @@ class Sidebar extends React.Component {
                 </ListItem>
                 <ListItem className={classes.collapseItem}>
                   <NavLink
-                    to="/login"
+                    to="#"
                     className={
                       classes.itemLink + " " + classes.userCollapseLinks
                     }
@@ -198,7 +195,7 @@ class Sidebar extends React.Component {
                     }
                   >
                     <span className={collapseItemMini}>
-                      {rtlActive ? "و" : "L"}
+                      {rtlActive ? "و" : <Icon type="logout" />}
                     </span>
                     <ListItemText
                       primary={rtlActive ? "إعدادات" : "Logout"}
@@ -209,13 +206,13 @@ class Sidebar extends React.Component {
                 </ListItem>
                 <ListItem className={classes.collapseItem}>
                   <NavLink
-                    to="/settings"
+                    to="/home/settings"
                     className={
                       classes.itemLink + " " + classes.userCollapseLinks
                     }
                   >
                     <span className={collapseItemMini}>
-                      {rtlActive ? "و" : "S"}
+                      {rtlActive ? "و" : <Icon type="setting" />}
                     </span>
                     <ListItemText
                       primary={rtlActive ? "إعدادات" : "Settings"}
@@ -400,7 +397,7 @@ class Sidebar extends React.Component {
           to={"/home"}
           className={classes.itemLink + " " + classes.userCollapseButton}
         >
-          <div style={{ display:'flex',flexDirection: 'row',justifyContent:'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
             <div>
               <img src={logo} alt="logo" className={classes.img} />
             </div>
@@ -512,7 +509,7 @@ Sidebar.propTypes = {
 };
 const mapStateToProps = state => {
   return {
-      messages: state.projectChat.messages,
+    messages: state.projectChat.messages,
   }
 }
 export default withStyles(sidebarStyle)(Sidebar);

@@ -45,7 +45,6 @@ function Instruction({ ...props }) {
     </div>
   );
 }
-
 Instruction.defaultProps = {
   imageAlt: "..."
 };

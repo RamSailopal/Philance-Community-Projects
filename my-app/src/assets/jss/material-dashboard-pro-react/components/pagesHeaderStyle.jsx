@@ -18,11 +18,10 @@ import {
 
 const pagesHeaderStyle = theme => ({
   appBar: {
-    backgroundColor: "transparent",
+    backgroundColor: "#504d4d",
     boxShadow: "none",
     borderBottom: "0",
     marginBottom: "0",
-    position: "absolute",
     width: "100%",
     paddingTop: "10px",
     zIndex: "1029",

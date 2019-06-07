@@ -433,6 +433,7 @@ class Sidebar extends React.Component {
               keepMounted: true // Better open performance on mobile.
             }}
           >
+
             {brand}
             <SidebarWrapper
               className={sidebarWrapper}

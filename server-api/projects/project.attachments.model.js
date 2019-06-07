@@ -1,4 +1,4 @@
-    'use strict';
+'use strict';
 const Sequelize = require('sequelize');
 const sequelize = require('../util/dbconnection');
 var projects = require("./projects.model");
@@ -17,7 +17,7 @@ const projectAttachments = sequelize.define('project_attachments', {
         field: 'project_id',
         type: Sequelize.INTEGER,
         primaryKey: true,
-        references: {   
+        references: {
             model: projects,
             key: 'project_id'
         }
@@ -39,6 +39,10 @@ const projectAttachments = sequelize.define('project_attachments', {
         field: 'attachment_path',
         type: Sequelize.STRING,
     },
+    attachmentType: {
+        field: 'attachment_type',
+        type: Sequelize.STRING,
+    },
     creationDate: {
         type: Sequelize.DATE,
         field: 'creation_date',
@@ -57,30 +61,33 @@ const projectAttachments = sequelize.define('project_attachments', {
         type: Sequelize.INTEGER,
         field: 'last_updated_by'
     },
-},
-    {
+    id: {
+        field: 'id',
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+    }
+}, {
         timestamps: false,
         freezeTableName: true
-    },
-    {
-         classMethods: {
-             associate: function(models) {
-                 projectAttachments.belongsTo(models.projects, {foreignKey: 'project_id'})
-             }
-           }
-    },
-    {
-    instanceMethods: {
-        toJSON: function () {
-          var values = this.get();
-          if (this.projects) {
-            values.projectId = projects.projectId;
-          }   
-          return values;
+    }, {
+        classMethods: {
+            associate: function (models) {
+                projectAttachments.belongsTo(models.projects, {
+                    foreignKey: 'project_id'
+                })
+            }
         }
-      }
-    }
-);
+    }, {
+        instanceMethods: {
+            toJSON: function () {
+                var values = this.get();
+                if (this.projects) {
+                    values.projectId = projects.projectId;
+                }
+                return values;
+            }
+        }
+    });
 // projectDetails.associate = function (models) {
 //     projects.belongsTo(projectDetails,{as: 'projectDetails', foreignKey:'projectId'} );
 // };

@@ -21,8 +21,11 @@ app.use(logger('dev'));
 // app.use(express.urlencoded({ extended: false }));
 // app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+//app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '10mb', extended: true }))
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
@@ -40,7 +43,7 @@ app.use((req, res, next) => {
 routes(app);
 
 //catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   const error = new Error('Not found');
   error.status = 404;
   next(error);
@@ -67,15 +70,15 @@ app.use((error, req, res, next) => {
   });
 });
 
-server = http.createServer(app);
-initializeChatSocket(server);
+// server = http.createServer(app);
+// initializeChatSocket(server);
 
-/**
- * Initialize Socket IO Connection
- */
+// /**
+//  * Initialize Socket IO Connection
+//  */
 
-server.listen(port, '0.0.0.0', () => {
-  console.log('\n*** Server started on port %d ***\n', port);
-});
+// server.listen(port, '0.0.0.0', () => {
+//   console.log('\n*** Server started on port %d ***\n', port);
+// });
 
 module.exports = app;

@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Switch, Route, Redirect } from "react-router-dom";
-import { connect } from 'react-redux'
+import { connect } from "react-redux";
 
 // @material-ui/core components
 import withStyles from "@material-ui/core/styles/withStyles";
@@ -14,10 +14,11 @@ import { pagesRoutes } from "philance/routes/pages.jsx";
 
 import pagesStyle from "assets/jss/material-dashboard-pro-react/layouts/pagesStyle.jsx";
 
-import Dashboard from '../layouts/Dashboard'
+import Dashboard from "../layouts/Dashboard";
 import bgImagePub from "philance/assets/img/team-hands-in1.jpg";
 
 import { myProject } from '../actions/myProject'
+import { pvtPagesRoutes } from "../routes/pages";
 
 // var ps;
 
@@ -44,51 +45,39 @@ class Pages extends React.Component {
     this.setState({ miniActive: !this.state.miniActive });
   }
   render() {
-
     const { classes, ...rest } = this.props;
-    if (this.props.isLoggedIn) {
-      return (
-        <Dashboard {...rest} />
-      )
-    }
 
-    else {
-      //display public pages
-      return (
+    return (
+      <div className={classes.wrapper} ref="wrapper">
+        {
+          this.props.isLoggedIn ? null : <PublicPagesHeader {...rest} />
+        }
+        <br></br>
+        <br></br>
+        <br></br>
+        <br></br>
         <div>
-          <PublicPagesHeader {...rest} />
-          <div className={classes.wrapper} ref="wrapper">
-		  <br></br>
-		  <br></br>
-		  <br></br>
-		  <br></br>
-            <div className={classes.fullPage}>
-              <Switch>
-                {pagesRoutes.map((prop, key) => {
-                  if (prop.redirect) {
-                    return (
-                      <Redirect from={prop.path} to={prop.pathTo} key={key} />
-                    );
-                  }
-                  return (
-                    <Route
-                      path={prop.path}
-                      component={prop.component}
-                      key={key}
-                    />
-                  );
-                })}
-              </Switch>
-              <Footer white />
-              <div
-                className={classes.fullPageBackground}
-                style={{ backgroundImage: "url(" + bgImagePub + ")" }}
-              />
-            </div>
-          </div>
+          <Switch>
+            {pvtPagesRoutes.map((prop, key) => {
+              if (prop.redirect) {
+                return (
+                  <Redirect from={prop.path} to={prop.pathTo} key={key} />
+                );
+              }
+              return (
+                <Route
+                  path={prop.path}
+                  component={prop.component}
+                  key={key}
+                />
+              );
+            })}
+          </Switch>
+          <Footer white />
         </div>
-      );
-    }
+      </div>
+    );
+
   }
 }
 
@@ -96,11 +85,14 @@ const mapStateToProps = state => {
   return {
     isLoggedIn: state.auth.isLoggedIn,
     id: state.auth.userId
-  }
-}
+  };
+};
 
 Pages.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default connect(mapStateToProps, { myProject })(withStyles(pagesStyle)(Pages));
+export default connect(
+  mapStateToProps,
+  { myProject }
+)(withStyles(pagesStyle)(Pages));

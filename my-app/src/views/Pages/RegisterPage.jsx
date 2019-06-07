@@ -13,7 +13,8 @@ import Code from "@material-ui/icons/Code";
 import Group from "@material-ui/icons/Group";
 import Face from "@material-ui/icons/Face";
 import Email from "@material-ui/icons/Email";
-import LockOutline from "@material-ui/icons/LockOutline";
+import Lock from "@material-ui/icons/Lock";
+// import LockOutline from "@material-ui/icons/LockOutline";
 import Check from "@material-ui/icons/Check";
 
 // core components
@@ -142,9 +143,9 @@ class RegisterPage extends React.Component {
                               position="start"
                               className={classes.inputAdornment}
                             >
-                              <LockOutline
+                              {/* <LockOutline
                                 className={classes.inputAdornmentIcon}
-                              />
+                              /> */}
                             </InputAdornment>
                           ),
                           placeholder: "Password..."

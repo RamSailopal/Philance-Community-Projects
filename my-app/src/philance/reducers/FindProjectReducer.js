@@ -7,8 +7,9 @@ import {
     FIND_PROJECT_COUNTRY_CHANGED,
     FIND_PROJECT_KEYWORD_CHANGED,
     FIND_PROJECT_UNMOUNT,
-    FIND_PROJECTS_REQUEST_SUCCESS,
-    LOGOUT_USER
+    FIND_PROJECT_REQUEST_SUCCESS,
+    LOGOUT_USER,
+    FIND_PROJECT_PUBLIC_REQUEST_SUCCESS
 } from '../actions/types'
 const INITIAL_STATE = {
     tableData: [],
@@ -19,13 +20,17 @@ const INITIAL_STATE = {
     distanceFromYou: "",
     keyword: '',
     country: '',
-    textChanged: true
+    textChanged: true,
+    publicHomePageProjects: [],
+    totalPages: ''
 };
 
 export default (state = INITIAL_STATE, action) => {
     switch (action.type) {
-        case FIND_PROJECTS_REQUEST_SUCCESS:
-            return { ...state, tableData: action.payload }
+        case FIND_PROJECT_REQUEST_SUCCESS:
+            return { ...state, tableData: action.payload, totalPages: action.totalPages }
+        case FIND_PROJECT_PUBLIC_REQUEST_SUCCESS:
+            return { ...state, publicHomePageProjects: action.payload }
         case FIND_PROJECT_TEXT_CHANGED:
             return { ...state, textChanged: action.payload }
         case FIND_PROJECT_LOCATION_CHANGED:
@@ -52,10 +57,10 @@ export default (state = INITIAL_STATE, action) => {
                 distanceFromYou: "",
                 keyword: '',
                 country: '',
-                textChanged: true
+                textChanged: true,
+                publicHomePageProjects: [],
+                totalPages: ''
             }
-        
-            
         default:
             return state
     }

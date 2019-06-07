@@ -6,33 +6,30 @@ import axios from 'axios'
 
 import { hostname } from '../../../config'
 
-export const messageReceived=({messages,messageData},callback)=>{
-  return dispatch=>{
-    console.log('Pushed at Receive',messages,messageData);
+export const messageReceived = ({ messages, messageData }, callback) => {
+  return dispatch => {
     messages.push(messageData)
-    console.log('after push',messages,messageData);
     dispatch({
-      type:PROJECT_CHAT_MESSAGE_UPDATE,
-      payload:messages
+      type: PROJECT_CHAT_MESSAGE_UPDATE,
+      payload: messages
     })
-    callback?callback():null
+    callback ? callback() : null
   }
 }
-export const messageSent=({messages,messageData},callback)=>{
-  console.log('send message :- '+messageData);
+export const messageSent = ({ messages, messageData }, callback) => {
 
-  return dispatch=>{
+  return dispatch => {
     dispatch({
-      type:PROJECT_CHAT_MESSAGE_UPDATE,
-      payload:messages
+      type: PROJECT_CHAT_MESSAGE_UPDATE,
+      payload: messages
     })
-    callback?callback():null
+    callback ? callback() : null
   }
 }
-export const projectChatUnmount=()=>{
-  return dispatch=>{
+export const projectChatUnmount = () => {
+  return dispatch => {
     dispatch({
-      type:PROJECT_CHAT_UNMOUNT,
+      type: PROJECT_CHAT_UNMOUNT,
     })
   }
 }

@@ -93,6 +93,7 @@ const infoColor = "#00acc1";
 const roseColor = "#e91e63";
 const grayColor = "#999999";
 const blackColor = "#000000";
+const darkGrayColor = '#555555';
 
 const primaryBoxShadow = {
   boxShadow:
@@ -141,6 +142,10 @@ const purpleCardHeader = {
   ...primaryBoxShadow
 };
 // new card headers
+const warningNewCardHeader = {
+  background: "linear-gradient(60deg,#2185d0, #2185d0)",
+  ...warningBoxShadow
+};
 const warningCardHeader = {
   background: "linear-gradient(60deg, #ffa726, #fb8c00)",
   ...warningBoxShadow
@@ -279,6 +284,7 @@ export {
   warningBoxShadow,
   dangerBoxShadow,
   roseBoxShadow,
+  darkGrayColor,
   // old card header colors
   orangeCardHeader,
   greenCardHeader,
@@ -288,6 +294,7 @@ export {
   roseCardHeader,
   // new card header colors
   warningCardHeader,
+  warningNewCardHeader,
   successCardHeader,
   dangerCardHeader,
   infoCardHeader,

@@ -7,3 +7,6 @@ server-api/uploads
 frontend-test/*.pyc
 frontend-test/test.html
 .vagrant/*
+server-api/yarn-error.log
+frontend-lintreport.html
+backend-lintreport.html

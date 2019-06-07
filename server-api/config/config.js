@@ -2,7 +2,7 @@ var config={
     development:{
         unsecure:{
             protocol:'http://',
-            host:'localhost',
+            host:process.env.hostaddy,
             port:':3000'
         }
     },

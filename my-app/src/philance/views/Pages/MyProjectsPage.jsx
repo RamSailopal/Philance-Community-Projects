@@ -1,250 +1,409 @@
-import React from "react"
-import PropTypes from "prop-types"
-import ReactTable from "react-table"
+import React from "react";
+import PropTypes from "prop-types";
+import ReactTable from "react-table";
 import { NavLink } from "react-router-dom";
+import { Progress } from "semantic-ui-react";
 
 // @material-ui/icons
-import withStyles from "@material-ui/core/styles/withStyles"
+import withStyles from "@material-ui/core/styles/withStyles";
 import Person from "@material-ui/icons/Person";
 import ViewList from "@material-ui/icons/ViewList";
 
 // @material-ui/core components
 import Button from "components/CustomButtons/Button.jsx";
-import Tooltip from '@material-ui/core/Tooltip';
 
+import Link from "@material-ui/core/Link";
+//import Card from '@material-ui/core/Card';
+import CardActionArea from "@material-ui/core/CardActionArea";
+import CardActions from "@material-ui/core/CardActions";
+import CardContent from "@material-ui/core/CardContent";
+import CardMedia from "@material-ui/core/CardMedia";
+import Typography from "@material-ui/core/Typography";
 // core components
-import GridContainer from "components/Grid/GridContainer.jsx"
-import GridItem from "components/Grid/GridItem.jsx"
-import Card from "components/Card/Card.jsx"
-import CardBody from "components/Card/CardBody.jsx"
+import GridContainer from "components/Grid/GridContainer.jsx";
+import GridItem from "components/Grid/GridItem.jsx";
+import Card from "components/Card/Card.jsx";
+import CardBody from "components/Card/CardBody.jsx";
 import imag from "philance/assets/img/Helpingothers4.jpg";
+import CustomLinearProgress from "components/CustomLinearProgress/CustomLinearProgress.jsx";
 
 // redux
-import { connect } from 'react-redux'
-import { myProject, storeList } from '../../actions/myProject'
-import { getProjectById, idStored } from '../../actions/projectDetails'
-import { getProjectCandidateReviewList } from '../../actions/candidateReview'
+import { connect } from "react-redux";
+import { myProject, storeList } from "../../actions/myProject";
+import { getProjectById, idStored, statusChanged, updateProjectExclusive } from "../../actions/projectDetails";
+import { getProjectCandidateReviewList } from "../../actions/candidateReview";
 
-import Loader from "../../components/Loader/Loader"
+import Loader from "../../components/Loader/Loader";
 //import publicHomePageStyle from "./PublicHomePageStyle";
 import { hostname } from "../../../config";
-
+import bgImag from "philance/assets/img/VolunteerProject3.jpeg";
+import { Tag, Divider, Pagination, Popconfirm, message, Tooltip } from 'antd'
+import EmptyState from "../../../components/EmptyState";
 const styles = theme => ({
   root: {
-    width: '100%',
+    width: "100%",
     marginTop: theme.spacing.unit * 1,
-    overflowX: 'auto',
+    overflowX: "auto"
   },
   table: {
-    minWidth: 700,
+    minWidth: 700
   },
   row: {
-    '&:nth-of-type(odd)': {
-      backgroundColor: theme.palette.background.default,
-    },
+    "&:nth-of-type(odd)": {
+      backgroundColor: theme.palette.background.default
+    }
   },
   progress: {
-    margin: theme.spacing.unit * 2,
+    margin: theme.spacing.unit * 2
   },
   lightTooltip: {
     background: theme.palette.common.white,
     color: theme.palette.text.primary,
     boxShadow: theme.shadows[1],
-    fontSize: 13,
+    fontSize: 12
+  },
+  cardMedia: {
+    width: "40%",
+    "&:hover": {
+      opacity: 0.7,
+      cursor: "pointer"
+    }
+  },
+  link: {
+    "&:hover": {
+      opacity: 0.9,
+      cursor: "pointer"
+    }
   }
-})
-
+});
 class MyProjectsPage extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
       activePage: 1,
       loading: false,
       loader: false,
-      data: [],
-	  fndimag: ''
-    }
+      fndimag: "",
+      upStatus: 'ACTIVE',
+      localStatus: '',
+      cardData1: {},
+      activePage: 1,
+      pageSize: 2,
+    };
   }
-
   componentDidMount() {
-    this.props.myProject(this.props.id,(flag=>{
-      this.props.response ?
-      this.renderData() : null
-    }))
-    this.toggleLoader(true)
+    this.myProject();
+  }
+  myProject() {
+    this.toggleLoader(true);
+    const {
+      id
+    } = this.props;
+    const { activePage, pageSize } = this.state
+    this.props.myProject(
+      {
+        id,
+        activePage, pageSize
+      },
+      flag => {
+        this.toggleLoader(flag);
+      }
+    );
+  }
+  handlePageChange = async (page) => {
+    await this.setState({ activePage: page });
+    this.myProject();
   }
 
-  handlePaginationChange = (e, { activePage }) => this.setState({ activePage })
+  onShowSizeChange = async (page, pagesPerPage) => {
+    await this.setState({ pageSize: pagesPerPage });
+    await this.setState({ activePage: 1 })
+    this.myProject();
+  }
+
   handleItemClick = async (e, { id }) => {
-    await this.setState({ activeItem: id })
-    this.renderProjects()
-  }
+    await this.setState({ activeItem: id });
+    this.renderProjects();
+  };
 
-    getimg(att) {
-     const { classes } = this.props;
-     var fownd="0";	
-     var fndimag="/static/media/Helpingothers4.023cec80.jpg";
-	if (att) {
-					att.map((value, key) => {
-						var attbits=att[key].originalName.split(".")
-						if (attbits[0] === "ProjectImage") {
-							fndimag=hostname() + att[key].attachment
-						}
-					})
-					
-	}
-	else {
-			var attbits=""
-			fndimag='/static/media/Helpingothers4.023cec80.jpg'
-	}
-	return fndimag
+  getimg(att) {
+    const { classes } = this.props;
+    var fownd = "0";
+    var fndimag = "/static/media/Helpingothers4.023cec80.jpg";
+    if (att) {
+      att.map((value, key) => {
+        var attbits = att[key].originalName.split(".");
+        if (attbits[0] === "ProjectImage") {
+          fndimag = hostname() + att[key].attachment;
+        }
+      });
+    } else {
+      var attbits = "";
+      fndimag = "/static/media/Helpingothers4.023cec80.jpg";
+    }
+    return fndimag;
   }
-  
   color(i) {
-    if (i === 1) return '#dbebf6'
+    if (i === 1) return "#dbebf6";
   }
-
-  toggleLoader = (flag) => {
+  toggleLoader = flag => {
     this.setState({
       loader: flag
     });
+  };
+
+  confirm = (projectId) => {
+    this.props.updateProjectExclusive({ status: this.state.upStatus }, { id: projectId }, () => {
+      this.myProject();
+    })
+    message.success('Status is changed to Active');
   }
 
-  renderData(){
-    const { classes } = this.props;
-    let i = 0;
-    this.props.response ?
-      this.props.response.map((element) => {
-        i = i === 2 ? 1 : i + 1
-        let startDate = new Date(element.startDate);
-        let endDate = new Date(element.endDate);
-        startDate = startDate.toDateString()
-        endDate = endDate.toDateString()
-        let sample = {
-		  Imag: 
-               <span><img src={this.getimg(element.project_attachments)} height="100px" width="200px"></img></span>,
-          project_name: element.projectName,
-          status: element.status,
-          startDate: startDate,
-          endDate: endDate,
-          Close: "",
-          Complete: "",
-          Action: <span>
-            <Tooltip title="Details" classes={{ tooltip: classes.lightTooltip }}>
-              <NavLink to={`/project-details/info`}>
-              <Button
-                round
-                justIcon
-                simple
-                onClick={() => {
-                this.toggleLoader(true)
-                  this.props.getProjectById({id:element.projectId},(flag)=>{
-                    this.toggleLoader(flag)
-                    // this.props.history.push(`/project-details/${element.project_id}`)
-                    this.props.idStored(element.projectId)
-                  })
-                }}
-                color="info"
-                className="like"
-              ><ViewList /></Button>
-
-              </NavLink>
-            </Tooltip>
-            <Tooltip title="Review" classes={{ tooltip: classes.lightTooltip }}>
-              <Button
-                justIcon
-                round
-                simple onClick={() => {
-                  this.toggleLoader(true)
-                  this.props.getProjectCandidateReviewList(element.projectId, (flag)=>{
-                    this.toggleLoader(flag)
-                    this.props.idStored(element.projectId)
-                    this.props.history.push(`../projectCandidateReview/${element.projectId}/`)
-                  })
-                }} color="info"
-                className="like"
-              ><Person /></Button>
-            </Tooltip>
-          </span>
-        }
-        return(
-        this.setState((prev)=>({
-          data:[...prev.data,sample]
-      }))
-        );
-      }) : null
-      this.toggleLoader(false)
+  tag(cardData) {
+    if (cardData.status == "ACTIVE") {
+      return <Tag color="green">{cardData.status}</Tag>
+    }
+    else if (cardData.status == "CLOSED") {
+      return <Tag color="red">{cardData.status}</Tag>
+    }
+    else if (cardData.status == "UNPUBLISHED") {
+      return <Tooltip placement="bottom" title="Click to Publish Project"><Popconfirm title="Are you sure you want to publish this project? It will be visible to everyone after you publish." onConfirm={() => this.confirm(cardData.projectId)} okText="Publish" cancelText="Cancel">
+        <Tag color="gray">{cardData.status}</Tag>
+      </Popconfirm></Tooltip>
+    }
   }
 
   render() {
     const { classes } = this.props;
 
     return (
-      <GridContainer>
-        <Loader loader={this.state.loader} />
-        <GridContainer justify="center">
-          <GridItem xs={12} sm={12} md={10}>
-            <Card className={classes.cardSignup}>
-              <CardBody>
-                <ReactTable style={{ overflow: "none" }}
-                  data={this.state.data}
-                  columns={[
-				    {
-                          Header: <strong></strong>,
-                          accessor: "Imag",
-                          sortable: false,
-						  width:200
-                        },
-                    {
-                      Header: <strong>Name</strong>,
-                      accessor: "project_name",
-                      filterable: true,
-                      filterMethod: this.columnFilter,
-					  width:100
-                    },
-                    {
-                      Header: <strong>Status</strong>,
-                      accessor: "status",
-                      filterable: true,
-                      filterMethod: this.columnFilter
-                    },
-                    {
-                      Header: <strong>Start</strong>,
-                      accessor: "startDate",
-                      filterable: true,
-                      filterMethod: this.columnFilter
-                    },
-                    {
-                      Header: <strong>Target End</strong>,
-                      accessor: "endDate",
-                      filterable: true,
-                      filterMethod: this.columnFilter
-                    },
-                    {
-                      Header: <strong>Close</strong>,
-                      accessor: "Close",
-                      filterable: true,
-                      filterMethod: this.columnFilter
-                    },
-                    {
-                      Header: <strong></strong>,
-                      accessor: "Action",
-                      sortable: false,
-                    }                    
-                  ]}
-                  defaultPageSize={5}
-                  showPaginationTop
-                  showPaginationBottom={false}
-                  className="-striped -highlight"
-                />
-              </CardBody>
-            </Card>
-          </GridItem>
+      <div>
+        <div
+          style={{
+            height: "20em",
+            marginRight: "-31px",
+            marginLeft: "-31px",
+            opacity: 0.9,
+            marginBottom: "30px",
+            zIndex: 3,
+            position: "relative"
+          }}
+        >
+          <img
+            className={classes.backImage}
+            src={bgImag}
+            style={{
+              width: "100%",
+              height: "20em",
+              position: "relative",
+              objectFit: "cover"
+            }}
+          />
+        </div>
+        <GridContainer>
+          <Loader loader={this.state.loader} />
+          {this.props.response
+            ? <GridContainer justify="center">
+                {this.props.response.map(cardData => (
+                  (cardData) => this.setState({ cardData1: cardData }),
+                  <GridItem xs={11} sm={5} md={5} lg={8} className="row-grid-item">
+                    <Card
+                      className={classes.card}
+                      style={{ display: "flex" }}
+                    >
+                      <GridContainer direction="row">
+                        <GridItem xs={12} sm={12} md={12} lg={4}>
+                          <CardMedia
+                            component="img"
+                            className={classes.cardMedia}
+                            style={{
+                              width: "100%",
+                              maxHeight: "250px",
+                              width: "100%",
+                              '&:hover': {
+                                background: 'blue'
+                              }
+                            }}
+                            //  width="30%"
+                            image={
+                              cardData.defaultImage
+                                ? hostname() + cardData.defaultImage
+                                : imag
+                            }
+                            onClick={() => {
+                              let id = cardData.projectId;
+                              this.props.history.push(
+                                `/home/project-details/info?p=${cardData.projectId}`
+                              );
+                            }}
+                          />
+                        </GridItem>
+                        <GridItem xs={12} sm={12} md={12} lg={8}>
+                          <CardContent style={{ padding: '0px 10px' }}>
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  display: "flex",
+                                  marginTop: "12px"
+                                }}
+                              >
+                                <Typography
+                                  style={{
+                                    paddingRight: "0.5em",
+                                    fontSize: 14,
+                                    fontWeight: 700
+                                  }}
+                                  color="textSecondary"
+                                >
+                                  {cardData.project_details.map(detail => {
+                                    return detail.name + " ";
+                                  })}
+                                  <Divider type="vertical" style={{ background: "#bababa" }} />
+                                </Typography>
+                                <Typography
+                                  color="textSecondary"
+                                  style={{
+                                    color: "rgb(255, 104, 22)", fontSize: 14, fontWeight: 800,
+                                  }}
+                                >
+                                  {" " + cardData.country}
+                                </Typography>
+                              </div>
+                              <div style={{}}>
+                                <Tooltip
+                                  title="Review Candidates"
+                                  classes={{ tooltip: classes.lightTooltip }}
+                                >
+                                  <Button
+                                    justIcon
+                                    round
+                                    simple
+                                    onClick={() => {
+                                      this.toggleLoader(true);
+                                      this.props.getProjectCandidateReviewList(
+                                        cardData.projectId,
+                                        flag => {
+                                          this.toggleLoader(flag);
+                                          this.props.idStored(cardData.projectId);
+                                          this.props.history.push(
+                                            `/home/projectCandidateReview/${
+                                            cardData.projectId
+                                            }/`
+                                          );
+                                        }
+                                      );
+                                    }}
+                                    color="twitter"
+                                    className="like"
+                                  >
+                                    <Person />
+                                  </Button>
+                                </Tooltip>
+                              </div>
+                            </div>
+                            <Typography
+                              gutterBottom
+                              variant="h5"
+                              component="h1"
+                              style={{ fontSize: '1.5rem', margin: '0em 0 0 0' }}
+                            >
+                              <Link
+                                className={classes.link}
+                                color="inherit"
+                                onClick={() => {
+                                  let id = cardData.projectId;
+                                  this.props.history.push(
+                                    `/home/project-details/info?p=${
+                                    cardData.projectId
+                                    }`
+                                  );
+                                }}
+                              >
+                                {" "}
+                                {cardData.projectName}{" "}
+                              </Link>
+                              {this.tag(cardData)}
+                            </Typography>
+                            <Typography
+                              color="textSecondary"
+                              style={{ marginBottom: 8 }}
+                            >
+                              CREATED BY {cardData.createdByDetails.firstName}{" "}
+                              {cardData.createdByDetails.lastName}
+                            </Typography>
+                            <Typography
+                              style={{
+                                margin: " 0.5 0 0em 0",
+                                overflow: "hidden",
+                                position: "relative",
+                                height: "2.9em" /* exactly three lines */,
+                                fontSize: '1.1rem', color: "#3e4b59", fontWeight: 400,
+                              }}
+                              component="h3"
+                            >
+                              {cardData.projectSummary}
+                            </Typography>
+                            <Link
+                              className={classes.link}
+                              color="inherit"
+                              onClick={() => {
+                                let id = cardData.projectId;
+                                this.props.history.push(
+                                  `/home/project-details/info?p=${
+                                  cardData.projectId
+                                  }`
+                                );
+                              }}
+                            >
+                              (...more)
+                          </Link>
+                            <div style={{ display: "flex" }}>
+                              <div style={{ width: "90%" }}>
+                                <h4
+                                  color="textSecondary"
+                                  style={{ marginBottom: 2, color: "rgba(120, 155, 93, 0.92)", display: 'flex', textTransform: 'uppercase', fontWeight: '600' }}
+                                >
+                                  <span style={{
+                                    color: 'green', paddingRight: '6px'
+                                  }}>
+                                    $0
+                                </span>{" "}
+                                  raised of ${cardData.estimatedBudget} goal
+  
+                              </h4>
+                                <Progress
+                                  size="small"
+                                  percent={0}
+                                  progress
+                                  active
+                                  color="green"
+                                  style={{
+                                    width: "95%",
+                                    display: "inline-block"
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </CardContent>
+                        </GridItem>
+                      </GridContainer>
+                    </Card>
+                  </GridItem>
+
+                ))} </GridContainer>
+            : null}
+            
+            {this.props.response.length!=0 ? <GridContainer justify="center">
+                <Pagination showSizeChanger pageSizeOptions={['2', '5', '10', '20', '50']} onShowSizeChange={this.onShowSizeChange} pageSize={this.state.pageSize} current={this.state.activePage} onChange={this.handlePageChange} total={this.props.totalPages} />
+              </GridContainer> : <EmptyState/>}
+          <GridContainer justify="center" />
         </GridContainer>
-        <GridContainer justify="center">
-        </GridContainer>
-      </GridContainer>
+      </div>
     );
   }
 }
@@ -253,14 +412,27 @@ const mapStateToProps = state => {
   return {
     response: state.mypro.response,
     length: state.mypro.length,
+    totalPages: state.mypro.totalPages,
     list: state.mypro.list,
     id: state.auth.userId,
-	projectAttachments: state.proDetails.projectAttachments
-  }
-}
+    projectAttachments: state.proDetails.projectAttachments,
+    status: state.proDetails.status,
+  };
+};
 
 MyProjectsPage.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default connect(mapStateToProps, { getProjectCandidateReviewList, storeList, getProjectById, idStored, myProject })(withStyles(styles)(MyProjectsPage));
+export default connect(
+  mapStateToProps,
+  {
+    getProjectCandidateReviewList,
+    storeList,
+    getProjectById,
+    idStored,
+    myProject,
+    statusChanged,
+    updateProjectExclusive
+  }
+)(withStyles(styles)(MyProjectsPage));

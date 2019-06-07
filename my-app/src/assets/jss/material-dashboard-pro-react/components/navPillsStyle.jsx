@@ -8,7 +8,8 @@ import {
   infoColor,
   successColor,
   warningColor,
-  dangerColor
+  dangerColor,
+  darkGrayColor
 } from "assets/jss/material-dashboard-pro-react.jsx";
 
 const navPillsStyle = theme => ({
@@ -71,7 +72,7 @@ const navPillsStyle = theme => ({
   label: {
     lineHeight: "24px",
     textTransform: "uppercase",
-    fontSize: "12px",
+    fontSize: "18px",
     fontWeight: "500",
     position: "relative",
     display: "block",
@@ -124,6 +125,14 @@ const navPillsStyle = theme => ({
     "&,&:hover": {
       color: "#FFFFFF",
       backgroundColor: roseColor,
+      boxShadow:
+        "0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(233, 30, 99, 0.4)"
+    }
+  },
+  darkGray: {
+    "&,&:hover": {
+      color: "#FFFFFF",
+      backgroundColor: darkGrayColor,
       boxShadow:
         "0 4px 20px 0px rgba(0, 0, 0, 0.14), 0 7px 10px -5px rgba(233, 30, 99, 0.4)"
     }

@@ -1,5 +1,6 @@
 import {
   warningCardHeader,
+  warningNewCardHeader,
   successCardHeader,
   dangerCardHeader,
   infoCardHeader,
@@ -13,7 +14,7 @@ const cardHeaderStyle = {
     borderBottom: "none",
     background: "transparent",
     zIndex: "3 !important",
-    "&$cardHeaderPlain,&$cardHeaderImage,&$cardHeaderContact,&$cardHeaderSignup,&$cardHeaderIcon,&$cardHeaderStats,&$warningCardHeader,&$successCardHeader,&$dangerCardHeader,&$infoCardHeader,&$primaryCardHeader,&$roseCardHeader": {
+    "&$cardHeaderImage,&$cardHeaderContact,&$cardHeaderSignup,&$cardHeaderIcon,&$cardHeaderStats,&$warningCardHeader,&$warningNewCardHeader,&$successCardHeader,&$dangerCardHeader,&$infoCardHeader,&$primaryCardHeader,&$roseCardHeader": {
       margin: "0 15px",
       padding: "0",
       position: "relative",
@@ -23,7 +24,7 @@ const cardHeaderStyle = {
       borderRadius: "calc(.25rem - 1px) calc(.25rem - 1px) 0 0"
     },
     "&$warningCardHeader,&$successCardHeader,&$dangerCardHeader,&$infoCardHeader,&$primaryCardHeader,&$roseCardHeader": {
-      "&:not($cardHeaderIcon):not($cardHeaderImage):not($cardHeaderText)": {
+      "&:not($cardHeaderIcon):not($cardHeaderImage):not($cardHeaderText):not($cardHeaderPlain)": {
         borderRadius: "3px",
         marginTop: "-20px",
         padding: "15px"
@@ -58,8 +59,8 @@ const cardHeaderStyle = {
     }
   },
   cardHeaderPlain: {
-    marginLeft: "0px",
-    marginRight: "0px",
+    marginLeft: "0px ",
+    marginRight: "0px ",
     "&$cardHeaderImage": {
       margin: "0 !important"
     }
@@ -121,8 +122,19 @@ const cardHeaderStyle = {
   cardHeaderText: {},
   warningCardHeader: {
     color: "#FFFFFF",
+
+
     "&:not($cardHeaderText):not($cardHeaderIcon)": {
       ...warningCardHeader
+    }
+  },
+  warningNewCardHeader: {
+    color: "#FFFFFF",
+    marginRight: "0px !important",
+    marginLeft: "0px !important",
+    borderRadius: "3px",
+    "&:not($cardHeaderText):not($cardHeaderIcon)": {
+      ...warningNewCardHeader
     }
   },
   successCardHeader: {

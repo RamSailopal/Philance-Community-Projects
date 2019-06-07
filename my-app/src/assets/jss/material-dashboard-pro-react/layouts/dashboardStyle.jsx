@@ -34,7 +34,7 @@ const appStyle = theme => ({
     maxHeight: "100%",
     width: "100%",
     overflowScrolling: "touch",
-    backgroundColor:"#d3e6ed"
+    backgroundColor: "#ebeeee !important"
   },
   content: {
     marginTop: "70px",

@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import socketIOClient from 'socket.io-client';
+// import socketIOClient from 'socket.io-client';
 import { NavLink } from "react-router-dom";
 
 // @material-ui/icons
@@ -36,7 +36,7 @@ import {
   projectChatUnmount
 } from "../../actions/projectChat";
 import store from "../../store/store";
-const chat = socketIOClient.connect(`${hostname()}/chat`);
+// const chat = socketIOClient.connect(`${hostname()}/chat`);
 var userImages = {}
 class ChatBox extends React.Component {
   state = {
@@ -47,23 +47,22 @@ class ChatBox extends React.Component {
     this.props.projectTeam.map((value, key) => {
       userImages[`${value.user.userId}`] = `${hostname()}${value.user.userProfileImageUrl}`
     })
-    console.log(this.props)
-    chat.emit('authenticate', {
-      token: localStorage.getItem('auth'),
-      refreshToken: localStorage.getItem('refresh'),
-      projectId: this.props.projectId,
-      userId: this.props.userId,
-    });
-    chat.on('newMessage', (messageData) => {
-      console.log('------------newMessageReceived-------------');
-      this.props.messageReceived({ messages: this.props.messages, messageData }, () => {
-        console.log('callback');
-        this.setState({
-          messages: this.props.messages
-        })
-      })
-      console.log(messageData);
-    })
+    // chat.emit('authenticate', {
+    //   token: localStorage.getItem('auth'),
+    //   refreshToken: localStorage.getItem('refresh'),
+    //   projectId: this.props.projectId,
+    //   userId: this.props.userId,
+    // });
+    // chat.on('newMessage', (messageData) => {
+    //   console.log('------------newMessageReceived-------------');
+    //   this.props.messageReceived({ messages: this.props.messages, messageData }, () => {
+    //     console.log('callback');
+    //     this.setState({
+    //       messages: this.props.messages
+    //     })
+    //   })
+    //   console.log(messageData);
+    // })
   }
   componentDidUpdate() {
     const messageList = this.refs.messageList;
@@ -71,19 +70,19 @@ class ChatBox extends React.Component {
   }
   _handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      chat.emit('newMessage', {
-        messageHeader: {
-          sender: {
-            user: {
-              id: this.props.userId,
-              name: this.props.name
-            }
-          },
-          creationTime: new Date()
-        },
-        messageBody: this.state.message,
+      // chat.emit('newMessage', {
+      //   messageHeader: {
+      //     sender: {
+      //       user: {
+      //         id: this.props.userId,
+      //         name: this.props.name
+      //       }
+      //     },
+      //     creationTime: new Date()
+      //   },
+      //   messageBody: this.state.message,
 
-      });
+      // });
       this.props.messageSent(
         {
           messages: this.props.messages,
@@ -100,12 +99,10 @@ class ChatBox extends React.Component {
             messageBody: this.state.message,
           }
         }, () => {
-          console.log('callback');
           this.setState({
             messages: this.props.messages
           })
         })
-      console.log('button pressed');
 
       this.setState({
         message: ''
@@ -119,8 +116,7 @@ class ChatBox extends React.Component {
       <Card style={{ height: "50rem" }}>
 
         <div style={{ maxHeight: '40rem', marginTop: '50px', maxWidth: '100%', minWidth: '500px', overflow: 'auto', "overflow-x": "hidden" }} ref='messageList'>
-          {console.log(this.props.messages)
-          }
+
           {
             this.props.messages.map((value, key) => {
               return (

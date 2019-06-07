@@ -21,9 +21,9 @@ const users = sequelize.define('users', {
     firstName: {
         type: Sequelize.STRING,
         field: 'fName',
-        allowNull : false, 
+        allowNull: false,
         validate: {
-            notEmpty : true
+            notEmpty: true
         }
     },
     lastName: {
@@ -32,17 +32,17 @@ const users = sequelize.define('users', {
     },
     email: {
         type: Sequelize.STRING,
-        field: 'email',   
-        allowNull : false,     
+        field: 'email',
+        allowNull: false,
         validate: {
             isEmail: true,
-            notEmpty : true
+            notEmpty: true
         }
     },
     password: {
         type: Sequelize.STRING,
         field: 'password',
-        allowNull : false
+        allowNull: false
     },
     phoneNumber: {
         type: Sequelize.STRING,
@@ -75,7 +75,7 @@ const users = sequelize.define('users', {
     creationDate: {
         type: Sequelize.DATE,
         field: 'creation_date',
-        default : Sequelize.DATE
+        default: Sequelize.DATE
     },
     createdBy: {
         type: Sequelize.INTEGER,
@@ -84,7 +84,7 @@ const users = sequelize.define('users', {
     lastUpdatedDate: {
         type: Sequelize.DATE,
         field: 'last_updated_date',
-        default : Sequelize.DATE
+        default: Sequelize.DATE
     },
     lastUpdatedBy: {
         type: Sequelize.INTEGER,
@@ -110,11 +110,11 @@ const users = sequelize.define('users', {
         type: Sequelize.STRING,
         field: 'zip_code'
     },
-    userProfileImageUrl:{
+    userProfileImageUrl: {
         type: Sequelize.STRING,
         field: 'user_profile_image_url'
     },
-    userProfileImagePath:{
+    userProfileImagePath: {
         type: Sequelize.STRING,
         field: 'user_profile_image_path'
     }
@@ -123,13 +123,13 @@ const users = sequelize.define('users', {
         timestamps: false,
         freezeTableName: true
     },
-        {
+    {
         classMethods: {
-            associate: function(models) {
-              users.hasMany(models.userSkills, {foreignKey: 'user_id'})
-              users.hasMany(models.projectTeam, {foreignKey: 'user_id'})
+            associate: function (models) {
+                users.hasMany(models.userSkills, { foreignKey: 'user_id' })
+                users.hasMany(models.projectTeam, { foreignKey: 'user_id' })
             }
-          }
+        }
     }
 );
 

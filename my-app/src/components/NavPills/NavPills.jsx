@@ -4,18 +4,14 @@ import classNames from "classnames";
 // nodejs library to set properties for components
 import PropTypes from "prop-types";
 import SwipeableViews from "react-swipeable-views";
-
 // material-ui components
 import withStyles from "@material-ui/core/styles/withStyles";
 import Tab from "@material-ui/core/Tab";
 import Tabs from "@material-ui/core/Tabs";
-
 // core components
 import GridContainer from "components/Grid/GridContainer.jsx";
 import GridItem from "components/Grid/GridItem.jsx";
-
 import navPillsStyle from "assets/jss/material-dashboard-pro-react/components/navPillsStyle.jsx";
-
 class NavPills extends React.Component {
   constructor(props) {
     super(props);
@@ -103,14 +99,13 @@ class NavPills extends React.Component {
         <GridItem {...horizontal.contentGrid}>{tabContent}</GridItem>
       </GridContainer>
     ) : (
-      <div>
-        {tabButtons}
-        {tabContent}
-      </div>
-    );
+        <div>
+          {tabButtons}
+          {tabContent}
+        </div>
+      );
   }
 }
-
 NavPills.defaultProps = {
   active: 0,
   color: "primary"
@@ -133,7 +128,8 @@ NavPills.propTypes = {
     "danger",
     "success",
     "info",
-    "rose"
+    "rose",
+    "darkGray"
   ]),
   direction: PropTypes.string,
   horizontal: PropTypes.shape({

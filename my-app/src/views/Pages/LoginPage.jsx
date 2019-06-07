@@ -8,7 +8,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 // @material-ui/icons
 import Face from "@material-ui/icons/Face";
 import Email from "@material-ui/icons/Email";
-import LockOutline from "@material-ui/icons/LockOutline";
+import Lock from "@material-ui/icons/Lock";
 
 // core components
 import GridContainer from "components/Grid/GridContainer.jsx";
@@ -21,7 +21,7 @@ import CardHeader from "components/Card/CardHeader.jsx";
 import CardFooter from "components/Card/CardFooter.jsx";
 
 import loginPageStyle from "assets/jss/material-dashboard-pro-react/views/loginPageStyle.jsx";
-import Loader from "../../philance/components/Loader/Loader"
+import Loader from "../../philance/components/Loader/Loader";
 
 class LoginPage extends React.Component {
   constructor(props) {
@@ -35,7 +35,7 @@ class LoginPage extends React.Component {
   componentDidMount() {
     // we add a hidden class to the card and after 700 ms we delete it and the transition appears
     setTimeout(
-      function () {
+      function() {
         this.setState({ cardAnimaton: "" });
       }.bind(this),
       700
@@ -46,7 +46,7 @@ class LoginPage extends React.Component {
     this.setState({
       loader: !this.state.loader
     });
-  }
+  };
 
   render() {
     const { classes } = this.props;
@@ -120,9 +120,9 @@ class LoginPage extends React.Component {
                       inputProps={{
                         endAdornment: (
                           <InputAdornment position="end">
-                            <LockOutline
+                            {/* <LockOutline
                               className={classes.inputAdornmentIcon}
-                            />
+                            /> */}
                           </InputAdornment>
                         )
                       }}

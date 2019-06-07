@@ -30,7 +30,7 @@ sudo yum install -y unzip
 #
 # Unzip the zipped material react zip file from the repo
 #
-sudo unzip /opt/openproject/public/Philance/material-dashboard-pro-react-v1.2.0.zip
+sudo unzip /opt/openproject/public/Philance/material-dashboard-pro-react-v1.5.0.zip
 #
 # Remove the unzipped package.json file ready for symbolic link
 #

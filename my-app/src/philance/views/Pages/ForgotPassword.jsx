@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 
 // @material-ui/icons
 import withStyles from "@material-ui/core/styles/withStyles";
-
+import { NavLink } from "react-router-dom";
 // @material-ui/core components
 
 // core components
@@ -65,48 +65,50 @@ class ForgotPassword extends React.Component {
                   >
                     <h4 className={classes.cardTitle}>Forgot Password?</h4>
                   </CardHeader>
-                  {!this.props.emailSent?
-                  
-                  <CardBody>
-                    <CustomInput
-                      labelText="Enter your email"
-                      id="project-name"
-                      formControlProps={{
-                        fullWidth: true
-                      }}
-                      inputProps={{
-                        type: "text",
-                        name: "yourLocation",
-                        onChange: e => {
-                          this.onEmailChange(e.target.value)
-                        }
-                      }}
-                    />
-                    <GridContainer className={classes.justifyContentCenter}>
-                      <GridItem >
-                        <Toaster md={11} display={this.props.errorMessage==='Invalid Credentials'} message={'No active user account with this email address. Please try again'}/>
-                      </GridItem>
-                    </GridContainer>
-                    <GridContainer className={classes.justifyContentCenter}>
-                      <GridItem >
-                        <Button className={classes.customButtonClass} color="info" onClick={() => this.onButtonPress()}>
-                          Send Me a Password Reset Email
-                      </Button>
-                      </GridItem>
-                    </GridContainer>
-                  </CardBody>
+                  {!this.props.emailSent ?
 
-                  :
-                  
-                  <CardBody>
-                  Email Sent!
+                    <CardBody>
+                      <CustomInput
+                        labelText="Enter your email"
+                        id="project-name"
+                        formControlProps={{
+                          fullWidth: true
+                        }}
+                        inputProps={{
+                          type: "text",
+                          name: "yourLocation",
+                          onChange: e => {
+                            this.onEmailChange(e.target.value)
+                          }
+                        }}
+                      />
+                      <GridContainer className={classes.justifyContentCenter}>
+                        <GridItem >
+                          <Toaster md={11} display={this.props.errorMessage === 'Invalid Credentials'} message={'No active user account with this email address. Please try again'} />
+                        </GridItem>
+                      </GridContainer>
+                      <GridContainer className={classes.justifyContentCenter}>
+                        <GridItem >
+                          <Button className={classes.customButtonClass} color="info" onClick={() => this.onButtonPress()}>
+                            Send Me a Password Reset Email
+                      </Button>
+                        </GridItem>
+                      </GridContainer>
+                    </CardBody>
+
+                    :
+
+                    <CardBody>
+                      Email Sent!
                   </CardBody>
                   }
                   <CardFooter className={classes.justifyContentCenter}>
                     Don't have an account?
-                  <Button color="info" simple size="small">
-                      Sign Up
+                    <NavLink to="/register">
+                      <Button color="info" simple size="small" >
+                        Sign Up
                   </Button>
+                    </NavLink>
                   </CardFooter>
                 </Card>
               </form>

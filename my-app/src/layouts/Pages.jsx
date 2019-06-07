@@ -47,7 +47,9 @@ class Pages extends React.Component {
             <Footer white />
             <div
               className={classes.fullPageBackground}
-              style={{ backgroundImage: "url(" + bgImage + ")" }}
+              style={{
+                backgroundImage: "url(" + bgImage + ")"
+              }}
             />
           </div>
         </div>

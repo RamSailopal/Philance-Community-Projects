@@ -13,7 +13,7 @@ import {
 
 import axios from 'axios'
 
-import {hostname} from '../../../config'
+import { hostname } from '../../../config'
 
 /**
  * The method recieves the text from password input field and updates the email key parameter in the redux store
@@ -56,54 +56,57 @@ export const textChanged = () => {
  * @param {*} param0 input object in the format { email, password }
  */
 
-export const loginUser = ({email, password}) => {
-    if(email === '' && password === '') 
+export const loginUser = ({ email, password }, callback) => {
+    if (email === '' && password === '')
         return {
             type: FIELDS_EMPTY
         }
-    else if(email === '')
+    else if (email === '')
         return {
             type: EMAIL_EMPTY
         }
-    else if(password === '')
+    else if (password === '')
         return {
             type: PASSWORD_EMPTY
         }
     return dispatch => {
-        dispatch({type: LOGIN_USER})
-        axios.post(hostname()+'/philance/users/login/', {
+        dispatch({ type: LOGIN_USER })
+        axios.post(hostname() + '/philance/users/login/', {
             email: email,
             password: password
         })
-        .then(response=>{
-            const status = response.status
-            if(status===200){
-                dispatch({
-                    type: LOGIN_USER_SUCCESS,
-                    payload: response.data,
-                    email:email
-                })
-                    axios.post(hostname()+'/philance/users/search', {
-                        email: email  
+            .then(response => {
+                const status = response.status
+
+                if (status === 200) {
+                    dispatch({
+                        type: LOGIN_USER_SUCCESS,
+                        payload: response.data,
+                        email: email
                     })
-                    .then(response=>{
-                        dispatch({
-                            type: USER_PROFILE_GET_USER_INFO,
-                            payload: response.data[0]
+                    axios.post(hostname() + '/philance/users/search', {
+                        email: email
+                    })
+                        .then(response => {
+
+                            dispatch({
+                                type: USER_PROFILE_GET_USER_INFO,
+                                payload: response.data[0]
+                            })
+                            callback()
                         })
-                    })
-                    .catch(error=>
-                        console.log(error)
-                    )
-            }
-                dispatch({type: INVALID_CREDENTIALS})
-        })
-        .catch(error=>{
-            const status = error.response.status
-            if (status === 409)
-                dispatch({type: INVALID_CREDENTIALS})
-            else 
-                dispatch({type: LOGIN_NETWORK_ERROR})
-        });
-    }   
+                        .catch(error =>
+                            console.log(error)
+                        )
+                }
+                // dispatch({type: INVALID_CREDENTIALS})
+            })
+            .catch(error => {
+                const status = error.response.status
+                if (status === 409)
+                    dispatch({ type: INVALID_CREDENTIALS })
+                else
+                    dispatch({ type: LOGIN_NETWORK_ERROR })
+            });
+    }
 }

@@ -29,7 +29,7 @@ export const textChanged = () => {
 
 
 export const filesChanged = (text, callback) => {
-  
+
   return dispatch => {
     dispatch({
       type: PROJECT_TASKS_FILES_CHANGED,
@@ -61,7 +61,7 @@ export const startDateChanged = text => {
 }
 
 
-export const taskNameChanged = text => {  
+export const taskNameChanged = text => {
   return {
     type: PROJECT_TASKS_NAME_CHANGED,
     payload: text
@@ -102,33 +102,33 @@ export const createProjectTask = ({
   userId
 }, uploadCallback, loaderCallback) => {
 
-  if ( name === '' ) {
+  if (name === '') {
     loaderCallback(false)
     return {
       type: PROJECT_TASKS_FIELDS_EMPTY
     }
   }
-  
-  if ( startDate > endDate ) {
+
+  if (startDate > endDate) {
     loaderCallback(false)
     return {
       type: PROJECT_TASKS_FIELDS_EMPTY
     }
   }
-  
-  
+
+
   return dispatch => {
     dispatch({ type: PROJECT_TASKS })
     axios.post(hostname() + `/philance/projects/${projectId}/tasks`, {
-      projectId:projectId,
-      taskName:name,
-      description:description,
-      assignedTo:userSelected,
-      assignedBy:userId,
-      status:status,
-      startDate:startDate,
-      endDate:endDate,
-      priority:priority,
+      projectId: projectId,
+      taskName: name,
+      description: description,
+      assignedTo: userSelected,
+      assignedBy: userId,
+      status: status,
+      startDate: startDate,
+      endDate: endDate,
+      priority: priority,
     }
     )
       .then(response => {
@@ -144,7 +144,7 @@ export const createProjectTask = ({
           })
           uploadCallback({
             projectId,
-            taskId:response.data.taskId
+            taskId: response.data.taskId
           });
           // uploadCallback()
         }
@@ -165,8 +165,8 @@ export const createProjectTasksUnmount = () => {
     })
   }
 }
-export const uploadFiles = (metadata, files,callback) => {
-  var axPromises=[]
+export const uploadFiles = (metadata, files, callback) => {
+  var axPromises = []
   if (!files) {
     return dispatch => {
       dispatch({
@@ -177,7 +177,7 @@ export const uploadFiles = (metadata, files,callback) => {
     return dispatch => {
       const url = hostname() + '/philance/files';
       for (var i = 0; i < files.length; i++) {
-        
+
         const formData = new FormData();
         formData.append('file', files[i])
         formData.append('param', JSON.stringify(metadata))
@@ -187,50 +187,49 @@ export const uploadFiles = (metadata, files,callback) => {
           }
         }
         setTimeout(() => {
-          axPromises[i]= axios.post(url, formData, config)
+          axPromises[i] = axios.post(url, formData, config)
         }, 1000);
       }
       Promise.all(axPromises)
-      .then(() => {
-        dispatch({
-          type: PROJECT_TASKS_FILES_UPLOAD_SUCCESS
+        .then(() => {
+          dispatch({
+            type: PROJECT_TASKS_FILES_UPLOAD_SUCCESS
+          })
+          if (callback) {
+            callback()
+          }
         })
-        if(callback){
-          callback()
-        }
-      })
-      .catch(() => {
-        dispatch({
-          type: PROJECT_TASKS_FILES_UPLOAD_FAILED
-        })
+        .catch(() => {
+          dispatch({
+            type: PROJECT_TASKS_FILES_UPLOAD_FAILED
+          })
 
-      })
+        })
     }
   }
 
 }
-export const setTaskDetails=(tasks,id,callback)=>{
-  
-  
-  
-  var task={}
-  for(var i=0;i<tasks.length;i++){
-    if(tasks[i].taskId==id){
-      task=tasks[i]
+export const setTaskDetails = (tasks, id, callback) => {
+
+
+
+  var task = {}
+  for (var i = 0; i < tasks.length; i++) {
+    if (tasks[i].taskId == id) {
+      task = tasks[i]
     }
   }
   // task=tasks.map((value)=>{
   //   console.log(value,id);
   //   console.log(value.taskId==id);
   //   if(value.taskId==id){
-      
+
   //     return value
   //   }
   // })
-  console.log(task);
-  callback?callback():null
-  return{
-    type:TASK_DETAILS_SET_DETAILS,
-    payload:task
+  callback ? callback() : null
+  return {
+    type: TASK_DETAILS_SET_DETAILS,
+    payload: task
   }
 }

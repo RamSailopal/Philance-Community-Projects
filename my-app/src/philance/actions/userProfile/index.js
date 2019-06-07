@@ -31,7 +31,9 @@ import {
 
 import axios from 'axios'
 
-import {hostname} from '../../../config'
+import {
+    hostname
+} from '../../../config'
 
 export const textChanged = (image) => {
     return {
@@ -117,31 +119,34 @@ export const interestschanged = text => {
     }
 }
 
-export const settingsUpdate = ({settings,userId}) => {
-    var params={}
-    if(settings.notificationSettings.emailNotifications===true){
-        params['emailNotifications']='YES'
+export const settingsUpdate = ({
+    settings,
+    userId
+}) => {
+    var params = {}
+    if (settings.notificationSettings.emailNotifications === true) {
+        params['emailNotifications'] = 'YES'
     }
-    if(settings.notificationSettings.emailNotifications===false){
-        params['emailNotifications']='NO'
+    if (settings.notificationSettings.emailNotifications === false) {
+        params['emailNotifications'] = 'NO'
     }
-    if(settings.notificationSettings.textNotifications===true){
-        params['textNotifications']='YES'
+    if (settings.notificationSettings.textNotifications === true) {
+        params['textNotifications'] = 'YES'
     }
-    if(settings.notificationSettings.textNotifications===false){
-        params['textNotifications']='NO'
+    if (settings.notificationSettings.textNotifications === false) {
+        params['textNotifications'] = 'NO'
     }
-    return dispatch=>{
-        axios.put(hostname()+`/philance/users/${userId}/settings`,params).then((resp)=>{
-            
-            if(resp){
+    return dispatch => {
+        axios.put(hostname() + `/philance/users/${userId}/settings`, params).then((resp) => {
+
+            if (resp) {
                 dispatch({
-                    type:USER_PROFILE_UPDATE_SETTINGS_INFO,
-                    payload:resp.data.userSettings
+                    type: USER_PROFILE_UPDATE_SETTINGS_INFO,
+                    payload: resp.data.userSettings
                 })
-            }else{
+            } else {
                 dispatch({
-                    type:'nothing'
+                    type: 'nothing'
                 })
             }
         })
@@ -155,100 +160,120 @@ export const updateUnmount = text => {
     }
 }
 
-export const getUserSettings = ({userId}) => {
-    return dispatch=>{
-        axios.get(hostname()+`/philance/users/${userId}/settings`).then((response)=>{
-            
+export const getUserSettings = ({
+    userId
+}) => {
+    return dispatch => {
+        axios.get(hostname() + `/philance/users/${userId}/settings`).then((response) => {
+
             dispatch({
-                type:USER_PROFILE_GET_SETTINGS_INFO,
-                payload:response.data.userSettings
+                type: USER_PROFILE_GET_SETTINGS_INFO,
+                payload: response.data.userSettings
             })
-        }).catch((err)=>{
+        }).catch((err) => {
             console.log(err);
-            
+
         })
     }
 }
 
-export const getUserInfo =(email,callback)=> {
+export const getUserInfo = (email, callback) => {
     return dispatch =>
-        axios.post(hostname()+'/philance/users/search', {
-            email: email  
+        axios.post(hostname() + '/philance/users/search', {
+            email: email
         })
-        .then(response=>{
-            dispatch({
-                type: USER_PROFILE_GET_USER_INFO,
-                payload: response.data[0]
+            .then(response => {
+                dispatch({
+                    type: USER_PROFILE_GET_USER_INFO,
+                    payload: response.data[0]
+                })
+                if (callback) {
+                    callback()
+                }
+
             })
-            callback()
-        })
-        .catch(error=>
-            console.log(error)
-        )
+            .catch(error =>
+                console.log(error)
+            )
 }
 export const setUserLoggedIn = (userId) => {
-    return{
-        type:SET_USER_LOGGED_IN,
-        payload:userId
+    return {
+        type: SET_USER_LOGGED_IN,
+        payload: userId
     }
 }
-export const getUserById =(id,authToken)=> {
+export const getUserById = (id, authToken) => {
     return dispatch =>
-        axios.get(hostname()+`/philance/users/${id}`, {
-            headers:{
+        axios.get(hostname() + `/philance/users/${id}`, {
+            headers: {
                 authorization: authToken,
             }
-            })
-        .then(response=>{
-            dispatch({
-                type: ANY_PROFILE_GET_USER_INFO,
-                payload: response.data.user[0]
-            })
-            
         })
-        .catch(error=>
-            console.log(error)
-        )
+            .then(response => {
+                dispatch({
+                    type: ANY_PROFILE_GET_USER_INFO,
+                    payload: response.data.user[0]
+                })
+
+            })
+            .catch(error =>
+                console.log(error)
+            )
 }
 
-export const updateProfile = ({ name, email, password, contact, country, postalCode, description, organization, title, interests, currentEmail, userId }) => {
-    if(email === ''|| name === '' ) 
-	{
-    return {
-        type: USER_PROFILE_FIELDS_EMPTY
+export const updateProfile = ({
+    name,
+    email,
+    password,
+    contact,
+    country,
+    postalCode,
+    description,
+    organization,
+    title,
+    interests,
+    currentEmail,
+    userId
+}, callback) => {
+
+    if (email === '' || name === '') {
+        return {
+            type: USER_PROFILE_FIELDS_EMPTY
+        }
     }
-}
-if (!contact.match('[0-9]+'))
-	{
-    return {
-        type: USER_PROFILE_FIELDS_EMPTY
+    if (!contact.match('[0-9]+')) {
+        return {
+            type: USER_PROFILE_FIELDS_EMPTY
+        }
+    } else {
+        return dispatch => {
+            var intr = interests ? interests.toString() : null
+            axios.put(hostname() + '/philance/users/1', {
+                firstName: name.split(" ")[0],
+                lastName: name.split(" ")[1],
+                email: email,
+                password: password,
+                contact: contact,
+                postalCode: postalCode,
+                country: country,
+                description: description,
+                title: title,
+                organization: organization,
+                interests: intr,
+                currentEmail: currentEmail,
+                userId: userId
+            })
+                .then(response => {
+                    callback(true)
+                    dispatch({
+                        type: USER_PROFILE_UPDATE_SUCCESS
+                    })
+                })
+                .catch(error => {
+                    console.log(error)
+                });
+        }
     }
-}
-else {return dispatch => {
-    var intr=interests?interests.toString():null
-        axios.put(hostname()+'/philance/users/1', {
-            firstName: name.split(" ")[0],
-            lastName: name.split(" ")[1],
-            email: email,
-            password: password,
-            contact: contact,
-            postalCode: postalCode,
-            country: country,
-            description: description,
-            title: title,
-            organization: organization,
-            interests: intr,
-            currentEmail: currentEmail,
-            userId:userId
-         })
-            .then(response=>{
-                dispatch({type: USER_PROFILE_UPDATE_SUCCESS})
-            }
-            )
-            .catch(error=>{
-                console.log(error)
-            });
-    }}
 }
 
 /**
@@ -257,17 +282,17 @@ else {return dispatch => {
  */
 
 export const uploadFiles = (metadata, files) => {
-    
-    if(!files){
-        return dispatch=>{
-            dispatch({
-                type:USER_PROFILE_IMAGE_UPLOAD_FAILED
-            })
-        }
-    }else{
+
+    if (!files) {
         return dispatch => {
             dispatch({
-                type:'UPLOAD_STARTED'
+                type: USER_PROFILE_IMAGE_UPLOAD_FAILED
+            })
+        }
+    } else {
+        return dispatch => {
+            dispatch({
+                type: 'UPLOAD_STARTED'
             })
             const url = hostname() + '/philance/files';
             const formData = new FormData();
@@ -294,67 +319,77 @@ export const uploadFiles = (metadata, files) => {
                     dispatch({
                         type: USER_PROFILE_IMAGE_UPLOAD_FAILED
                     })
-    
                 })
         }
     }
-
 }
 
-export const getUserProfileImage=(userId)=>{
-    return dispatch =>{
-        axios.get(`${hostname()}/philance/users/image/${userId}`).then((image)=>{
-            dispatch( {
+export const getUserProfileImage = (userId) => {
+    return dispatch => {
+        axios.get(`${hostname()}/philance/users/image/${userId}`).then((image) => {
+            dispatch({
                 type: USER_PROFILE_USER_IMAGE_CHANGED_AFTER_UPLOAD,
                 payload: `${hostname()}/philance/users/image/${userId}`
             })
             dispatch({
                 type: 'USER_PROFILE_IMAGE_REFRESH_NOT_REQUIRED',
-                
             })
         })
     }
 
 }
 
-export const logout=({userId,authToken,refreshToken})=>{
-    return dispatch =>{
+export const logout = ({
+    userId,
+    authToken,
+    refreshToken
+}, callback) => {
+    return dispatch => {
         localStorage.removeItem('auth')
         localStorage.removeItem('refresh')
-        axios.get(`${hostname()}/philance/users/${userId}/logout`,{
-            headers:{
-                authorization:authToken
+        axios.get(`${hostname()}/philance/users/${userId}/logout`, {
+            headers: {
+                authorization: authToken
             }
-        }).then((response)=>{
+        }).then((response) => {
+            document.body.setAttribute('style', '')
+
+            if (callback) {
+                callback()
+            }
             dispatch({
                 type: LOGOUT_USER
             })
+        }).catch(err => {
+            if (callback) {
+                callback()
+            }
         })
     }
 }
-export const forceLogout=()=>{
-    return dispatch =>{
+export const forceLogout = () => {
+    return dispatch => {
         localStorage.removeItem('auth')
         localStorage.removeItem('refresh')
-            dispatch({
-                type: LOGOUT_USER
-            })
+        dispatch({
+            type: LOGOUT_USER
+        })
 
     }
 }
 
 
-export const getNotifications=(userId,currentNotifications)=>{
-    return dispatch =>{
-        axios.get(`${hostname()}/philance/users/notifications/${userId}`).then((response)=>{
-            if(currentNotifications!==response.data){
-                response.data.map((notification, key)=>{
-                    response.data[key]={
+export const getNotifications = (userId, currentNotifications) => {
+    return dispatch => {
+        axios.get(`${hostname()}/philance/users/notifications/${userId}`).then((response) => {
+            if (currentNotifications !== response.data) {
+                response.data.map((notification, key) => {
+                    response.data[key] = {
                         ...notification,
-                        creationDate:new Date(notification.creationDate).toLocaleTimeString('en-US')+' '+new Date(notification.creationDate).toDateString('en-US')
+                        creationDate: new Date(notification.creationDate).toLocaleTimeString('en-US') + ' ' + new Date(notification.creationDate).toDateString('en-US')
                     }
                 })
-                dispatch( {
+                dispatch({
                     type: USER_PROFILE_NOTIFICATIONS_CALLED,
                     payload: response.data
                 })
@@ -363,24 +398,32 @@ export const getNotifications=(userId,currentNotifications)=>{
     }
 
 }
-export const refreshAuthToken=({userId,authToken,refreshToken},callback)=>{
-    
-    return dispatch =>{
-        axios.get(`${hostname()}/philance/users/${userId}/refresh`,{
-                headers: {
-                    authorization: authToken,
-                    refreshtoken: refreshToken
-                }
-        }).then((response,err)=>{
-            
-            dispatch( {
+export const refreshAuthToken = ({
+    userId,
+    authToken,
+    refreshToken
+}, callback) => {
+
+    return dispatch => {
+        axios.get(`${hostname()}/philance/users/${userId}/refresh`, {
+            headers: {
+                authorization: authToken,
+                refreshtoken: refreshToken
+            }
+        }).then((response, err) => {
+
+            dispatch({
                 type: USER_AUTHENTICATION_REFRESH_TOKENS,
                 payload: response.data
             })
-            callback?callback({tokenrecieved:true}):null
-            
-        }).catch((err)=>{
-            callback?callback({tokenrecieved:false}):null
+            callback ? callback({
+                tokenrecieved: true
+            }) : null
+
+        }).catch((err) => {
+            callback ? callback({
+                tokenrecieved: false
+            }) : null
         })
     }
 

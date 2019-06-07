@@ -17,7 +17,7 @@ import {
 
 import axios from 'axios'
 
-import {hostname} from '../../../config'
+import { hostname } from '../../../config'
 
 /**
  * The method recieves the text from password input field and updates the first name key parameter in the redux store
@@ -97,10 +97,9 @@ export const registerToast = () => {
  * @param {*} param0 input object in the format { firstName, lastName, email, password }
  */
 
-export const registerUser = ({ firstName, lastName, email, password }) => 
-{
+export const registerUser = ({ firstName, lastName, email, password },callback) => {
     const reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
-    if(email === '' || password === '' || firstName === '' || lastName === '' ) 
+    if (email === '' || password === '' || firstName === '' || lastName === '')
         return {
             type: FIELDS_EMPTY
         }
@@ -110,7 +109,7 @@ export const registerUser = ({ firstName, lastName, email, password }) =>
         }
     }
 
-    else if (password.length<6) {
+    else if (password.length < 6) {
         return {
             type: WEAK_PASSWORD
         }
@@ -118,64 +117,62 @@ export const registerUser = ({ firstName, lastName, email, password }) =>
 
     else {
         return dispatch => {
-            dispatch({type: REGISTER_USER})
-            axios.post(hostname()+'/philance/users/', {
+            dispatch({ type: REGISTER_USER })
+            axios.post(hostname() + '/philance/users/', {
                 firstName: firstName,
                 lastName: lastName,
                 email: email,
                 password: password,
             })
-            .then(response=>
-                {
+                .then(response => {
                     dispatch({
                         type: REGISTER_USER_SUCCESS,
                         payload: response.data
                     })
-                        axios.post(hostname()+'/philance/users/login/', {
-                            email: email,
-                            password: password
-                        }
+                    axios.post(hostname() + '/philance/users/login/', {
+                        email: email,
+                        password: password
+                    }
                     )
-                    .then((loginResponse)=>
-                            {
-                                dispatch({
-                                    type: LOGIN_USER_SUCCESS,
-                                    payload: loginResponse.data,
-                                    email:email
-                                })
-                                dispatch({
-                                    type: USER_PROFILE_GET_USER_INFO,
-                                    payload: {
-                                        fname:firstName,
-                                        lname:lastName,
-                                        email: email
-                                    }
-                                })
-                            }
+                        .then((loginResponse) => {
+                            dispatch({
+                                type: LOGIN_USER_SUCCESS,
+                                payload: loginResponse.data,
+                                email: email
+                            })
+                            dispatch({
+                                type: USER_PROFILE_GET_USER_INFO,
+                                payload: {
+                                    fname: firstName,
+                                    lname: lastName,
+                                    email: email
+                                }
+                            })
+                            callback()
+                        }
                         )
                 }
-                
-            )
-            .catch(error=>{
-                if(error.response.status==null){
-                const status = error.response.status
-                if (status === 409)
-                    dispatch({type: ALREADY_REGISTER})
-                else if (status === 500)
-                    dispatch({type: INVALID_EMAIL})
-                else 
-                    dispatch({type: NETWORK_ERROR})
-                }else{
-                    console.log('ss',typeof(error.response.status))
-                    const status = error.response.status
-                    if (status === 409)
-                        dispatch({type: ALREADY_REGISTER})
-                    else if (status === 500)
-                        dispatch({type: INVALID_EMAIL})
-                    else 
-                        dispatch({type: NETWORK_ERROR})
-                }
-            });
+
+                )
+                .catch(error => {
+                    if (error.response.status == null) {
+                        const status = error.response.status
+                        if (status === 409)
+                            dispatch({ type: ALREADY_REGISTER })
+                        else if (status === 500)
+                            dispatch({ type: INVALID_EMAIL })
+                        else
+                            dispatch({ type: NETWORK_ERROR })
+                    } else {
+                        const status = error.response.status
+                        if (status === 409)
+                            dispatch({ type: ALREADY_REGISTER })
+                        else if (status === 500)
+                            dispatch({ type: INVALID_EMAIL })
+                        else
+                            dispatch({ type: NETWORK_ERROR })
+                    }
+                });
         }
     }
 }

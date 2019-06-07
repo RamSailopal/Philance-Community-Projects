@@ -23,7 +23,6 @@ const projects = sequelize.define('projects', {
     projectName: {
         type: Sequelize.STRING,
         field: 'Project_name',
-        allowNull: false
     },
     description: {
         type: Sequelize.BLOB,
@@ -32,17 +31,46 @@ const projects = sequelize.define('projects', {
     volunteers: {
         type: Sequelize.INTEGER,
         field: 'volunteers',
-        default : 0
+        default: 0
     },
     freelancers: {
         type: Sequelize.INTEGER,
         field: 'freelancers',
-        default : 0
+        default: 0
     },
     location: {
         type: Sequelize.STRING,
         field: 'location'
     },
+    projectSummary: {
+        type: Sequelize.STRING,
+        field: 'project_summary'
+    },
+    projectChallenge: {
+        type: Sequelize.STRING,
+        field: 'project_challenge'
+    },
+    projectSolution: {
+        type: Sequelize.STRING,
+        field: 'project_solution'
+    },
+    projectJustification: {
+        type: Sequelize.STRING,
+        field: 'project_justification'
+    },
+    budgetDetails: {
+        type: Sequelize.STRING,
+        field: 'budget_details'
+    },
+    city: {
+        type: Sequelize.STRING,
+        field: 'city'
+    },
+    suppliesNeeded: {
+        type: Sequelize.STRING,
+        field: 'supplies_needed'
+    },
+
     startDate: {
         type: Sequelize.DATE,
         field: 'start_date',
@@ -84,7 +112,11 @@ const projects = sequelize.define('projects', {
     status: {
         type: Sequelize.STRING,
         field: 'status',
-        defaultValue : 'ACTIVE'
+        defaultValue: 'UNPUBLISHED'
+    },
+    defaultImage: {
+        type: Sequelize.STRING,
+        field: 'default_image',
     },
 },
     {
@@ -93,13 +125,12 @@ const projects = sequelize.define('projects', {
     },
     {
         classMethods: {
-            associate: function(models) {
-              projects.hasMany(models.projectDetails, {foreignKey: 'project_id'})
-              projects.hasMany(models.projectTeam, {foreignKey: 'project_id'})
+            associate: function (models) {
+                projects.hasMany(models.projectDetails, { foreignKey: 'project_id' })
+                projects.hasMany(models.projectTeam, { foreignKey: 'project_id' })
             }
-          }
+        }
     }
 );
-
 // projects.hasMany(projectDetails);
 module.exports = projects;

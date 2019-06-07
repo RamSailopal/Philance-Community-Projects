@@ -32,6 +32,18 @@ const startProjectPageStyple = {
   center: {
     textAlign: "center"
   },
+  fontClass1: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    fontFamily:"Aleo,Georgia,serif",
+    transform: "translate(-50%, -50%)",
+    "&:hover": {
+      opacity: 1,
+      color: "#ff7b00"
+    },
+    fontSize:'4rem'
+  },
   right: {
     textAlign: "right"
   },
@@ -88,8 +100,25 @@ const startProjectPageStyple = {
     minHeight: "34px"
   },
   justifyContentCenter: {
-    justifyContent: "center"
+    justifyContent: "center",
+    zIndex: "3",
+    position: "relative",
   },
+  inputLabel: {
+    color: "#101010",
+    marginBottom: '5px !important',
+    marginTop: '100px !important',
+  },
+  label: {
+    color: '#294859',
+    cursor: 'pointer',
+    display: 'inline-flex',
+    fontSize: '14px',
+    transition: '0.3s ease all',
+    lineHeight: '1.428571429',
+    fontWeight: '400',
+    paddingLeft: '0',
+  }
 };
 
 export default startProjectPageStyple;

@@ -1,7 +1,4 @@
 # -*- coding: utf-8 -*-
-#
-#	Tests for current page load on clicking on Home
-#
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -10,7 +7,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
 import unittest, time, re
 
-class HomeButton(unittest.TestCase):
+class Home(unittest.TestCase):
     def setUp(self):
         self.driver = webdriver.Firefox()
         self.driver.implicitly_wait(30)
@@ -18,10 +15,10 @@ class HomeButton(unittest.TestCase):
         self.verificationErrors = []
         self.accept_next_alert = True
     
-    def test_home_button(self):
+    def test_home(self):
         driver = self.driver
-        driver.get("http://127.0.0.1:3000/home")
-        try: self.assertEqual("HOME", driver.find_element_by_xpath("(.//*[normalize-space(text()) and normalize-space(.)='Start A Project'])[1]/preceding::div[2]").text)
+        driver.get("http://127.0.0.1:3000/")
+        try: self.assertEqual("START A PROJECT", driver.find_element_by_xpath("(.//*[normalize-space(text()) and normalize-space(.)='Unleash the Power of Community'])[1]/following::div[3]").text)
         except AssertionError as e: self.verificationErrors.append(str(e))
     
     def is_element_present(self, how, what):

@@ -103,20 +103,20 @@ export const createProjectTask = ({
   userId
 }, uploadCallback, loaderCallback) => {
 
-  if ( name === '' ) {
+  if (name === '') {
     loaderCallback(false)
     return {
       type: PROJECT_TASK_DETAILS_FIELDS_EMPTY
     }
   }
-  
-  if ( startDate > endDate ) {
+
+  if (startDate > endDate) {
     loaderCallback(false)
     return {
       type: PROJECT_TASK_DETAILS_FIELDS_EMPTY
     }
   }
-  
+
   return dispatch => {
     dispatch({ type: PROJECT_TASK_DETAILS })
     axios.post(hostname() + `/philance/projects/${projectId}/tasks`, {
@@ -148,7 +148,7 @@ export const createProjectTask = ({
       })
       .catch(error => {
         loaderCallback(false)
-        console.log(error);
+
         return {
           type: PROJECT_TASK_DETAILS_NETWORK_ERROR
         }
@@ -166,58 +166,58 @@ export const updateTaskDetails = ({
   priority,
   projectId,
   userId
-  
+
 }, loaderCallback) => {
-   
- 
-  
-  if ( new Date(startDate) > new Date(endDate) ) {
-	loaderCallback(false)
+
+
+
+  if (new Date(startDate) > new Date(endDate)) {
+    loaderCallback(false)
     return {
       type: PROJECT_TASK_DETAILS_FIELDS_EMPTY
     }
   }
-  
+
   else {
 
-  return dispatch => {
-    dispatch({ type: PROJECT_TASK_DETAILS })
-    axios.put(hostname() + `/philance/projects/${projectId}/tasks/${taskId}`, {
-      taskName: taskName,
-      description:description,
-      assignedTo: userSelected,
-      assignedBy: userId,
-      status: status,
-      startDate: startDate,
-      endDate: endDate,
-      priority: priority,
-    }
-    )
-      .then(response => {
-        if (response.status !== 200) {
-          loaderCallback({ response: response.data, flag: false })
+    return dispatch => {
+      dispatch({ type: PROJECT_TASK_DETAILS })
+      axios.put(hostname() + `/philance/projects/${projectId}/tasks/${taskId}`, {
+        taskName: taskName,
+        description: description,
+        assignedTo: userSelected,
+        assignedBy: userId,
+        status: status,
+        startDate: startDate,
+        endDate: endDate,
+        priority: priority,
+      }
+      )
+        .then(response => {
+          if (response.status !== 200) {
+            loaderCallback({ response: response.data, flag: false })
+            return {
+              type: PROJECT_TASK_DETAILS_UPDATE_NETWORK_ERROR
+            }
+          } else {
+            loaderCallback(false)
+
+            dispatch({
+              type: PROJECT_TASK_DETAILS_UPDATE_REQUEST_SUCCESS
+            })
+            // uploadCallback(projectId);
+            // uploadCallback()
+          }
+        })
+        .catch(error => {
+          loaderCallback({ error, flag: false })
+
           return {
             type: PROJECT_TASK_DETAILS_UPDATE_NETWORK_ERROR
           }
-        } else {
-          loaderCallback(false)
-
-          dispatch({
-            type: PROJECT_TASK_DETAILS_UPDATE_REQUEST_SUCCESS
-          })
-          // uploadCallback(projectId);
-          // uploadCallback()
-        }
-      })
-      .catch(error => {
-        loaderCallback({ error, flag: false })
-        console.log(error);
-        return {
-          type: PROJECT_TASK_DETAILS_UPDATE_NETWORK_ERROR
-        }
-      });
+        });
+    }
   }
- }
 }
 
 export const projectTasksUnmount = () => {

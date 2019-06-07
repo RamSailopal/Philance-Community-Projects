@@ -16,15 +16,14 @@ const Op = sequelize.Op;
 const Sequelize = require('sequelize');
 var config = require('../config/config')
 var authutil = require('../util/authutil')
-var userHelper=require('../helpers/user')
-var {mediaHost}=require('../config')
-const randtoken=require('rand-token')
+var userHelper = require('../helpers/user')
+var { mediaHost } = require('../config')
+const randtoken = require('rand-token')
 
 exports.createProfile = (req, res, next) => {
 
     users.findOne({ where: { email: req.body.email } }).then(_user => {
         if (_user == null) {
-            console.log('Not Registered');
             bcrypt.hash(req.body.password, 10, (err, hash) => {
                 if (err) {
                     return res.status(500).json({
@@ -37,47 +36,47 @@ exports.createProfile = (req, res, next) => {
                         email: req.body.email,
                         password: hash,
                         location: req.body.location,
-                        status:'ACTIVE',
-                        creationDate:new Date()
+                        status: 'ACTIVE',
+                        creationDate: new Date()
                     }).then((_user) => {
-//TODO: Change the logic if other user makes a created by
-                        users.findOne({where:{email:req.body.email}})
-                        .then((founduser)=>{
-                            users.update({
-                                createdBy:founduser.userId
-                            },{
-                                where:{
-                                    userId:founduser.userId
-                                }
-                            }).then(()=>{
-                                userSettings.create({
-                                    userId:founduser.userId,
-                                    emailNotifications:'YES',
-                                    textNotifications:'NO',
-                                    pushNotifications:'NO',
-                                    createdBy:founduser.userId,
-                                    creationDate:new Date(),
-                                    lastUpdatedBy:founduser.userId,
-                                    lastUpdatedDate:new Date(),
-                                }).then(()=>{
-                                    res.status(200).json({
-                                        message: "User # " + req.body.firstName + " " + req.body.lastName + " Registered Successfully",
-                                        user: _user
-                                    });
-                                }).catch((err)=>{
-                                    res.status(500).json({
-                                        error: err.message
-                                    });
-                                })
-                            }).catch((err)=>{
-                                res.status(500).json({
-                                    error: err.message
-                                });
+                        //TODO: Change the logic if other user makes a created by
+                        users.findOne({ where: { email: req.body.email } })
+                            .then((founduser) => {
+                                users.update({
+                                    createdBy: founduser.userId
+                                }, {
+                                        where: {
+                                            userId: founduser.userId
+                                        }
+                                    }).then(() => {
+                                        userSettings.create({
+                                            userId: founduser.userId,
+                                            emailNotifications: 'YES',
+                                            textNotifications: 'NO',
+                                            pushNotifications: 'NO',
+                                            createdBy: founduser.userId,
+                                            creationDate: new Date(),
+                                            lastUpdatedBy: founduser.userId,
+                                            lastUpdatedDate: new Date(),
+                                        }).then(() => {
+                                            res.status(200).json({
+                                                message: "User # " + req.body.firstName + " " + req.body.lastName + " Registered Successfully",
+                                                user: _user
+                                            });
+                                        }).catch((err) => {
+                                            res.status(500).json({
+                                                error: err.message
+                                            });
+                                        })
+                                    }).catch((err) => {
+                                        res.status(500).json({
+                                            error: err.message
+                                        });
+                                    })
                             })
-                        })
 
                     }).catch(err => {
-                        console.log(err);
+
                         res.status(500).json({
                             error: err.message
                         });
@@ -85,7 +84,6 @@ exports.createProfile = (req, res, next) => {
                 }
             })
         } else {
-            console.log('User Registered');
             return res.status(409).json({
                 message: "User # " + req.body.firstName + " " + req.body.lastName + " already registered",
                 user: _user
@@ -96,28 +94,28 @@ exports.createProfile = (req, res, next) => {
     )
 }
 
-exports.refreshAuthToken=(req,res,next)=>{
-    
+exports.refreshAuthToken = (req, res, next) => {
+
     authentication.findOne({
-        where:{
-            [Op.and]:{
-                authToken:req.headers.authorization,
-                refreshToken:req.headers.refreshtoken,
-                userId:req.params.userId
+        where: {
+            [Op.and]: {
+                authToken: req.headers.authorization,
+                refreshToken: req.headers.refreshtoken,
+                userId: req.params.userId
             }
         },
-        logging:false
-    }).then((_userauth)=>{
-        if(_userauth){
+        logging: false
+    }).then((_userauth) => {
+        if (_userauth) {
 
             users.findOne({
-                where:{
-                    [Op.and]:{
-                        userId:_userauth.userId
+                where: {
+                    [Op.and]: {
+                        userId: _userauth.userId
                     }
                 },
-                logging:false
-            }).then((_user)=>{
+                logging: false
+            }).then((_user) => {
                 const token = jwt.sign(
                     {
                         email: _user.email,
@@ -130,22 +128,22 @@ exports.refreshAuthToken=(req,res,next)=>{
                 );
                 const refreshToken = randtoken.uid(256)
                 authentication.update({
-                    authToken:token,
-                    refreshToken:refreshToken
-                },{
-                    where:{
-                        refreshToken:req.headers.refreshtoken
-                    },
-                    logging:false
-                }).then(()=>{
-                    res.send({
-                        message:'Token Refreshed',
-                        token,refreshToken,
-                        userId:_user.userId
+                    authToken: token,
+                    refreshToken: refreshToken
+                }, {
+                        where: {
+                            refreshToken: req.headers.refreshtoken
+                        },
+                        logging: false
+                    }).then(() => {
+                        res.send({
+                            message: 'Token Refreshed',
+                            token, refreshToken,
+                            userId: _user.userId
+                        })
                     })
-                })
             })
-        }else{
+        } else {
             res.status(403).send()
         }
     })
@@ -180,12 +178,12 @@ exports.login = (req, res, next) => {
                 );
                 const refreshToken = randtoken.uid(256)
                 authentication.create({
-                    userId:_user.userId,
-                    email:_user.email,
-                    authToken:token,
-                    platform:req.headers.platform,
-                    refreshToken:refreshToken,
-                    createdBy:_user.userId,
+                    userId: _user.userId,
+                    email: _user.email,
+                    authToken: token,
+                    platform: req.headers.platform,
+                    refreshToken: refreshToken,
+                    createdBy: _user.userId,
                 })
                 return res.status(200).json({
                     message: "authentication successful",
@@ -263,11 +261,11 @@ exports.updateProfile = (req, res, next) => {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         email: req.body.email,
-        zipCode:req.body.postalCode,
-        country:req.body.country,
+        zipCode: req.body.postalCode,
+        country: req.body.country,
         phoneNumber: req.body.contact,
-        title:req.body.title,
-        interests: req.body.interests?req.body.interests.toString():null,
+        title: req.body.title,
+        interests: req.body.interests ? req.body.interests.toString() : null,
         organization: req.body.organization,
         description: req.body.description,
         phoneNumber: req.body.contact,
@@ -283,21 +281,20 @@ exports.updateProfile = (req, res, next) => {
         }
     )
         .then(_user => {
-            if(req.body.password){
+            if (req.body.password) {
                 authutil.createPassword(req.body.password).then((response) => {
                     users.update({
                         password: response.hash
                     }, {
                             where: {
-                                userId:req.body.userId
+                                userId: req.body.userId
                             }
                         }).then(() => {
-                            console.log('Successful')
                             //send email
                         })
                 })
             }
-            if (_user&&req.body.userSkills) {
+            if (_user && req.body.userSkills) {
                 userSkills.destroy({ where: { userId: req.body.userId }, truncate: true, force: true }).then(
                     sequelize.transaction(function (t) {
                         sequelize.Promise.each(req.body.userSkills, function (itemToUpdate) {
@@ -387,11 +384,10 @@ exports.updateProfile = (req, res, next) => {
                                 email: decoded.email
                             }
                         }).then(() => {
-                            console.log('Password Change Successful')
                             //send email
                         })
                     res.status(200).send(response)
-    
+
                 })
                 // users.findAll({
                 //     where: { userId: req.body.userId },
@@ -402,16 +398,16 @@ exports.updateProfile = (req, res, next) => {
                 //     });
                 // }
                 // )
-            }else{
+            } else {
                 res.status(200).send({
                     firstName: req.body.firstName,
                     lastName: req.body.lastName,
                     email: req.body.email,
-                    zipCode:req.body.postalCode,
-                    country:req.body.country,
+                    zipCode: req.body.postalCode,
+                    country: req.body.country,
                     phoneNumber: req.body.contact,
-                    title:req.body.title,
-                    interests: req.body.interests?req.body.interests.toString():null,
+                    title: req.body.title,
+                    interests: req.body.interests ? req.body.interests.toString() : null,
                     organization: req.body.organization,
                     description: req.body.description,
                     phoneNumber: req.body.contact,
@@ -420,7 +416,7 @@ exports.updateProfile = (req, res, next) => {
             }
         })
         .catch(err => {
-            console.log(err);
+
             res.status(500).json({
                 error: err
             });
@@ -431,14 +427,21 @@ exports.updateProfile = (req, res, next) => {
 /**
  * This is to get the list of projects either created by user or applied by the user
  */
-
+projects.belongsTo(users, {
+    foreignKey: 'created_by',
+    scope: {
+        created_by:
+        {
+            $col: 'createdByDetails.user_id'
+        }
+    },
+    as: 'createdByDetails'
+});
 exports.getProjects = (req, res, next) => {
-
     projects.hasMany(projectDetails, { foreignKey: 'projectId' });
     projects.hasMany(projectTeam, { foreignKey: 'projectId' });
     users.hasMany(projectTeam, { foreignKey: 'userId' });
     projectTeam.belongsTo(users, { foreignKey: 'userId' });
-
     // var sql = 'select distinct proj.*, \'OWNER\' from projects proj where 1 = 1 and proj.created_by =' + req.params.userId + ' union ' +
     //     'select distinct proj.*, projteam.role from projects proj, project_team projteam where 1 = 1 and proj.project_id = projteam.project_id and user_id =' + req.params.userId;
 
@@ -449,29 +452,68 @@ exports.getProjects = (req, res, next) => {
     //     });
     // }
     // )
-    projects.findAll({
-        include:[
-		{
-			model: projectAttachments,
-		},
-		{
-            model:projectTeam,
-            where:{
-                userId:req.params.userId
-            },
-		}]
-    }).then((_projs)=>{
-        res.status(200).send(_projs)
+
+
+    const activePage = req.body.activePage ? req.body.activePage : 1
+    const pageSize = req.body.pageSize ? req.body.pageSize : 10
+    const offset = (activePage - 1) * pageSize
+    const limit = pageSize
+
+    projects.findAndCountAll({
+        where: {
+            createdBy: req.params.userId,
+        }
     })
+        .then((data) => {
+            let pages = Math.ceil(data.count);
+            projects.findAll({
+                offset: offset,
+                limit: limit,
+                order: [['creationDate', 'DESC']],
+                where: {
+                    createdBy: req.params.userId,
+                },
+                include: [
+                    {
+                        model: projectAttachments,
+                    },
+                    // {
+                    //     model: projectTeam,
+                    //     where: {
+                    //         userId: req.params.userId
+                    //     },
+                    // },
+                    {
+                        model: projectDetails,
+                        attributes: [
+                            'name'
+                        ]
+                    },
+                    {
+                        model: users,
+                        attributes: [
+                            'firstName', 'lastName', 'email'
+                        ],
+                        as: 'createdByDetails'
+
+                    },
+                ]
+            }).then((_projs) => {
+                res.status(200).send({
+                    _projs: _projs,
+                    totalPages: pages
+                })
+            })
+        })
 }
 
 exports.createPasswordResetToken = (req, res, next) => {
     users.findOne({
-        where:{
-            email:req.body.email
+        where: {
+            email: req.body.email
         }
-    }).then((__user)=>{
-        if(__user){
+    }).then((__user) => {
+        if (__user) {
             var email = req.body.email;
             const token = jwt.sign(
                 {
@@ -483,49 +525,46 @@ exports.createPasswordResetToken = (req, res, next) => {
                 }
             );
             var dev
-            if (process.env.NODE_ENV === 'production'){
+            if (process.env.NODE_ENV === 'production') {
                 dev = config.production.secure;
 
-            }else{
+            } else {
                 dev = config.development.unsecure;
 
             }
             //send email
             userHelper.emailUsers({
-                config:{
-                    from:'noreply@philance.org',
+                config: {
+                    from: 'noreply@philance.org',
                     to: req.body.email,                      //email to be requested from the database
                 },
-                data:{
-                    url:dev.protocol + dev.host + dev.port + '/philance/users/passwordReset?token=' + token,
-                    subject:'Philance Password Reset',
-                    text:'Dear User, \nPlease click the following link to reset your password\n\n'+dev.protocol + dev.host + dev.port + '/resetPassword/' + token+'\n This link is valid for 1 hour only.\nRegards\nPhilance Support'
-                }})
+                data: {
+                    url: dev.protocol + dev.host + dev.port + '/philance/users/passwordReset?token=' + token,
+                    subject: 'Philance Password Reset',
+                    text: 'Dear User, \nPlease click the following link to reset your password\n\n' + dev.protocol + dev.host + dev.port + '/resetPassword/' + token + '\n This link is valid for 1 hour only.\nRegards\nPhilance Support'
+                }
+            })
             res.status(200).send({
                 backendURL: dev.protocol + dev.host + dev.port + '/philance/users/passwordReset?token=' + token
-            })    
-        }else{
+            })
+        } else {
             res.status(409).send({
-                message:'Invalid Email'
+                message: 'Invalid Email'
             })
         }
     })
 
 
-    console.log("In user password reset Controller");
 };
 exports.passwordReset = (req, res, next) => {
     jwt.verify(req.query.token, 'philance_secret', function (err, decoded) {
         if (err) {
-            console.log(decoded + ' failed')
             res.status(401).send(err)
         } else {
-            if(parseInt(Date.now()/1000)-decoded.iat>3600){
-
+            if (parseInt(Date.now() / 1000) - decoded.iat > 3600) {
                 //TODO: One time usage Implementation
-
-                res.status(401).send({error:"token Expired"})
-            }else{
+                res.status(401).send({ error: "token Expired" })
+            } else {
                 authutil.createPassword(req.body.password).then((response) => {
                     users.update({
                         password: response.hash
@@ -538,11 +577,11 @@ exports.passwordReset = (req, res, next) => {
                             //send email
                         })
                     res.status(200).send(response)
-    
+
                 }).catch((error) => {
                     res.status(500).send(error)
                 })
-    
+
             }
 
         }
@@ -550,9 +589,9 @@ exports.passwordReset = (req, res, next) => {
     });
 }
 
-exports.updateUserImage=(req,res,next)=>{
+exports.updateUserImage = (req, res, next) => {
     users.update({
-        userProfileImagePath: mediaHost()+req.file.filename,
+        userProfileImagePath: mediaHost() + req.file.filename,
         userProfileImageUrl: `/philance/users/image/${JSON.parse(req.body.param).userInfo.userId}${req.file.filename}`,
 
     },
@@ -564,8 +603,8 @@ exports.updateUserImage=(req,res,next)=>{
     )
     res.status(200).send(
         {
-            user:{
-                userProfileUrl:JSON.parse(req.body.param).userInfo.userId
+            user: {
+                userProfileUrl: JSON.parse(req.body.param).userInfo.userId
             }
         })
 
@@ -573,103 +612,103 @@ exports.updateUserImage=(req,res,next)=>{
 
 exports.getUserImage = (req, res, next) => {
     users.findOne({
-        where:{
-            [Op.and]:{
-                userId:req.params.userId,
+        where: {
+            [Op.and]: {
+                userId: req.params.userId,
                 userProfileImageUrl: `/philance/users/image/${req.params.userId}/uploads/${req.params.filename}`,
             }
         }
-    }).then((instance)=>{
+    }).then((instance) => {
         res.sendFile(instance.userProfileImagePath)
-    }).catch((err)=>{
+    }).catch((err) => {
         res.status(404).send(err)
     })
 }
 exports.getUserNotifications = (req, res, next) => {
     userNotifications.hasOne(users, { foreignKey: 'createdBy' })
     userNotifications.findAll({
-        where:{
-            userId:req.params.userId,
+        where: {
+            userId: req.params.userId,
         },
         include: [
-            { 
+            {
                 model: users,
-                on:{
-                    col1:sequelize.where(sequelize.col("user.user_id"), "=", sequelize.col("user_notifications.created_by")),
+                on: {
+                    col1: sequelize.where(sequelize.col("user.user_id"), "=", sequelize.col("user_notifications.created_by")),
                 },
-                nested: false, 
-                duplicating: false, 
+                nested: false,
+                duplicating: false,
                 attributes: [
-                    'userId', 
-                    'firstName', 
-                    'lastName', 
+                    'userId',
+                    'firstName',
+                    'lastName',
                     'email'
                 ]
-            }],        
-        order:[
+            }],
+        order: [
             ['creationDate', 'DESC']
         ],
-        limit:10,
-        logging:false
-    }).then((instance)=>{
+        limit: 10,
+        logging: false
+    }).then((instance) => {
         res.status(200).send(instance)
-    }).catch((err)=>{
+    }).catch((err) => {
         res.status(404).send(err)
     })
 }
-exports.userLogout=((req,res,next)=>{
+exports.userLogout = ((req, res, next) => {
     authentication.destroy({
-        where:{
-            [Op.and]:{
-                authToken:req.headers.authorization,
-                userId:req.params.userId
+        where: {
+            [Op.and]: {
+                authToken: req.headers.authorization,
+                userId: req.params.userId
             }
         }
-    }).then(()=>{
+    }).then(() => {
         res.send({
-            message:'User Logged out'
+            message: 'User Logged out'
         })
-    }).catch(()=>{
+    }).catch(() => {
         res.status(500).send({
-            message:'User cannot be Logged out'
+            message: 'User cannot be Logged out'
         })
     })
 })
-exports.updateUserSettings=((req,res,next)=>{
+exports.updateUserSettings = ((req, res, next) => {
     userSettings.update({
-        emailNotifications:req.body.emailNotifications,
-        textNotifications:req.body.textNotifications,
-        pushNotifications:req.body.pushNotifications,
-    },{
-        where:{
-            userId:req.params.userId
-        }
-    }).then((userSettingsRes)=>{
-        userSettings.findOne({
-            where:{
-                userId:req.params.userId
+        emailNotifications: req.body.emailNotifications,
+        textNotifications: req.body.textNotifications,
+        pushNotifications: req.body.pushNotifications,
+    }, {
+            where: {
+                userId: req.params.userId
             }
-        }).then((resp)=>{
-            res.status(200).send({
-                userSettings:resp
-            }
-            )
+        }).then((userSettingsRes) => {
+            userSettings.findOne({
+                where: {
+                    userId: req.params.userId
+                }
+            }).then((resp) => {
+                res.status(200).send({
+                    userSettings: resp
+                }
+                )
+            })
         })
-    })
 })
-exports.getUserSettings=((req,res,next)=>{
+exports.getUserSettings = ((req, res, next) => {
     userSettings.findOne({
-        where:{
-            userId:req.params.userId
+        where: {
+            userId: req.params.userId
         }
-    }).then((userSettings)=>{
-        if(userSettings){
+    }).then((userSettings) => {
+        if (userSettings) {
             res.status(200).send({
                 userSettings
             })
-        }else{
+        } else {
             res.status(404).send({
-                message:'Settings not found'
+                message: 'Settings not found'
             })
         }
     })

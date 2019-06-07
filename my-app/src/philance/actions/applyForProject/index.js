@@ -1,5 +1,5 @@
 import axios from 'axios'
-
+import { notification } from 'antd'
 import { hostname } from '../../../config'
 import {
     APPLY_FOR_PROJECT_MESSAGE_CHANGED,
@@ -29,7 +29,7 @@ export const roleChanged = text => {
     }
 }
 
-export const applyForProject = ({ userId, projectId, message, role }, loaderCallback) => {
+export const applyForProject = ({ userId, projectId, message, role }, loaderCallback, callback) => {
     return dispatch => {
         axios.post(hostname() + `/philance/projects/${projectId}/users`, {
             userId: userId,
@@ -40,9 +40,15 @@ export const applyForProject = ({ userId, projectId, message, role }, loaderCall
             .then(
                 response => {
                     loaderCallback(false)
+
                     dispatch({
                         type: APPLY_FOR_PROJECT_UPDATE_SUCCESS
                     })
+                    notification.success({
+                        message: 'Your application has been submitted. Thank You!',
+                        duration: 5
+                    });
+                    callback()
                 }
             )
             .catch(
@@ -53,6 +59,12 @@ export const applyForProject = ({ userId, projectId, message, role }, loaderCall
                         dispatch({
                             type: APPLY_FOR_PROJECT_ALREADY_APPLIED
                         })
+                        notification.error({
+
+                            message: 'You already applied for this project',
+                            duration: 5
+
+                        });
                     }
                 }
             )

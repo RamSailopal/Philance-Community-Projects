@@ -22,7 +22,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 // core components
 import Button from "components/CustomButtons/Button";
 
-import { headerRoutes } from "../../routes/pages.jsx";
+import { pvtPagesRoutes } from "../../routes/pages.jsx";
 
 import publicPagesHeaderStyle from "assets/jss/material-dashboard-pro-react/components/pagesHeaderStyle.jsx";
 
@@ -55,7 +55,7 @@ class PublicPagesHeader extends React.Component {
 
     var list = (
       <List className={classes.list}>
-        {headerRoutes.map((prop, key) => {
+        {pvtPagesRoutes.filter(route => { return route.publicHeader == true }).map((prop, key) => {
           if (prop.redirect) {
             return null;
           }
@@ -83,28 +83,30 @@ class PublicPagesHeader extends React.Component {
     );
 
     return (
-      <AppBar position="static" className={classes.appBar + appBarClasses}>
+      <AppBar className={classes.appBar + appBarClasses}>
         <Toolbar>
           <Hidden smDown implementation="css">
-          <div style={{ display:'flex',flexDirection: 'row',justifyContent:'center' }}>
-            <div>
-              <img src={require('philance/assets/logos/philancelogo.png')} alt="logo" style={{width: "45px",verticalAlign: "middle",border: "0"}} />
-            </div>
-            <div>
-              <img src={require('philance/assets/logos/Philance-logo-text.png')} alt="logo" className={classes.txtimg} />
-            </div>
-          </div>
-
+            <NavLink to="/">
+              <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+                <div>
+                  <img src={require('philance/assets/logos/philancelogo.png')} alt="logo" style={{ width: "45px", verticalAlign: "middle", border: "0" }} />
+                </div>
+                <div>
+                  <img src={require('philance/assets/logos/Philance-logo-text.png')} alt="logo" className={classes.txtimg} />
+                </div>
+              </div>
+            </NavLink>
+            <div><h6 style={{ color: '#ffe100' }}>Unleash the Power of Community</h6></div>
           </Hidden>
           <Hidden mdUp>
             <div className={classes.flex}>
               {/* <Typography variant="title" color="inherit"> */}
-                {
-                  <img
-                    src={require("philance/assets/logos/Philance-logo-text.png")}
-                    alt="Philance"
-                  />
-                }
+              {
+                <img
+                  src={require("philance/assets/logos/Philance-logo-text.png")}
+                  alt="Philance"
+                />
+              }
               {/* </Typography> */}
             </div>
           </Hidden>

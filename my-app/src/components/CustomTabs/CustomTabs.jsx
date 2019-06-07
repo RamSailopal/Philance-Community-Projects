@@ -12,14 +12,12 @@ import Tab from "@material-ui/core/Tab";
 import Card from "components/Card/Card.jsx";
 import CardBody from "components/Card/CardBody.jsx";
 import CardHeader from "components/Card/CardHeader.jsx";
-
 import customTabsStyle from "assets/jss/material-dashboard-pro-react/components/customTabsStyle.jsx";
 
 class CustomTabs extends React.Component {
   state = {
     value: 0
   };
-
   handleChange = (event, value) => {
     this.setState({ value });
   };
@@ -31,7 +29,8 @@ class CustomTabs extends React.Component {
       plainTabs,
       tabs,
       title,
-      rtlActive
+      rtlActive,
+      backgroundColor,
     } = this.props;
     const cardTitle = classNames({
       [classes.cardTitle]: true,
@@ -50,6 +49,8 @@ class CustomTabs extends React.Component {
               root: classes.tabsRoot,
               indicator: classes.displayNone
             }}
+            variant="scrollable"
+            scrollButtons="on"
           >
             {tabs.map((prop, key) => {
               var icon = {};
@@ -75,7 +76,7 @@ class CustomTabs extends React.Component {
             })}
           </Tabs>
         </CardHeader>
-        <CardBody>
+        <CardBody style={{ backgroundColor: `${backgroundColor}` }}>
           {tabs.map((prop, key) => {
             if (key === this.state.value) {
               return <div key={key}>{prop.tabContent}</div>;
@@ -99,6 +100,7 @@ CustomTabs.propTypes = {
     "rose"
   ]),
   title: PropTypes.string,
+  backgroundColor: PropTypes.string,
   tabs: PropTypes.arrayOf(
     PropTypes.shape({
       tabName: PropTypes.string.isRequired,

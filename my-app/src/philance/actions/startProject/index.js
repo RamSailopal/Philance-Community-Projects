@@ -12,7 +12,8 @@ import {
   START_PROJECT_NETWORK_ERROR,
   START_PROJECT_REQUEST_SUCCESS,
   START_PROJECT_UNMOUNT,
-  START_PROJECT_FILES_CHANGED,
+  START_PROJECT_BUDGET_DETAILS_CHANGED,
+  START_PROJECT_CITY_CHANGED,
   START_PROJECT_FILES_UPLOAD_FAILED,
   START_PROJECT_FILES_UPLOAD_SUCCESS,
   START_PROJECT_COUNTRY_CHANGED,
@@ -20,12 +21,22 @@ import {
   START_PROJECT_BUDGET_FORMAT,
   START_PROJECT_STARTEND,
   START_PROJECT_VOLERR,
-  START_PROJECT_FREEERR
+  START_PROJECT_FREEERR,
+  START_PROJECT_SUMMARY_CHANGED,
+  START_PROJECT_CHALLENGE_CHANGED,
+  START_PROJECT_SOLUTION_CHANGED,
+  START_PROJECT_JUSTIFICATION_CHANGED,
+  START_PROJECT_DOCUMENTS_FILES_CHANGED,
+  START_PROJECT_IMAGES_FILES_CHANGED,
+  START_PROJECT_SUPPLIES_NEEDED_CHANGED,
+  START_PROJECT_RESOURCES_REQUIRED_ERROR
 } from '../types'
 
 import axios from 'axios'
 
-import { hostname } from '../../../config'
+import {
+  hostname
+} from '../../../config'
 
 export const textChanged = () => {
   return {
@@ -40,11 +51,20 @@ export const budgetChanged = text => {
   }
 }
 
-export const filesChanged = (text, callback) => {
+export const imagesFilesChanged = (files, callback) => {
   return dispatch => {
     dispatch({
-      type: START_PROJECT_FILES_CHANGED,
-      payload: text
+      type: START_PROJECT_IMAGES_FILES_CHANGED,
+      payload: files
+    })
+    callback ? callback() : null
+  }
+}
+export const documentsFilesChanged = (files, callback) => {
+  return dispatch => {
+    dispatch({
+      type: START_PROJECT_DOCUMENTS_FILES_CHANGED,
+      payload: files
     })
     callback ? callback() : null
   }
@@ -56,6 +76,7 @@ export const descriptionChanged = text => {
     payload: text
   }
 }
+
 
 export const endDateChanged = text => {
   return {
@@ -107,6 +128,7 @@ export const zipCodeChanged = text => {
 }
 
 export const startProject = ({
+
   name,
   description,
   volunteers,
@@ -118,77 +140,23 @@ export const startProject = ({
   endDate,
   budget,
   userId,
-  files
+  files,
+  summary,
+  challenge,
+  solution,
+  justification,
+  budgetDetails,
+  city,
+  suppliesNeeded
+
+
 }, uploadCallback, loaderCallback) => {
-
-  if ( name === '' || description === '' || zipCode === '' || country === '' || interests === '') {
-	loaderCallback(false)
-    return {
-      type: START_PROJECT_FIELDS_EMPTY
-    }
-  } 
-  
-  if ( budget === null ) {
-	budget=""
+  if (freelancers === null || freelancers === "") {
+    freelancers = 0
   }
-  
-  if ( freelancers === null ) {
-	freelancers="0"
- }
-  
-  else if ( freelancers === "" ) {
-        freelancers="0"
+  if (volunteers === null || volunteers === "") {
+    volunteers = 0
   }
-
- 
-  if ( volunteers === null ) {
-	volunteers="0"
-  }
-  
-  else if ( freelancers === "" ) {
-        freelancers="0"
-  }
-
-  
-   if ( ! budget.match('^[0-9]{1,6}[.][0-9]{2}$')) {
-    loaderCallback(false)
-    return {
-      type: START_PROJECT_BUDGET_FORMAT
-    }
-  } 
-  
-  
-  if ( ! freelancers.match('^[0-9]{1,3}$') && ! volunteers.match('^[0-9]{1,3}$') ) {
-    loaderCallback(false)
-    return {
-      type: START_PROJECT_FREEERR
-    }
-  } 
-   
-  if ( startDate === "" ) {
-    loaderCallback(false)
-    return {
-      type: START_PROJECT_FIELDS_EMPTY
-    }
-  }
-  
-  if ( endDate === "" ) {
-    loaderCallback(false)
-    return {
-      type: START_PROJECT_FIELDS_EMPTY
-    }
-  }
-  
-  
-  if ( endDate < startDate ) {
-    loaderCallback(false)
-    return {
-      type: START_PROJECT_STARTEND
-    }
-  } 
-  
-  
-  
   var projectDetails = []
   var interestsArray = interests
   for (var i = 0; i < interestsArray.length; i++) {
@@ -205,7 +173,9 @@ export const startProject = ({
     })
   }
   return dispatch => {
-    dispatch({ type: START_PROJECT })
+    dispatch({
+      type: START_PROJECT
+    })
     axios.post(hostname() + '/philance/projects/', {
       projectName: name,
       description: description,
@@ -219,30 +189,40 @@ export const startProject = ({
       endDate: endDate,
       userId: userId,
       files: files,
-      "projectDetails": projectDetails
-    }
-    )
+      summary: summary,
+      challenge: challenge,
+      solution: solution,
+      justification: justification,
+      "projectDetails": projectDetails,
+      budgetDetails: budgetDetails,
+      city: city,
+      suppliesNeeded: suppliesNeeded
+
+    })
       .then(response => {
         if (response.status !== 200) {
+
           loaderCallback(false)
           return {
             type: START_PROJECT_NETWORK_ERROR
           }
         } else {
           loaderCallback(false)
-          dispatch({
-            type: START_PROJECT_REQUEST_SUCCESS
-          })
           uploadCallback(response.data.project[0].projectId);
         }
       })
       .catch(error => {
         loaderCallback(false)
-        console.log(error);
+
         return {
           type: START_PROJECT_NETWORK_ERROR
         }
       });
+  }
+}
+export const startProjectSuccess = () => {
+  return {
+    type: START_PROJECT_REQUEST_SUCCESS
   }
 }
 export const startProjectUnmount = () => {
@@ -258,8 +238,56 @@ export const interestschanged = text => {
     payload: text
   }
 }
-export const uploadFiles = (metadata, files,callback) => {
-  var axPromises=[]
+export const projectSummaryChanged = text => {
+  return {
+    type: START_PROJECT_SUMMARY_CHANGED,
+    payload: text
+  }
+}
+export const projectChallengeChanged = text => {
+  return {
+    type: START_PROJECT_CHALLENGE_CHANGED,
+    payload: text
+  }
+}
+export const projectSolutionChanged = text => {
+  return {
+    type: START_PROJECT_SOLUTION_CHANGED,
+    payload: text
+  }
+}
+export const projectSuppliesNeededChange = text => {
+  return {
+    type: START_PROJECT_SUPPLIES_NEEDED_CHANGED,
+    payload: text
+  }
+}
+export const budgetDetailsChange = text => {
+  return {
+    type: START_PROJECT_BUDGET_DETAILS_CHANGED,
+    payload: text
+  }
+}
+export const cityChange = text => {
+  return {
+    type: START_PROJECT_CITY_CHANGED,
+    payload: text
+  }
+}
+
+export const projectJustificationChange = text => {
+  return {
+    type: START_PROJECT_JUSTIFICATION_CHANGED,
+    payload: text
+  }
+}
+export const uploadFiles = (metadata, files, callback) => {
+  if (Array.from(files).length == 0) {
+    callback()
+    return {
+      type: START_PROJECT_FILES_UPLOAD_FAILED
+    }
+  }
   if (!files) {
     return dispatch => {
       dispatch({
@@ -269,40 +297,82 @@ export const uploadFiles = (metadata, files,callback) => {
   } else {
     return dispatch => {
       const url = hostname() + '/philance/files';
-      for (var i = 0; i < files.length; i++) {
+      const uploaders = Array.from(files).map((file, index) => {
+
+
         const formData = new FormData();
-        formData.append('file', files[i])
+        formData.append('file', files[index])
+        if (index == 0 && metadata.attachmentType == 'image' && metadata.uploadType == "startProjectFiles") {
+          metadata['setDefaultImage'] = true
+        }
         formData.append('param', JSON.stringify(metadata))
         const config = {
+          onUploadProgress: function (progressEvent) {
+            var percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+          },
           headers: {
             'content-type': 'multipart/form-data'
           }
         }
-        setTimeout(() => {
-          axPromises[i]= axios.post(url, formData, config)
-        }, 1000);
-      }
-      Promise.all(axPromises)
-      .then(() => {
-        dispatch({
-          type: START_PROJECT_FILES_UPLOAD_SUCCESS
+        return axios.post(url, formData, config).then(() => {
+          // alert('done')
         })
-        if(callback){
-          setTimeout(() => {
+      })
+      axios.all(uploaders)
+        .then(() => {
+          dispatch({
+            type: START_PROJECT_FILES_UPLOAD_SUCCESS
+          })
+          if (callback) {
+            setTimeout(() => {
+              callback()
+              return {}
+            }, 2500);
+          }
+        })
+        .catch(() => {
+          dispatch({
+            type: START_PROJECT_FILES_UPLOAD_FAILED
+          })
+          if (callback) {
             callback()
-          }, 2500);
-        }
-      })
-      .catch(() => {
-        dispatch({
-          type: START_PROJECT_FILES_UPLOAD_FAILED
+          }
         })
-        if(callback){
-          callback()
-        }
-
-      })
     }
   }
+}
 
+export const uploadLinks = (links, projectId, callback) => {
+  return dispatch => {
+    let filteredLinks = links.filter(link => link.link)
+
+    if (filteredLinks.length == 0) {
+      callback()
+      dispatch({
+        type: 'START_PROJECT_LINKS_UPLOAD_FAILED'
+      })
+      return
+    }
+    filteredLinks.map((link, index) => {
+      link['projectId'] = projectId
+      if (index == (filteredLinks.length - 1)) {
+        const url = hostname() + '/philance/files/links';
+        axios.post(url, {
+          links: filteredLinks
+        }).then((resp) => {
+          dispatch({
+            type: 'START_PROJECT_LINKS_UPLOAD_SUCCESS'
+          })
+          if (callback) {
+            callback()
+          }
+        }).catch((err) => {
+
+          if (callback) {
+            callback()
+          }
+        })
+      }
+    })
+  }
 }

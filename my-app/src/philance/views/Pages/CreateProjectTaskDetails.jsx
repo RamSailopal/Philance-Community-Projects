@@ -43,7 +43,7 @@ import { connect } from 'react-redux'
 import { Label, Icon } from 'semantic-ui-react';
 import Loader from "../../components/Loader/Loader"
 import { getCommonInfo } from "../../actions/common";
-import { 
+import {
   createProjectTask,
   descriptionChanged,
   endDateChanged,
@@ -57,15 +57,15 @@ import {
   userSelectedChanged,
   startDateChanged,
   setTaskDetails
- } from "../../actions/projectTasks";
- import{
-   getProjectById
- }from '../../actions/projectDetails'
+} from "../../actions/projectTasks";
+import {
+  getProjectById
+} from '../../actions/projectDetails'
 
 import store from '../../store/store'
 
 const uid = Math.random().toString(36).substring(7);
-var data=[]
+var data = []
 
 function Transition(props) {
   return <Slide direction="down" {...props} />;
@@ -89,8 +89,8 @@ class CreateProjectTasksDetails extends React.Component {
       freeLancers: null,
       startDate: null,
       validName: false,
-      files:[],
-      data:[],
+      files: [],
+      data: [],
       validBudget: false,
       validZipCode: false,
       validDescription: false,
@@ -106,13 +106,13 @@ class CreateProjectTasksDetails extends React.Component {
     this.fileInput = React.createRef();
   }
 
-  handlePriority(e){
+  handlePriority(e) {
     this.props.priorityChanged(e.target.value)
   }
-  handleTaskStatus(e){
+  handleTaskStatus(e) {
     this.props.taskStatusChanged(e.target.value)
   }
-  handleUserSelected(e){
+  handleUserSelected(e) {
     this.props.userSelectedChanged(e.target.value)
   }
 
@@ -220,60 +220,59 @@ class CreateProjectTasksDetails extends React.Component {
       this.props.textChanged()
     }
   }
-  async onFilesChange (files) {
+  async onFilesChange(files) {
     const { classes } = this.props;
-    
-    if(files.length==0){
-      data=[]
+
+    if (files.length == 0) {
+      data = []
     }
-    var a =[]
-    await this.props.filesChanged(files,async()=>{
-      await files?Array.from(this.props.files).map((value,key)=>{
-        if(Array.from(files)[key]){
-		  if (this.props.files[key].size < 10485760)
-          {			  
-          a=
-            [<span className={classes.customFont}>
-              {this.props.files[key].name}
-            </span>,
-            <Button simple justIcon color='info' onClick={()=>{
+    var a = []
+    await this.props.filesChanged(files, async () => {
+      await files ? Array.from(this.props.files).map((value, key) => {
+        if (Array.from(files)[key]) {
+          if (this.props.files[key].size < 10485760) {
+            a =
+              [<span className={classes.customFont}>
+                {this.props.files[key].name}
+              </span>,
+              <Button simple justIcon color='info' onClick={() => {
                 //call delete action
-                this.fileSplicer(this.props.files,key);
+                this.fileSplicer(this.props.files, key);
               }}>
-              <Delete/>
-            </Button>]       
-              data.push(a)
-		  }
-		  else {
-		       a = [<span className={classes.customFont}>
+                <Delete />
+              </Button>]
+            data.push(a)
+          }
+          else {
+            a = [<span className={classes.customFont}>
               <font color="red">{"The size of the file is bigger than 10MB"}</font>
             </span>
-            ]  
-			  data.push(a);
-			  setTimeout(
-					function() {
-								this.fileSplicer(this.props.files,key);
-								}
-								.bind(this),5000);
-		  } 	  
+            ]
+            data.push(a);
+            setTimeout(
+              function () {
+                this.fileSplicer(this.props.files, key);
+              }
+                .bind(this), 5000);
+          }
         }
-      }):null
+      }) : null
     })
-    
-        await this.setState({
-          files:data
-        })
-        data=[]
-        
+
+    await this.setState({
+      files: data
+    })
+    data = []
+
   }
 
   onEndDateChange = async (text) => {
     if (text === undefined) {
       this.validate("endDate")
     }
-	else if ( text < this.props.startDate ) {
-		this.validate("endDate")
-	}
+    else if (text < this.props.startDate) {
+      this.validate("endDate")
+    }
     else {
       await this.setState({ validEndDate: false })
       this.props.endDateChanged(text)
@@ -298,535 +297,529 @@ class CreateProjectTasksDetails extends React.Component {
     }
   }
 
-    onStartDateChange = async (text) => {
-      if (text === undefined) {
-        this.validate("startDate")
-      }
-      else {
-        await this.setState({ validStartDate: false })
-        this.props.startDateChanged(text)
-        this.props.textChanged()
-      }
+  onStartDateChange = async (text) => {
+    if (text === undefined) {
+      this.validate("startDate")
     }
-    onVolunteersChange = async (text) => {
-      if (text === "") {
-        this.validate("Volunteers")
-        this.props.volunteersChanged(text)
-        this.props.textChanged()
-      }
-      else {
-        await this.setState({ validVolunteers: false })
-        this.props.volunteersChanged(text)
-        this.props.textChanged()
-      }
+    else {
+      await this.setState({ validStartDate: false })
+      this.props.startDateChanged(text)
+      this.props.textChanged()
     }
-      onZipCodeChange = async (text) => {
-        if (text === "") {
-          this.validate("Zipcode")
-        }
-        else {
-          await this.setState({ validZipCode: false })
-          this.props.zipCodeChanged(text)
-          this.props.textChanged()
-        }
-      }
+  }
+  onVolunteersChange = async (text) => {
+    if (text === "") {
+      this.validate("Volunteers")
+      this.props.volunteersChanged(text)
+      this.props.textChanged()
+    }
+    else {
+      await this.setState({ validVolunteers: false })
+      this.props.volunteersChanged(text)
+      this.props.textChanged()
+    }
+  }
+  onZipCodeChange = async (text) => {
+    if (text === "") {
+      this.validate("Zipcode")
+    }
+    else {
+      await this.setState({ validZipCode: false })
+      this.props.zipCodeChanged(text)
+      this.props.textChanged()
+    }
+  }
 
-      fileSplicer=async(files,key)=>{
-        var a=[];
-        await Array.from(files).map((value,index)=>{
-          if(index!=key){
-            a.push(value)
-          }
-        })
-        this.onFilesChange(a);
+  fileSplicer = async (files, key) => {
+    var a = [];
+    await Array.from(files).map((value, index) => {
+      if (index != key) {
+        a.push(value)
       }
-      handleClick() {
-        this.refs.fileInput.click();
-      }
-      render() {
-        const { classes } = this.props;
-        return (
-		
-          <GridContainer className={this.props.isLoggedIn ? classes.justifyContentCenter : classes.container}>
-		   
-            <Loader loader={this.state.loader} />
-            <GridItem xs={12} sm={12} md={10}>
-              <Card>
-                <br/><br/><br/><br/>
-                <CardBody>
-                  <form>
-                    <GridContainer>
-                      <div ref={this.myRef} />
-                      <GridItem xs={12} sm={12}>
-                        <CustomInput
-                          labelText="Task Name"
-                          id="taskName"
-                          error={this.state.validName}
-                          formControlProps={{
-                            fullWidth: true
-                          }}
-                          inputProps={{
-                            placeholder: "Enter the task Name",
-                            onChange: e => {
-                              this.onTaskNameChange(e.target.value)
-                            }
-                          }}
-                        />
-                      </GridItem>
-                      <GridItem xs={12} sm={12}>
-                        <CustomInput
-                          labelText="Task Description"
-                          id="taskDescription"
-                          error={this.state.validDescription}
-                          formControlProps={{
-                            fullWidth: true
-                          }}
-                          inputProps={{
-                            placeholder: "Enter a Task Description",
-                            onChange: e => {
-                              this.onDescriptionChange(e.target.value)
-                            },
-							multiline: true,
-							rows: 5
-                          }}
-                        />
-                      </GridItem>
-                      <GridItem xs={12} sm={6} md={5} lg={5}>
-                        <FormControl
-                          fullWidth
-                          className={classes.selectFormControl}
-                        >
-                          <InputLabel
-                            htmlFor="simple-select"
-                            className={classes.selectLabel}
-                          >
-                            Task Status
-                          </InputLabel>
-                          <Select
-                            MenuProps={{
-                              className: classes.selectMenu
-                            }}
-                            classes={{
-                              select: classes.select
-                            }}
-                            value={this.props.status}
-                            onChange={(e)=>{this.handleTaskStatus(e)}}
-                            inputProps={{
-                              name: "simpleSelect",
-                              id: "simple-select"
-                            }}
-                          >
-                            <MenuItem
-                              disabled
-                              classes={{
-                                root: classes.selectMenuItem
-                              }}
-                              >
-                              Task Status
-                            </MenuItem>
-                           {
-                            ['Active','Closed','Archived'].map((prop, key) => {
-                              return (
-                                <MenuItem
-                                  classes={{
-                                    root: classes.selectMenuItem,
-                                    selected: classes.selectMenuItemSelected
-                                  }}
-                                  value={prop}
-                                  key={key}
-                                >
-                                  {prop}
-                                </MenuItem>
-                              );
-                            })
-                          }
-                          </Select>
-                        </FormControl>
-                      </GridItem>
-                      <GridItem xs={12} sm={6} md={5} lg={5}>
-                        <FormControl
-                          fullWidth
-                          className={classes.selectFormControl}
-                        >
-                          <InputLabel
-                            htmlFor="simple-select"
-                            className={classes.selectLabel}
-                          >
-                            Choose Assignee
-                          </InputLabel>
-                          <Select
-                            MenuProps={{
-                              className: classes.selectMenu
-                            }}
-                            classes={{
-                              select: classes.select
-                            }}
-                            value={this.props.userSelected}
-                            onChange={(e)=>{this.handleUserSelected(e)}}
-                            inputProps={{
-                              name: "simpleSelect",
-                              id: "simple-select"
-                            }}
-                          >
-                            <MenuItem
-                              disabled
-                              classes={{
-                                root: classes.selectMenuItem
-                              }}
-                              >
-                              Choose Assignee
-                            </MenuItem>
-						   {
-                            this.props.projectTeam.map((prop, key) => {
-                              if(prop.status=="ACCEPTED"){
-                                return (
-                                  
-                                  <MenuItem
-                                    classes={{
-                                      root: classes.selectMenuItem,
-                                      selected: classes.selectMenuItemSelected
-                                    }}
-                                    value={''+prop.userId}
-                                    key={key}
-                                  >
-                                    {prop.user.firstName+' '+prop.user.lastName}
-                                  </MenuItem>
-                                );
-                              }
-                            })
-                          }
-                          </Select>
-                        </FormControl>
-                      </GridItem>
-                      <GridItem xs={12} sm={6} md={5} lg={5}>
-                      <br/><br/>
-                        <FormControl
-                          fullWidth
-                          className={classes.selectFormControl}
-                        >
-                          <InputLabel
-                            htmlFor="simple-select"
-                            className={classes.selectLabel}
-                          >
-                            Priority
-                          </InputLabel>
-                          <Select
-                            MenuProps={{
-                              className: classes.selectMenu
-                            }}
-                            classes={{
-                              select: classes.select
-                            }}
-                            value={this.props.priority}
-                            onChange={(e)=>{this.handlePriority(e)}}
-                            inputProps={{
-                              name: "simpleSelect",
-                              id: "simple-select"
-                            }}
-                          >
-                            <MenuItem
-                              disabled
-                              classes={{
-                                root: classes.selectMenuItem
-                              }}
-                              >
-                              Priority
-                            </MenuItem>
-                           {
-                            ["High","Normal","Low"].map((prop, key) => {
-                              return (
-                                <MenuItem
-                                  classes={{
-                                    root: classes.selectMenuItem,
-                                    selected: classes.selectMenuItemSelected
-                                  }}
-                                  value={prop}
-                                  key={key}
-                                >
-                                  {prop}
-                                </MenuItem>
-                              );
-                            })
-                          }
-                          </Select>
-                        </FormControl>
-                      </GridItem>
-                      {console.log(this.props.files)
-                      }
-                    </GridContainer>
-                    <GridContainer>
-                      <GridItem xs={12} sm={12} md={4}>
-                        <Card>
-                          <CardBody>
-                            {this.state.validStartDate ?
-                              <InputLabel className={classes.label}>
-                                <span style={{ color: "red" }}>Task Start Date</span>
-                              </InputLabel>
-                              :
-                              <InputLabel className={classes.label}>
-                                Task Start Date
-                          </InputLabel>
-                            }
-                            <br />
-                            <FormControl fullWidth>
-                              <GridContainer>
-                                <GridItem xs={9}>
-                                  <Datetime
-                                    timeFormat={false}
-                                    onChange={date => this.onStartDateChange(date._d)}
-									isValidDate={ function( current ){
-											  return current.isAfter( Datetime.moment().subtract( 1, 'day' ) )
-												}
-											}
-                                  />
-                                </GridItem>
-                                <GridItem xs={3}>
-                                  <Icon bordered inverted color='teal' name='calendar alternate outline' />
-                                </GridItem>
-                              </GridContainer>
-                            </FormControl>
-                          </CardBody>
-                        </Card>
-                      </GridItem>
-                      <GridItem xs={12} sm={12} md={4}>
-                        <Card>
-                          <CardHeader color="info" icon>
-                          </CardHeader>
-                          <CardBody>
-                            {this.state.validEndDate ?
-                              <InputLabel className={classes.label}>
-                                <span style={{ color: "red" }}>Task End Date (Estimated)</span>
-                              </InputLabel>
-                              :
-                              <InputLabel className={classes.label}>
-                                Task End Date (Estimated)
-                          </InputLabel>
-                            }
+    })
+    this.onFilesChange(a);
+  }
+  handleClick() {
+    this.refs.fileInput.click();
+  }
+  render() {
+    const { classes } = this.props;
+    return (
+      <GridContainer className={this.props.isLoggedIn ? classes.justifyContentCenter : classes.container}>
 
-                            <br />
-                            <FormControl fullWidth>
-                              <GridContainer>
-                                <GridItem xs={9}>
-                                  <Datetime
-                                    timeFormat={false}
-                                    onChange={date => this.onEndDateChange(date._d)}
-									isValidDate={ function( current ){
-											  return current.isAfter( Datetime.moment().subtract( 1, 'day' ) )
-												}
-											}
-                                  />
-                                </GridItem>
-                                <GridItem xs={3}>
-                                  <Icon bordered inverted color='teal' name='calendar alternate outline' />
-                                </GridItem>
-                              </GridContainer>
-                            </FormControl>
-                          </CardBody>
-                        </Card>
-                      </GridItem>
-                    </GridContainer>
-
-                    <label
-                      as="label"
-                      basic
-                      htmlFor={uid}
+        <Loader loader={this.state.loader} />
+        <GridItem xs={12} sm={12} md={10}>
+          <Card>
+            <br /><br /><br /><br />
+            <CardBody>
+              <form>
+                <GridContainer>
+                  <div ref={this.myRef} />
+                  <GridItem xs={12} sm={12}>
+                    <CustomInput
+                      labelText="Task Name"
+                      id="taskName"
+                      error={this.state.validName}
+                      formControlProps={{
+                        fullWidth: true
+                      }}
+                      inputProps={{
+                        placeholder: "Enter the task Name",
+                        onChange: e => {
+                          this.onTaskNameChange(e.target.value)
+                        }
+                      }}
+                    />
+                  </GridItem>
+                  <GridItem xs={12} sm={12}>
+                    <CustomInput
+                      labelText="Task Description"
+                      id="taskDescription"
+                      error={this.state.validDescription}
+                      formControlProps={{
+                        fullWidth: true
+                      }}
+                      inputProps={{
+                        placeholder: "Enter a Task Description",
+                        onChange: e => {
+                          this.onDescriptionChange(e.target.value)
+                        },
+                        multiline: true,
+                        rows: 5
+                      }}
+                    />
+                  </GridItem>
+                  <GridItem xs={12} sm={6} md={5} lg={5}>
+                    <FormControl
+                      fullWidth
+                      className={classes.selectFormControl}
                     >
-                      <input type="file" id={uid}
-                        ref='fileInput'
-                        multiple
-                        style={{ display: "none" }}
-                        name="files"
-                        onChange={(e) => this.onFilesChange(e.target.files)}
-                      />
-                        </label>
-                    <GridContainer>
-                      <GridItem xs={12} sm={12} >
-                        <Label
-                        basic
+                      <InputLabel
+                        htmlFor="simple-select"
+                        className={classes.selectLabel}
+                      >
+                        Task Status
+                          </InputLabel>
+                      <Select
+                        MenuProps={{
+                          className: classes.selectMenu
+                        }}
+                        classes={{
+                          select: classes.select
+                        }}
+                        value={this.props.status}
+                        onChange={(e) => { this.handleTaskStatus(e) }}
+                        inputProps={{
+                          name: "simpleSelect",
+                          id: "simple-select"
+                        }}
+                      >
+                        <MenuItem
+                          disabled
+                          classes={{
+                            root: classes.selectMenuItem
+                          }}
                         >
-                          <GridContainer className={classes.justifyContentCenter}>
-                            <GridItem>
-                              <Button color="info" onClick={() => this.handleClick()}>
-                                <Icon name='upload' />Select Files{'\t\t\t'}
-                              </Button>
+                          Task Status
+                            </MenuItem>
+                        {
+                          ['Active', 'Closed', 'Archived'].map((prop, key) => {
+                            return (
+                              <MenuItem
+                                classes={{
+                                  root: classes.selectMenuItem,
+                                  selected: classes.selectMenuItemSelected
+                                }}
+                                value={prop}
+                                key={key}
+                              >
+                                {prop}
+                              </MenuItem>
+                            );
+                          })
+                        }
+                      </Select>
+                    </FormControl>
+                  </GridItem>
+                  <GridItem xs={12} sm={6} md={5} lg={5}>
+                    <FormControl
+                      fullWidth
+                      className={classes.selectFormControl}
+                    >
+                      <InputLabel
+                        htmlFor="simple-select"
+                        className={classes.selectLabel}
+                      >
+                        Choose Assignee
+                          </InputLabel>
+                      <Select
+                        MenuProps={{
+                          className: classes.selectMenu
+                        }}
+                        classes={{
+                          select: classes.select
+                        }}
+                        value={this.props.userSelected}
+                        onChange={(e) => { this.handleUserSelected(e) }}
+                        inputProps={{
+                          name: "simpleSelect",
+                          id: "simple-select"
+                        }}
+                      >
+                        <MenuItem
+                          disabled
+                          classes={{
+                            root: classes.selectMenuItem
+                          }}
+                        >
+                          Choose Assignee
+                            </MenuItem>
+                        {
+                          this.props.projectTeam.map((prop, key) => {
+                            if (prop.status == "ACCEPTED") {
+                              return (
+                                <MenuItem
+                                  classes={{
+                                    root: classes.selectMenuItem,
+                                    selected: classes.selectMenuItemSelected
+                                  }}
+                                  value={'' + prop.userId}
+                                  key={key}
+                                >
+                                  {prop.user.firstName + ' ' + prop.user.lastName}
+                                </MenuItem>
+                              );
+                            }
+                          })
+                        }
+                      </Select>
+                    </FormControl>
+                  </GridItem>
+                  <GridItem xs={12} sm={6} md={5} lg={5}>
+                    <br /><br />
+                    <FormControl
+                      fullWidth
+                      className={classes.selectFormControl}
+                    >
+                      <InputLabel
+                        htmlFor="simple-select"
+                        className={classes.selectLabel}
+                      >
+                        Priority
+                          </InputLabel>
+                      <Select
+                        MenuProps={{
+                          className: classes.selectMenu
+                        }}
+                        classes={{
+                          select: classes.select
+                        }}
+                        value={this.props.priority}
+                        onChange={(e) => { this.handlePriority(e) }}
+                        inputProps={{
+                          name: "simpleSelect",
+                          id: "simple-select"
+                        }}
+                      >
+                        <MenuItem
+                          disabled
+                          classes={{
+                            root: classes.selectMenuItem
+                          }}
+                        >
+                          Priority
+                            </MenuItem>
+                        {
+                          ["High", "Normal", "Low"].map((prop, key) => {
+                            return (
+                              <MenuItem
+                                classes={{
+                                  root: classes.selectMenuItem,
+                                  selected: classes.selectMenuItemSelected
+                                }}
+                                value={prop}
+                                key={key}
+                              >
+                                {prop}
+                              </MenuItem>
+                            );
+                          })
+                        }
+                      </Select>
+                    </FormControl>
+                  </GridItem>
+                </GridContainer>
+                <GridContainer>
+                  <GridItem xs={12} sm={12} md={4}>
+                    <Card>
+                      <CardBody>
+                        {this.state.validStartDate ?
+                          <InputLabel className={classes.label}>
+                            <span style={{ color: "red" }}>Task Start Date</span>
+                          </InputLabel>
+                          :
+                          <InputLabel className={classes.label}>
+                            Task Start Date
+                          </InputLabel>
+                        }
+                        <br />
+                        <FormControl fullWidth>
+                          <GridContainer>
+                            <GridItem xs={9}>
+                              <Datetime
+                                timeFormat={false}
+                                onChange={date => this.onStartDateChange(date._d)}
+                                isValidDate={function (current) {
+                                  return current.isAfter(Datetime.moment().subtract(1, 'day'))
+                                }
+                                }
+                              />
                             </GridItem>
-                            <GridItem xs={12}>
-                              {
-                                this.props.files.length!=0?
-                                  <Card>
-                                    <CardBody>
-                                      <Table
-                                            tableHead={[
-                                              <strong>Name</strong>,
-                                              ''
-                                            ]}
-                                            fixedHeader={true}
-                                            tableHeaderStyle={{borderRight: '40px solid transparent'}}
-                                            tableData={
-                                              this.state.files
-                                            }
-                                            customHeadCellClasses={[
-                                              classes.description,
-                                              classes.description,
-                                              classes.description,
-                                              classes.left,
-                                              classes.left,
-                                              classes.left
-                                            ]}
-                                            customHeadClassesForCells={[0, 2, 3, 4, 5, 6]}
-                                            customCellClasses={[
-                                              classes.customFont,
-                                              classes.customFont,
-                                              classes.customFont,
-                                              classes.tdNumber,
-                                              classes.tdNumber + " " + classes.tdNumberAndButtonGroup,
-                                              classes.tdNumber
-                                            ]}
-                                            customClassesForCells={[1, 2, 3, 4, 5, 6]}
-                                          />
-                                    </CardBody>
-                                  </Card>
-                                  : null
-                              }
+                            <GridItem xs={3}>
+                              <Icon bordered inverted color='teal' name='calendar alternate outline' />
                             </GridItem>
                           </GridContainer>
-                        </Label>
-                      </GridItem>
-                    </GridContainer>
-                    <br />
-                    <GridContainer direction={'row'} justify="center">
-                      <GridItem>
-                        <Button onClick={() => {
-                            this.toggleLoader(true)
-                            const {
-                              name,
-                              description,
-                              startDate,
-                              endDate,
-                              userSelected,
-                              status,
-                              priority,
-                              projectId,
-                              userId
-                            } = this.props
-                            this.props.createProjectTask({
-                              name,
-                              description,
-                              startDate,
-                              endDate,
-                              userSelected,
-                              status,
-                              priority,
-                              projectId,
-                              userId,
+                        </FormControl>
+                      </CardBody>
+                    </Card>
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={4}>
+                    <Card>
+                      <CardHeader color="info" icon>
+                      </CardHeader>
+                      <CardBody>
+                        {this.state.validEndDate ?
+                          <InputLabel className={classes.label}>
+                            <span style={{ color: "red" }}>Task End Date (Estimated)</span>
+                          </InputLabel>
+                          :
+                          <InputLabel className={classes.label}>
+                            Task End Date (Estimated)
+                          </InputLabel>
+                        }
 
-                            }, ({projectId,taskId}) => {
-                              //upload files
-                              
-                              this.props.uploadFiles(
-                                {
-                                  uploadType: 'projectTaskFiles',
-                                  taskInfo: {
-                                    userId:this.props.userId,
-                                    projectId: projectId,
-                                    taskId: taskId
-                                  }
-                                },
-                                this.props.files
-                                ,()=>{
-                                  this.props.getProjectById({id:this.props.projectId},()=>{
-                                    this.props.setTaskDetails(this.props.projectTasks,taskId,()=>{
-                                      this.props.history.push('/project-details/tasks')
-                                    })
-                                  })
+                        <br />
+                        <FormControl fullWidth>
+                          <GridContainer>
+                            <GridItem xs={9}>
+                              <Datetime
+                                timeFormat={false}
+                                onChange={date => this.onEndDateChange(date._d)}
+                                isValidDate={function (current) {
+                                  return current.isAfter(Datetime.moment().subtract(1, 'day'))
                                 }
-                              )
-                            }, (flag) => {
-                              this.toggleLoader(flag)
+                                }
+                              />
+                            </GridItem>
+                            <GridItem xs={3}>
+                              <Icon bordered inverted color='teal' name='calendar alternate outline' />
+                            </GridItem>
+                          </GridContainer>
+                        </FormControl>
+                      </CardBody>
+                    </Card>
+                  </GridItem>
+                </GridContainer>
+
+                <label
+                  as="label"
+                  basic
+                  htmlFor={uid}
+                >
+                  <input type="file" id={uid}
+                    ref='fileInput'
+                    multiple
+                    style={{ display: "none" }}
+                    name="files"
+                    onChange={(e) => this.onFilesChange(e.target.files)}
+                  />
+                </label>
+                <GridContainer>
+                  <GridItem xs={12} sm={12} >
+                    <Label
+                      basic
+                    >
+                      <GridContainer className={classes.justifyContentCenter}>
+                        <GridItem>
+                          <Button color="info" onClick={() => this.handleClick()}>
+                            <Icon name='upload' />Select Files{'\t\t\t'}
+                          </Button>
+                        </GridItem>
+                        <GridItem xs={12}>
+                          {
+                            this.props.files.length != 0 ?
+                              <Card>
+                                <CardBody>
+                                  <Table
+                                    tableHead={[
+                                      <strong>Name</strong>,
+                                      ''
+                                    ]}
+                                    fixedHeader={true}
+                                    tableHeaderStyle={{ borderRight: '40px solid transparent' }}
+                                    tableData={
+                                      this.state.files
+                                    }
+                                    customHeadCellClasses={[
+                                      classes.description,
+                                      classes.description,
+                                      classes.description,
+                                      classes.left,
+                                      classes.left,
+                                      classes.left
+                                    ]}
+                                    customHeadClassesForCells={[0, 2, 3, 4, 5, 6]}
+                                    customCellClasses={[
+                                      classes.customFont,
+                                      classes.customFont,
+                                      classes.customFont,
+                                      classes.tdNumber,
+                                      classes.tdNumber + " " + classes.tdNumberAndButtonGroup,
+                                      classes.tdNumber
+                                    ]}
+                                    customClassesForCells={[1, 2, 3, 4, 5, 6]}
+                                  />
+                                </CardBody>
+                              </Card>
+                              : null
+                          }
+                        </GridItem>
+                      </GridContainer>
+                    </Label>
+                  </GridItem>
+                </GridContainer>
+                <br />
+                <GridContainer direction={'row'} justify="center">
+                  <GridItem>
+                    <Button onClick={() => {
+                      this.toggleLoader(true)
+                      const {
+                        name,
+                        description,
+                        startDate,
+                        endDate,
+                        userSelected,
+                        status,
+                        priority,
+                        projectId,
+                        userId
+                      } = this.props
+                      this.props.createProjectTask({
+                        name,
+                        description,
+                        startDate,
+                        endDate,
+                        userSelected,
+                        status,
+                        priority,
+                        projectId,
+                        userId,
+                      }, ({ projectId, taskId }) => {
+                        //upload files
+                        this.props.uploadFiles(
+                          {
+                            uploadType: 'projectTaskFiles',
+                            taskInfo: {
+                              userId: this.props.userId,
+                              projectId: projectId,
+                              taskId: taskId
+                            }
+                          },
+                          this.props.files
+                          , () => {
+                            this.props.getProjectById({ id: this.props.projectId }, () => {
+                              this.props.setTaskDetails(this.props.projectTasks, taskId, () => {
+                                this.props.history.push(`/home/project-details/info?p=${this.props.projectId}`)
+                              })
                             })
-                            if (this.props.name === "") {
-                              this.setState({ validName: true })
-                            }
-                            if (this.props.description === "") {
-                              this.setState({ validDescription: true })
-                            }
-                            if (this.props.startDate === "") {
-                              this.setState({ validStartDate: true })
-                            }
-                            if (this.props.endDate === "") {
-                              this.setState({ validEndDate: true })
-                            }
-							if (this.props.endDate < this.props.startDate) {
-                              this.setState({ validEndDate: true })
-                            }
-                          
-                        }}
+                          }
+                        )
+                      }, (flag) => {
+                        this.toggleLoader(flag)
+                      })
+                      if (this.props.name === "") {
+                        this.setState({ validName: true })
+                      }
+                      if (this.props.description === "") {
+                        this.setState({ validDescription: true })
+                      }
+                      if (this.props.startDate === "") {
+                        this.setState({ validStartDate: true })
+                      }
+                      if (this.props.endDate === "") {
+                        this.setState({ validEndDate: true })
+                      }
+                      if (this.props.endDate < this.props.startDate) {
+                        this.setState({ validEndDate: true })
+                      }
 
-                          color="info"
-                        >
-                          Create Task
+                    }}
+
+                      color="info"
+                    >
+                      Create Task
                         </Button>
-                      </GridItem>
-                      <GridItem>
-                        <Button
-                          color="danger"
-                          onClick={()=>{
-                            this.props.history.goBack()
-                          }}                        
-                        >
-                        Cancel
+                  </GridItem>
+                  <GridItem>
+                    <Button
+                      color="danger"
+                      onClick={() => {
+                        this.props.history.goBack()
+                      }}
+                    >
+                      Cancel
                         </Button>
-                      </GridItem>
-                    </GridContainer>
-                  </form>
-                </CardBody>
-              </Card>
-            </GridItem>
-			 <Toaster display={this.state.validEndDate} message={"End date is BEFORE start date"} />
-          </GridContainer>
-        );
-      }
-    }
+                  </GridItem>
+                </GridContainer>
+              </form>
+            </CardBody>
+          </Card>
+        </GridItem>
+        <Toaster display={this.state.validEndDate} message={"End date is BEFORE start date"} />
+      </GridContainer>
+    );
+  }
+}
 
-    const mapStateToProps = state => {
-      return {
-        name: state.createTask.name,
-        description: state.createTask.description,
-        startDate: state.createTask.startDate,
-        endDate: state.createTask.endDate,
-        text: state.createTask.text,
-        requestCompleted: state.createTask.requestCompleted,
-        uploadStatus: state.createTask.uploadStatus,
-        files: state.createTask.files,
-        userSelected: state.createTask.userSelected,
-        status: state.createTask.status,
-        priority: state.createTask.priority,
-        userId: state.user.userId,
-        isLoggedIn: state.auth.isLoggedIn,
-        userId: state.auth.userId,
-        projectTasks: state.proDetails.projectTasks,
-        projectId: state.proDetails.id,
-        projectTeam: state.proDetails.projectTeam
-      }
-    }
+const mapStateToProps = state => {
+  return {
+    name: state.createTask.name,
+    description: state.createTask.description,
+    startDate: state.createTask.startDate,
+    endDate: state.createTask.endDate,
+    text: state.createTask.text,
+    requestCompleted: state.createTask.requestCompleted,
+    uploadStatus: state.createTask.uploadStatus,
+    files: state.createTask.files,
+    userSelected: state.createTask.userSelected,
+    status: state.createTask.status,
+    priority: state.createTask.priority,
+    userId: state.user.userId,
+    isLoggedIn: state.auth.isLoggedIn,
+    userId: state.auth.userId,
+    projectTasks: state.proDetails.projectTasks,
+    projectId: state.proDetails.id,
+    projectTeam: state.proDetails.projectTeam
+  }
+}
 
-    CreateProjectTasksDetails.propTypes = {
-      classes: PropTypes.object.isRequired
-    };
+CreateProjectTasksDetails.propTypes = {
+  classes: PropTypes.object.isRequired
+};
 
-    export default connect(mapStateToProps, { 
-      createProjectTask,
-      descriptionChanged,
-      endDateChanged,
-      filesChanged,
-      priorityChanged,
-      createProjectTasksUnmount,
-      taskNameChanged,
-      taskStatusChanged,
-      textChanged,
-      uploadFiles,
-      userSelectedChanged,
-      startDateChanged,
-      getProjectById,
-      setTaskDetails
-  })(withStyles(startProjectPageStyle, notificationsStyle)(CreateProjectTasksDetails));
+export default connect(mapStateToProps, {
+  createProjectTask,
+  descriptionChanged,
+  endDateChanged,
+  filesChanged,
+  priorityChanged,
+  createProjectTasksUnmount,
+  taskNameChanged,
+  taskStatusChanged,
+  textChanged,
+  uploadFiles,
+  userSelectedChanged,
+  startDateChanged,
+  getProjectById,
+  setTaskDetails
+})(withStyles(startProjectPageStyle, notificationsStyle)(CreateProjectTasksDetails));

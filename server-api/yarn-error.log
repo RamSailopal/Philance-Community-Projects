@@ -5,7 +5,7 @@ PATH:
   /sbin:/bin:/usr/sbin:/usr/bin
 
 Yarn version: 
-  1.10.1
+  1.15.2
 
 Node version: 
   8.11.1
@@ -14,7 +14,7 @@ Platform:
   linux x64
 
 Trace: 
-  Error: ETXTBSY: text file is busy, unlink '/opt/openproject/public/Philance/server-api/node_modules/bcrypt/lib/binding/bcrypt_lib.node'
+  Error: EPROTO: protocol error, symlink '../../../acorn/bin/acorn' -> '/opt/openproject/public/Philance/server-api/node_modules/acorn-globals/node_modules/.bin/acorn'
 
 npm manifest: 
   {
@@ -47,11 +47,12 @@ npm manifest:
       "rand-token": "^0.4.0",
       "sequelize": "^4.38.0",
       "serve": "^9.1.2",
+      "socket.io": "^2.1.1",
       "uuid": "^3.3.2"
     },
     "devDependencies": {
       "newman": "^3.10.0",
-      "nodemon": "^1.17.5"
+      "nodemon": "^1.18.10"
     }
   }
 

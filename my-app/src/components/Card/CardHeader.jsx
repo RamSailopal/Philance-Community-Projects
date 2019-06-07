@@ -49,11 +49,13 @@ CardHeader.propTypes = {
   className: PropTypes.string,
   color: PropTypes.oneOf([
     "warning",
+    "warningNew",
     "success",
     "danger",
     "info",
     "primary",
     "rose"
+
   ]),
   plain: PropTypes.bool,
   image: PropTypes.bool,

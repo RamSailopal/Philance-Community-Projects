@@ -8,17 +8,17 @@ import LoginPage from "philance/views/Pages/LoginPage.jsx";
 import AboutUs from "philance/views/Pages/AboutUs.jsx";
 import MyProjectsPage from "philance/views/Pages/MyProjectsPage.jsx";
 import NotificationsPage from "philance/views/Pages/NotificationsPage.jsx";
-import MessagesPage from "philance/views/Pages/MessagesPage.jsx";
 import CandidateReview from "philance/views/Pages/CandidateReview.jsx";
 import UserProfile from "philance/views/Pages/UserProfilePage.jsx";
 import ForgotPassword from "../views/Pages/ForgotPassword";
-import ProjectDetails from "../views/Pages/ProjectDetails"
-import ApplicationPage from "philance/views/Pages/ApplicationPage.jsx"
-import ProjectApplicantPage from "philance/views/Pages/ProjectApplicantPage.jsx"
+import ProjectDetails from "../views/Pages/ProjectDetails";
+import ApplicationPage from "philance/views/Pages/ApplicationPage.jsx";
+import ProjectApplicantPage from "philance/views/Pages/ProjectApplicantPage.jsx";
 
 // @material-ui/icons
 import HomeIcon from "@material-ui/icons/Home";
 import LaunchIcon from "@material-ui/icons/Create";
+import myProjectsIcon from "@material-ui/icons/ViewList";
 import SearchIcon from "@material-ui/icons/Search";
 import HelpIcon from "@material-ui/icons/Help";
 import FingerprintIcon from "@material-ui/icons/Fingerprint";
@@ -36,8 +36,14 @@ import CreateProjectTaskDetails from "../views/Pages/CreateProjectTaskDetails";
 import ProjectTaskDetails from "../views/Pages/ProjectTaskDetails";
 import ProjectTaskView from "../views/Pages/ProjectTaskView";
 import ProjectChat from "../views/Pages/ProjectChat";
+import CookiesPolicy from "../views/Pages/CookiesPolicy";
+import PrivacyPolicy from "../views/Pages/PrivacyPolicy";
+import TermAndCondition from "../views/Pages/TermAndCondition";
+import ContactForm from "../views/Pages/ContactForm";
+import EditProjectDetails from "../views/Pages/EditProjectDetails";
+import Dashboard from "../layouts/Dashboard";
 
-export const pagesRoutes = [
+export const pvtPagesRoutes = [
   {
     path: "/project-details/:id",
     name: "Project Details",
@@ -47,20 +53,14 @@ export const pagesRoutes = [
     component: ProjectDetails
   },
   {
-    path: "/home",
-    name: "Home",
-    short: "Home",
-    mini: "PHP",
-    icon: HomeIcon,
-    component: PublicHomePage
-  },
-  {
     path: "/start-project",
     name: "Start Project",
     short: "Start A Project",
     mini: "SPP",
     icon: LaunchIcon,
-    component: StartProjectPage
+    component: StartProjectPage,
+    privateSidebarItems: true,
+    publicHeader: true
   },
   {
     path: "/find-project",
@@ -68,7 +68,9 @@ export const pagesRoutes = [
     short: "Find A project",
     mini: "FPP",
     icon: SearchIcon,
-    component: ProjectSearch
+    component: ProjectSearch,
+    privateSidebarItems: true,
+    publicHeader: true
   },
   {
     path: "/how-it-works",
@@ -76,6 +78,7 @@ export const pagesRoutes = [
     short: "How It Works",
     mini: "HIWP",
     icon: HelpIcon,
+    publicHeader: true,
     component: HowItWorksPage
   },
   {
@@ -84,6 +87,7 @@ export const pagesRoutes = [
     short: "Login",
     mini: "LP",
     icon: FingerprintIcon,
+    publicHeader: true,
     component: LoginPage
   },
   {
@@ -92,6 +96,7 @@ export const pagesRoutes = [
     short: "Sign Up",
     mini: "RP",
     icon: PersonAddIcon,
+    publicHeader: true,
     component: RegisterPage
   },
   {
@@ -100,6 +105,7 @@ export const pagesRoutes = [
     short: "About US",
     mini: "AU",
     icon: HelpIcon,
+    publicHeader: true,
     component: AboutUs
   },
   {
@@ -109,8 +115,8 @@ export const pagesRoutes = [
     mini: "FP",
     icon: PersonAddIcon,
     component: ForgotPassword
-
   },
+
   {
     path: "/resetPassword/:id",
     name: "Reset Password",
@@ -118,64 +124,65 @@ export const pagesRoutes = [
     mini: "RP",
     icon: PersonAddIcon,
     component: ResetPasswordPublic
-
   },
   {
-    redirect: true,
+    path: "/privacypolicy",
+    name: "PrivacyPolicy",
+    short: "PrivacyPolicy",
+    mini: "PP",
+    icon: PersonAddIcon,
+    component: PrivacyPolicy
+  },
+  {
+    path: "/termofuse",
+    name: "TermOfUse",
+    short: "TermOfUse",
+    mini: "TOU",
+    icon: PersonAddIcon,
+    component: TermAndCondition
+  },
+  {
+    path: "/cookiespolicy",
+    name: "TermOfUse",
+    short: "TermOfUse",
+    mini: "CP",
+    icon: PersonAddIcon,
+    component: CookiesPolicy
+  },
+  {
+    path: "/contactUs",
+    name: "Contact Us",
+    short: "Contact Us",
+    mini: "CU",
+    icon: PersonAddIcon,
+    publicHeader: true,
+    component: ContactForm
+  },
+  {
     path: "/",
-    pathTo: "/home",
-    name: "Home"
-  },
-
-];
-export const headerRoutes = [
-  {
-    path: "/home",
-    name: "Home",
+    name: "Public Home Page",
     short: "Home",
-    mini: "PHP",
-    icon: HomeIcon,
+    mini: "H",
+    icon: LaunchIcon,
+    // publicHeader: true,
     component: PublicHomePage
   },
+
   {
-    path: "/start-project",
-    name: "Start Project",
-    short: "Start A Project",
-    mini: "SPP",
-    icon: LaunchIcon,
-    component: StartProjectPage
+    path: "/project-details",
+    name: "Project Navigator",
+    short: "Details",
+    mini: "PD",
+    icon: FolderIcon,
+    component: ProjectNavigator
   },
   {
-    path: "/find-project",
-    name: "Find Project",
-    short: "Find A project",
-    mini: "FPP",
-    icon: SearchIcon,
-    component: ProjectSearch
-  },
-  {
-    path: "/how-it-works",
-    name: "How It Works",
-    short: "How It Works",
-    mini: "HIWP",
-    icon: HelpIcon,
-    component: HowItWorksPage
-  },
-  {
-    path: "/login",
-    name: "Login",
-    short: "Login",
-    mini: "LP",
-    icon: FingerprintIcon,
-    component: LoginPage
-  },
-  {
-    path: "/register",
-    name: "Register",
-    short: "Sign Up",
-    mini: "RP",
+    path: "/contactUs",
+    name: "Contact Us",
+    short: "Contact Us",
+    mini: "CU",
     icon: PersonAddIcon,
-    component: RegisterPage
+    component: ContactForm
   },
   {
     path: "/aboutus",
@@ -190,102 +197,52 @@ export const headerRoutes = [
     path: "/",
     pathTo: "/home",
     name: "Home"
-  },
-
+  }
 ];
 
-export const pvtSidebarRoutes = [
+
+export const dashboardRoutes = [
   {
-    path: "/home",
-    name: "Home",
-    short: "Home",
-    mini: "HP",
-    icon: HomeIcon,
-    component: PvtHomePage
-  },
-  {
-    path: "/start-project",
+    path: "/home/start-project",
     name: "Start Project",
     short: "Start A Project",
     mini: "SPP",
     icon: LaunchIcon,
-    component: StartProjectPage
+    component: StartProjectPage,
+    privateSidebarItems: true,
+    publicHeader: true
   },
   {
-    path: "/my-projects",
-    name: "My Projects",
-    short: "My Projects",
-    mini: "MPP",
-    icon: FolderIcon,
-    component: MyProjectsPage
-  },
-  {
-    path: "/find-project",
+    path: "/home/find-project",
     name: "Find Project",
     short: "Find A project",
     mini: "FPP",
     icon: SearchIcon,
-    component: ProjectSearch
+    component: ProjectSearch,
+    privateSidebarItems: true,
+    publicHeader: true
   },
   {
-    path: "/notifications",
-    name: "Notifications",
-    short: "Notifications",
-    mini: "NP",
-    icon: NotificationsIcon,
-    component: NotificationsPage
-  },
-  // {
-  //   path: "/settings",
-  //   name: "Settings",
-  //   short: "Settings",
-  //   mini: "S",
-  //   icon: NotificationsIcon,
-  //   component: ProfileSettings
-  // },
-//  {
-//    path: "/messages",
-//    name: "Messages",
-//    short: "Messages",
-//    mini: "MP",
-//    icon: MessageIcon,
-//    component: MessagesPage
-//  },
-  {
-    redirect: true,
-    path: "/",
-    pathTo: "/home",
-    name: "Home"
-  }
-];
-
-export const pvtPagesRoutes = [
-  {
-    path: "/home",
-    name: "Home",
-    short: "Home",
-    mini: "HP",
-    icon: HomeIcon,
-    component: PvtHomePage
+    path: "/home/my-projects",
+    name: "My Projects",
+    short: "My projects",
+    mini: "MP",
+    icon: myProjectsIcon,
+    component: MyProjectsPage,
+    privateSidebarItems: true,
+    publicHeader: true
   },
   {
-    path: "/start-project",
-    name: "Start Project",
-    short: "Start A Project",
-    mini: "SPP",
-    icon: LaunchIcon,
-    component: StartProjectPage
-  },
-  {
-    path: "/project-details/tasks/create",
+    path: "/home/project-details/tasks/create",
     name: "Create Project Tasks",
     short: "Create Tasks",
     mini: "CPTk",
+    privateRoute: true,
     icon: SearchIcon,
     component: CreateProjectTaskDetails
   },
   {
-    path: "/project-details/tasks/:id",
+    path: "/home/project-details/tasks/:id",
     name: "View Project Task",
     short: "View Task",
     mini: "CPTk",
@@ -293,125 +250,87 @@ export const pvtPagesRoutes = [
     component: ProjectTaskDetails
   },
   {
-    path: "/find-project",
-    name: "Find Project",
-    short: "Find A project",
-    mini: "FPP",
-    icon: SearchIcon,
-    component: ProjectSearch
-  },
-  {
-    path: "/my-projects",
-    name: "My Projects",
-    short: "My Projects",
-    mini: "MPP",
-    icon: FolderIcon,
-    component: MyProjectsPage
-  },
-  {
-    path: "/notifications",
+    path: "/home/notifications",
     name: "Notifications",
     short: "Notifications",
     mini: "NP",
+    privateRoute: true,
+    privateSidebarItems: true,
     icon: NotificationsIcon,
     component: NotificationsPage
   },
   {
-    path: "/project-details",
-    name: "Project Navigator",
-    short: "Details",
-    mini: "PD",
-    icon: FolderIcon,
-    component: ProjectNavigator
-  },
-  {
-    path: "/settings",
+    path: "/home/settings",
     name: "Settings",
     short: "Settings",
     mini: "S",
+    privateRoute: true,
     icon: NotificationsIcon,
     component: ProfileSettings
   },
- // {
- //   path: "/messages",
- //   name: "Messages",
- //   short: "Messages",
- //   mini: "MP",
- //   icon: MessageIcon,
- //   component: MessagesPage
- // },
   {
-    path: "/projectCandidateReview/:id",
+    path: "/home/projectCandidateReview/:id",
     name: "Project Candidate Review",
     short: "Project Candidate Review",
     mini: "PCR",
+    privateRoute: true,
     icon: MessageIcon,
     component: CandidateReview
   },
   {
-    path: "/profile/:id",
+    path: "/home/profile/:id",
     name: "User Profile",
     short: "User Profile",
     mini: "UP",
+    privateRoute: true,
     icon: PersonIcon,
     component: Profile
   },
   {
-    path: "/profile",
+    path: "/home/profile",
     name: "User Profile",
     short: "User Profile",
     mini: "UP",
+    privateRoute: true,
     icon: PersonIcon,
     component: UserProfile
   },
   {
-    path: "/project/:projectId/user/:userId",
+    path: "/home/project/:projectId/user/:userId",
     name: "Project Applicant",
     short: "Project Applicant",
     mini: "PA",
     icon: PersonIcon,
+    privateRoute: true,
     component: ProjectApplicantPage
   },
   {
-    path: "/application-page/:id",
+    path: "/home/application-page/:id",
     name: "Application Page",
     short: "Application",
     mini: "AP",
     icon: FolderIcon,
+    privateRoute: true,
     component: ApplicationPage
   },
   {
-    redirect: true,
-    path: "/project-details",
-    pathTo: "/my-projects",
-    name: "Home Page"
-  },
-  {
-    redirect: true,
-    path: "/",
-    pathTo: "/home",
-    name: "Home"
-  }
-];
-export const projectPagesRoutes = [
-  {
-    path: "/project-details/info",
-    name: "Project Info",
+    path: "/home/project-details/info",
+    // name: "Project Info",
     short: "Info",
     mini: "Info",
     icon: HomeIcon,
     component: ProjectDetails
   },
   {
-    path: "/project-details/team",
-    name: "Project Team",
-    short: "Team",
-    mini: "PTm",
-    icon: LaunchIcon,
-    component: ProjectTeam
+    path: "/home/editProject",
+    name: "Edit Project",
+    short: "Edit Project",
+    mini: "AP",
+    icon: FolderIcon,
+    component: EditProjectDetails
   },
   {
-    path: "/project-details/tasks",
+    path: "/home/project-details/tasks",
     name: "Project Tasks",
     short: "Tasks",
     mini: "PTk",
@@ -419,24 +338,33 @@ export const projectPagesRoutes = [
     component: ProjectTaskView
   },
   {
-    path: "/project-details/v1/chat",
-    name: "Project Chat",
-    short: "Chat",
-    mini: "PC",
-    icon: FolderIcon,
-    component: ProjectChat
-  }]
-export const projectPagesHeaderRoutes = [
+    redirect: true,
+    path: "/home/project-details",
+    pathTo: "/home/my-projects",
+    name: "Home Page"
+  },
   {
-    path: "/project-details/info",
-    name: "Details",
-    short: "Details",
-    mini: "D",
+    path: "/home",
+    name: "Home",
+    short: "Home",
+    mini: "MPP",
+    icon: HomeIcon,
+    privateSidebarItems: false,
+    privateRoute: true,
+    component: PvtHomePage
+  },
+]
+export const projectPagesRoutes = [
+  {
+    path: "/home/project-details/info",
+    //name: "Project Info",
+    short: "Info",
+    mini: "Info",
     icon: HomeIcon,
     component: ProjectDetails
   },
   {
-    path: "/project-details/team",
+    path: "/home/project-details/team",
     name: "Project Team",
     short: "Team",
     mini: "PTm",
@@ -444,7 +372,41 @@ export const projectPagesHeaderRoutes = [
     component: ProjectTeam
   },
   {
-    path: "/project-details/tasks",
+    path: "/home/project-details/tasks",
+    name: "Project Tasks",
+    short: "Tasks",
+    mini: "PTk",
+    icon: SearchIcon,
+    component: ProjectTaskView
+  },
+  {
+    path: "/home/project-details/v1/chat",
+    name: "Project Chat",
+    short: "Chat",
+    mini: "PC",
+    icon: FolderIcon,
+    component: ProjectChat
+  }
+];
+export const projectPagesHeaderRoutes = [
+  {
+    path: "/home/project-details/info",
+    name: "Details",
+    short: "Details",
+    mini: "D",
+    icon: HomeIcon,
+    component: ProjectDetails
+  },
+  {
+    path: "/home/project-details/team",
+    name: "Project Team",
+    short: "Team",
+    mini: "PTm",
+    icon: LaunchIcon,
+    component: ProjectTeam
+  },
+  {
+    path: "/home/project-details/tasks",
     name: "Project Tasks",
     short: "Tasks",
     mini: "PTk",
@@ -452,10 +414,11 @@ export const projectPagesHeaderRoutes = [
     component: CreateProjectTaskDetails
   },
   {
-    path: "/project-details/v1/chat",
+    path: "/home/project-details/v1/chat",
     name: "Project Chat",
     short: "Chat",
     mini: "PC",
     icon: FolderIcon,
     component: ProjectChat
-  }]
+  }
+];

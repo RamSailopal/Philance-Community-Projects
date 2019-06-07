@@ -3,8 +3,10 @@ distance.apiKey = '';
 var projects = require("./projects.model");
 var projectTasks = require("./project.tasks.model");
 var projectDetails = require("./project.details.model");
+var projectUpdates = require("./project.updates.model");
 var projectAttachments = require("./project.attachments.model");
 var taskAttachments = require("./tasks.attachments.model");
+const projectLinkAttachments = require('../projects/project.link.attachments.model');
 var projectTeam = require("./projects.team.model");
 var users = require("../users/users.model");
 var userSettings = require("../users/user.settings.model");
@@ -24,7 +26,7 @@ const Op = sequelize.Op;
  * @param {*} next 
  */
 exports.createProjects = (req, res, next) => {
-    console.info('\n\n\n', req.body, '\n\n\n')
+
     projects.create({
         projectName: req.body.projectName,
         description: req.body.description,
@@ -37,7 +39,15 @@ exports.createProjects = (req, res, next) => {
         lastUpdatedBy: req.body.userId,
         lastUpdatedDate: new Date(),
         createdBy: req.body.userId,
-        country: req.body.country
+        country: req.body.country,
+        projectSummary: req.body.summary,
+        projectChallenge: req.body.challenge,
+        projectSolution: req.body.solution,
+        projectJustification: req.body.justification,
+        budgetDetails: req.body.budgetDetails,
+        city: req.body.city,
+        suppliesNeeded: req.body.suppliesNeeded,
+
     }).then(_projects => {
         sequelize.transaction(function (t) {
             projectTeam.create({
@@ -49,7 +59,7 @@ exports.createProjects = (req, res, next) => {
                 lastUpdatedDate: new Date(),
                 createdBy: req.body.userId,
                 lastUpdatedBy: req.body.userId,
-                status: 'ACCEPTED'
+                status: 'ACCEPTED',
             })
             if (req.body.projectDetails) {
                 sequelize.Promise.each(req.body.projectDetails, function (itemToUpdate) {
@@ -74,13 +84,11 @@ exports.createProjects = (req, res, next) => {
                         name: 'general',
                         projectId: _projects.projectId
                     }).then((_groupResp) => {
-                        userGroup.bulkCreate([
-                            {
-                                groupId: _groupResp.groupId,
-                                projectId: _projects.projectId,
-                                userId: req.body.userId
-                            }
-                        ]).then(() => {
+                        userGroup.bulkCreate([{
+                            groupId: _groupResp.groupId,
+                            projectId: _projects.projectId,
+                            userId: req.body.userId
+                        }]).then(() => {
                             projects.findAll({
                                 where: {
                                     projectId: _projects.projectId
@@ -100,8 +108,42 @@ exports.createProjects = (req, res, next) => {
         })
     })
 }
+exports.updatesProjectOnly = (req, res) => {
+    projects.update(
+        req.body.fields, {
+            where: {
+                projectId: req.params.projectId
+            }
+        }
+    ).then(() => {
+        projects.findAll({
+            where: {
+                projectId: req.params.projectId
+            },
+            include: [{
+                model: projectDetails,
+                nested: true,
+                duplicating: false,
+                required: false
+            }]
+        }).then((_projects) => {
+            res.status(200).json({
+                project: _projects
+            });
+        }).catch(function (err) {
+
+            throw err
+        });
+    }).catch(err => {
+        res.status(500).send(err)
+    })
+}
 
 exports.updateProjects = (req, res, next) => {
+    if (req.query.exclusiveUpdate) {
+        this.updatesProjectOnly(req, res, next)
+        return
+    }
     var _count = 0;
     projects.hasMany(projectDetails, {
         foreignKey: 'projectId'
@@ -119,9 +161,16 @@ exports.updateProjects = (req, res, next) => {
             location: req.body.location,
             startDate: req.body.startDate,
             endDate: req.body.endDate,
-            lastUpdatedDate: new Date(),
             estimatedBudget: req.body.estimatedBudget,
+            lastUpdatedDate: new Date(),
             lastUpdatedBy: req.body.userId,
+            suppliesNeeded: req.body.suppliesNeeded,
+            city: req.body.city,
+            projectSummary: req.body.projectSummary,
+            projectChallenge: req.body.projectChallenge,
+            projectSolution: req.body.projectSolution,
+            projectJustification: req.body.projectJustification,
+            budgetDetails: req.body.budgetDetails,
         }, {
                 where: {
                     projectId: req.params.projectId
@@ -140,25 +189,25 @@ exports.updateProjects = (req, res, next) => {
                     }).then(() => {
                         if (req.body.projectDetails == null ||
                             req.body.projectDetails == undefined ||
-                            req.body.projectDetails.length==0) {
-                                projects.findAll({
-                                    where: {
-                                        projectId: req.params.projectId
-                                    },
-                                    include: [{
-                                        model: projectDetails,
-                                        nested: true,
-                                        duplicating: false,
-                                        required: false
-                                    }]
-                                }).then((_projects) => {
-                                    res.status(200).json({
-                                        project: _projects
-                                    });
-                                }).catch(function (err) {
-                                    console.log(err);
-                                    throw err
+                            req.body.projectDetails.length == 0) {
+                            projects.findAll({
+                                where: {
+                                    projectId: req.params.projectId
+                                },
+                                include: [{
+                                    model: projectDetails,
+                                    nested: true,
+                                    duplicating: false,
+                                    required: false
+                                }]
+                            }).then((_projects) => {
+                                res.status(200).json({
+                                    project: _projects
                                 });
+                            }).catch(function (err) {
+
+                                throw err
+                            });
                         } else {
                             sequelize.Promise.each(req.body.projectDetails, (itemToUpdate) => {
                                 projectDetails.create({
@@ -196,15 +245,15 @@ exports.updateProjects = (req, res, next) => {
                                                     project: _projects
                                                 });
                                             }).catch(function (err) {
-                                                console.log(err);
+
                                                 throw err
                                             });
                                         }
                                     }).catch(function (err) {
-                                        console.log(err);
+
                                         throw err
                                     });
-                            }).then(()=>{
+                            }).then(() => {
                                 projects.findAll({
                                     where: {
                                         projectId: req.params.projectId
@@ -220,7 +269,7 @@ exports.updateProjects = (req, res, next) => {
                                         project: _projects
                                     });
                                 }).catch(function (err) {
-                                    console.log(err);
+
                                     throw err
                                 });
                             })
@@ -237,86 +286,220 @@ exports.updateProjects = (req, res, next) => {
             })
     })
 }
-
-
-
 /**
  * GET - list of projects based on User Search Criteria. It may or may not be created or assigned to the user 
+ * Current input in Req
+ *      body:{
+ *          country,
+ *          volunteers,
+ *          freelancers,
+ *          keywords,
+ *          projectStatus,
+ *          interests
+ *      }
+ *  sample output
+ * "respProjects": [
+ *      {
+ *          "project_id": 1,
+ *          "project_name": "Improve Rural Moroccan Schools: Sami's Project",
+ *          "description": "fjkshdjkfsd",
+ *          "volunteers": "5",
+ *          "freelancers": "7",
+ *          "location": "Sample Location",
+ *          "start_date": "2019-03-21T18:30:00.000Z",
+ *          "end_date": "2019-03-26T18:30:00.000Z",
+ *          "zip_code": "125055",
+ *          "country": "India",
+ *          "estimated_budget": "50000.00",
+ *          "status": "ACTIVE",
+ *          "creation_date": "2019-03-19T13:25:13.000Z",
+ *          "created_by": 1,
+ *          "last_updated_date": "2019-03-20T12:53:07.000Z",
+ *          "last_updated_by": 1,
+ *          "original_name": null,
+ *          "attachment": null,
+ *          "defaultImage":'Should have unique name'
+ *          "interests": [
+ *              'Child Welfare','etc'
+ *          ]
+ *      },
  */
+projects.hasMany(projectDetails, { foreignKey: 'projectId', as: 'searchableProjectDetails' });
+
+// projects.belongsTo(users, {
+//     foreignKey: 'created_by',
+//     scope: {
+//         created_by:
+//         {
+//             $col: 'projectCreatedByDetails.user_id'
+//         }
+//     },
+//     as: 'projectCreatedByDetails'
+// });
+
+
 exports.getProjects = (req, res, next) => {
-    var _country = req.body.country
-    var _volunteers = req.body.volunteers
-    var _freelancers = req.body.freelancers
-    var _keywords = req.body.keywords
-    var _projectStatus = req.body.projectStatus
-    var _impactCategories = req.body.interests
+    // projects.hasMany(projectDetails, { foreignKey: 'projectId' });
+    const offset = (req.body.activePage - 1) * req.body.pageSize
+    const limit = req.body.pageSize
+    var whereClause = {}
+    /**
+     * Directly Match country with body
+     */
+    if (req.body.country) {
+        whereClause['country'] = req.body.country
+    }
+    /**
+     * Check for volunteers greater than 0
+     */
 
-
-    var keywordsArray = _keywords ? _keywords.replace(', ', ',').replace(' ,', ',').split(',') : null;
-
-    var _impactCategoriesSql = '';
-    if (_impactCategories) {
-        for (var i = 0; i < _impactCategories.length; i++) {
-            _impactCategoriesSql = _impactCategoriesSql + `details.name= '${_impactCategories[i]}'  OR `
+    if (req.body.volunteers) {
+        whereClause['volunteers'] = {
+            [Op.gt]: 0
         }
     }
-    var _keywordsSql = '';
-    if (_keywords) {
-        for (var i = 0; i < keywordsArray.length; i++) {
-            _keywordsSql = _keywordsSql + `(projects.description LIKE '%${keywordsArray[i]}%' OR projects.project_name LIKE '%${keywordsArray[i]}%') OR `
+
+    /**
+     * Check for freelancers greater than 0
+     */
+
+    if (req.body.freelancers) {
+        whereClause['freelancers'] = {
+            [Op.gt]: 0
         }
     }
-    var _sql2 = 'SELECT projects.*, details.name FROM philance.projects as projects INNER JOIN philance.project_details as details ON projects.project_id=details.project_id where projects.country=\'Afghanistan\' AND (details.name=\'Elderly\' OR details.name=\'Other\' )'
-    var _sql = ''
-    _sql = _impactCategories.length != 0 ? _sql + 'SELECT projects.*, attach.original_name, attach.attachment, details.name FROM philance.projects as projects   ' : 'SELECT projects.*, attach.original_name, attach.attachment FROM philance.projects as projects LEFT JOIN philance.project_attachments as attach ON projects.project_id=attach.project_id AND attach.original_name LIKE ' + `'ProjectImage.%'   `;
-    _sql = _impactCategories.length != 0 ? _sql + ' INNER JOIN philance.project_details as details ON projects.project_id=details.project_id LEFT JOIN philance.project_attachments as attach ON projects.project_id=attach.project_id   ' : _sql;
-    _sql = _sql + 'where ';
-	
-    _sql = _country ? _sql + `projects.country = '${_country}'   AND ` : _sql;
-    _sql = _projectStatus ? _sql + `projects.status = '${_projectStatus}'   AND ` : _sql;
-    _sql = _volunteers ? _sql + `projects.volunteers > 0   AND ` : _sql;
-    _sql = _freelancers ? _sql + `projects.freelancers > 0   AND ` : _sql;
-    _sql = _keywords ? _sql + `${_keywordsSql.slice(0, -3)}   AND ` : _sql;
-    _sql = _impactCategories.length != 0 ? _sql + `(${_impactCategoriesSql}  )` : _sql;
-    _sql = _sql.slice(0, -6)
-    _sql = _impactCategories.length != 0 ? _sql + `)` : _sql;
 
-    sequelize.query(_sql, {
-        type: sequelize.QueryTypes.SELECT
-    }).then((projects) => {
-        var respProjects = {}
-        var keys = []
-        for (var i = 0; i < projects.length; i++) {
-            if (!keys.includes(projects[i].project_id)) {
-                respProjects[projects[i].project_id] = projects[i]
-                respProjects[projects[i].project_id].interests = []
-                respProjects[projects[i].project_id].interests.push(projects[i].name)
-            } else {
-                respProjects[projects[i].project_id].interests.push(projects[i].name)
+    /**
+     * in the following logic, We are checking the keyworkd in different sets of columns.
+     * in the following example, Keywords are matched either by project name, OR by project description
+     */
+    if (req.body.keywords) {
+        /**
+         * Convert comma seperated keywords to array
+         */
+        let keywords = req.body.keywords.split(',')
+        whereClause[Op.or] = [{
+            [Op.or]: keywords.map(keyword => {
+                return {
+                    projectName: {
+                        [Op.like]: `%${keyword}%`
+                    }
+                }
+            })
+        },
+        {
+            [Op.or]: keywords.map(keyword => {
+                return {
+                    description: {
+                        [Op.like]: `%${keyword}%`
+                    }
+                }
+            })
+        },
+        ]
+    }
+
+    /**
+     * Directly Match country with body
+     */
+
+    if (!req.body.status) {
+        whereClause['status'] =
+            { [Op.not]: 'UNPUBLISHED' }
+    } else {
+        whereClause['status'] = req.body.status
+    }
+
+    let query = {
+        where: whereClause
+    }
+    let query1 = {
+        where: whereClause
+    }
+    if (req.query.l) {
+        query['limit'] = parseInt(req.query.l)
+    }
+    if (offset) {
+        query['offset'] = offset
+    }
+    if (limit) {
+        query['limit'] = limit
+    }
+    if (req.body.obd) {
+        if (req.body.obd == 'DESC') {
+            query['order'] = [['creationDate', 'DESC']]
+        } else {
+            query['order'] = [['creationDate']]
+        }
+    }
+
+    if (req.body.interests) {
+        query['include'] = []
+        query['include'][0] = {
+            model: projectDetails,
+            required: false,
+            as: 'searchableProjectDetails',
+            attributes: [
+                'name'
+            ],
+            where: {
+                name: [req.body.interests]
             }
-            keys.push(projects[i].project_id)
         }
+        query['include'][1] = {
+            model: projectDetails,
+            required: false,
+            attributes: [
+                'name'
+            ]
+        }
+    } else {
+        query['include'] = []
+        query['include'][0] =
+            {
+                model: projectDetails,
+                required: false,
+                attributes: [
+                    'name'
+                ]
+            }
+        query['include'][1] = {
+            model: users,
+            required: false,
+            attributes: [
+                'firstName', 'lastName',
+            ],
+            as: 'projectCreatedByDetails'
 
-        res.status(200).send({
-            respProjects: Object.values(respProjects)
-        })
-        delete respProjects;
-        delete keys;
+        }
+    }
 
-    })
-        .catch((err) => {
-            console.log(err)
-        })
+    /**
+     * Execute the query by including/joining the project details with the projects table 
+     */
+    //total pages shown in the pagination 
+    projects.findAndCountAll(
+        // {
+        //     where: {
+        //         status:
+        //             { [Op.not]: 'UNPUBLISHED' }
+        //     }
+        // }
+        query1
+    )
+        .then((data) => {
+            let pages = Math.ceil(data.count);
+            //total pages shown in the pagination 
+            projects.findAll(query).then((resp) => {
+                res.status(200).send({
+                    respProjects: resp,
+                    totalPages: pages
+                })
+            }).catch((err) => {
 
-    // projects.findAll({
-    //     hierarchy: true,
-    //     attributes: ['project_id']
-    //   }).then(function(results) {
-    //     console.log(results)
-    //     // res.render('index', { nested_cat: results });
-    //   });
-
-    // })
+                res.status(500).send(err)
+            })
+        });
 };
 
 
@@ -331,7 +514,18 @@ projects.hasMany(projectDetails, {
 projects.hasMany(projectTeam, {
     foreignKey: 'projectId'
 });
+projects.hasMany(projectTeam, {
+    foreignKey: 'projectId',
+    as: 'acceptedVolunteers'
+});
+projects.hasMany(projectTeam, {
+    foreignKey: 'projectId',
+    as: 'acceptedFreelancers'
+});
 projects.hasMany(projectAttachments, {
+    foreignKey: 'projectId'
+});
+projects.hasMany(projectLinkAttachments, {
     foreignKey: 'projectId'
 });
 projectAttachments.belongsTo(users, {
@@ -359,7 +553,15 @@ projects.hasMany(group, {
     as: "chatGroup",
     foreignKey: 'projectId'
 });
-
+projects.belongsTo(users, {
+    foreignKey: 'created_by',
+    scope: {
+        created_by: {
+            $col: 'projectCreatedByDetails.user_id'
+        }
+    },
+    as: 'projectCreatedByDetails'
+});
 exports.getProjectById = (req, res, next) => {
     users.hasMany(projectTeam, {
         foreignKey: 'userId'
@@ -377,16 +579,28 @@ exports.getProjectById = (req, res, next) => {
             nested: true,
             duplicating: false,
             required: false,
-			
+
         },
         {
             model: projectAttachments,
             nested: true,
             include: {
                 model: users,
-				attributes: ['userId', 'firstName', 'lastName','organization','title','rate','auth_src','status','interests','location','description','country']
-				
+                attributes: ['userId', 'firstName', 'lastName', 'organization', 'title', 'rate', 'auth_src', 'status', 'interests', 'location', 'description', 'country']
+
             }
+        },
+        {
+            model: users,
+            required: false,
+            attributes: [
+                'firstName', 'lastName', 'email'
+            ],
+            as: 'projectCreatedByDetails'
+        },
+        {
+            model: projectLinkAttachments,
+            // as: 'projectLinks',
         },
         {
             model: group,
@@ -401,12 +615,12 @@ exports.getProjectById = (req, res, next) => {
             include: [{
                 model: users,
                 as: "author",
-				attributes: ['userId', 'firstName', 'lastName','organization','title','rate','auth_src','status','interests','location','description','country']
-            }, 
-			{
+                attributes: ['userId', 'firstName', 'lastName', 'organization', 'title', 'rate', 'auth_src', 'status', 'interests', 'location', 'description', 'country']
+            },
+            {
                 model: users,
                 as: "assignee",
-				attributes: ['userId', 'firstName', 'lastName','organization','title','rate','auth_src','status','interests','location','description','country']
+                attributes: ['userId', 'firstName', 'lastName', 'organization', 'title', 'rate', 'auth_src', 'status', 'interests', 'location', 'description', 'country']
             },
             {
                 model: taskAttachments,
@@ -428,24 +642,82 @@ exports.getProjectById = (req, res, next) => {
                 model: users,
                 required: true,
                 nested: true,
-				attributes: ['userId','firstName','lastName','organization','title','rate','auth_src','status','createdBy','interests','location','description','country']
+                attributes: ['userId', 'firstName', 'lastName', 'organization', 'title', 'rate', 'auth_src', 'status', 'createdBy', 'interests', 'location', 'description', 'country']
             }, //, {attributes: ['fname' ,'lname', 'email'] }//, where : {userId : projectTeam.userId}}
             ]
+        },
+        {
+            model: projectTeam,
+            nested: true,
+            duplicating: false,
+            required: false,
+            as: 'acceptedVolunteers',
+
+            where: {
+                [Op.and]: {
+                    projectId: req.params.projectId,
+                    status: "ACCEPTED",
+                    role: 'volunteer'
+                }
+            }
+        },
+        {
+            model: projectTeam,
+            nested: true,
+            duplicating: false,
+            required: false,
+            as: 'acceptedFreelancers',
+
+            where: {
+                [Op.and]: {
+                    projectId: req.params.projectId,
+                    status: "ACCEPTED",
+                    role: 'freelancer'
+                }
+            }
         }
         ]
     }).then((_project) => {
-
         res.status(200).json({
             project: _project
         });
     }).catch(err => {
-        console.log(err);
+
         res.status(500).json({
             error: err
         });
     })
 }
+exports.getRecentProject = (req, res, next) => {
 
+    projects.findAll({
+        limit: 3,
+        order: [
+            [{
+                model: projects,
+                as: 'projects'
+            }, 'creation_date', 'DESC']
+        ],
+        include: [{
+            model: projectDetails,
+            nested: true,
+            duplicating: false,
+            required: false,
+            attributes: [
+                'name'
+            ],
+        }]
+    }).then((_project) => {
+        res.status(200).json({
+            recentProject: _project
+        });
+    }).catch(err => {
+
+        res.status(500).json({
+            error: err
+        });
+    })
+}
 
 exports.resourceApplyForProject = (req, res, next) => {
     users.hasOne(userSettings, {
@@ -471,7 +743,6 @@ exports.resourceApplyForProject = (req, res, next) => {
                 // lastUpdatedDate: sequelize.literal('CURRENT_TIMESTAMP'),
                 lastUpdatedBy: req.body.userId
             }).then((_projectTeam) => {
-
                 users.findOne({
                     where: {
                         [Op.and]: {
@@ -492,10 +763,8 @@ exports.resourceApplyForProject = (req, res, next) => {
                         var dev
                         if (process.env.NODE_ENV === 'production') {
                             dev = config.production.secure;
-
                         } else {
                             dev = config.development.unsecure;
-
                         }
                         users.findOne({
                             where: {
@@ -512,9 +781,6 @@ exports.resourceApplyForProject = (req, res, next) => {
                                     projectId: req.params.projectId
                                 }
                             }).then((project) => {
-                                console.log(project.dataValues.projectName)
-                                console.log(Owner.dataValues.user_setting.dataValues);
-                                console.log('Owner.dataValues.user_setting.dataValues', user.dataValues.firstName);
 
                                 //send notifications
                                 userNotifications.create({
@@ -533,7 +799,7 @@ exports.resourceApplyForProject = (req, res, next) => {
                                 userHelper.emailUsers({
                                     config: {
                                         from: 'noreply@philance.org',
-                                        to: Owner.dataValues.email,                      //email to be requested from the database
+                                        to: Owner.dataValues.email, //email to be requested from the database
                                     },
                                     data: {
                                         subject: 'Philance Project Application',
@@ -544,7 +810,7 @@ exports.resourceApplyForProject = (req, res, next) => {
                                 userHelper.emailUsers({
                                     config: {
                                         from: 'noreply@philance.org',
-                                        to: user.dataValues.email,                      //email to be requested from the database
+                                        to: user.dataValues.email, //email to be requested from the database
                                     },
                                     data: {
                                         subject: 'Philance Project Application',
@@ -563,13 +829,13 @@ exports.resourceApplyForProject = (req, res, next) => {
                     Application: _projectTeam
                 });
             }).catch(err => {
-                console.log(err);
+
                 res.status(500).json({
                     error: err.message
                 });
             })
         } else {
-            console.log('User already applied for the Project');
+
             return res.status(409).json({
                 message: "User already applied for the Project",
                 Application: _projectTeam
@@ -579,7 +845,42 @@ exports.resourceApplyForProject = (req, res, next) => {
     })
 }
 
+exports.submitQuery = (req, res, next) => {
 
+
+    // contactQuery.create({
+    //     firtsName: req.body.firtsName,
+    //     lastName: req.body.lastName,
+    //     email: req.body.email,
+    //     queryDate: new Date(),
+    //     message: req.body.message,
+    // }).then((res) => {
+
+    //     res.status(200).json({
+    //         response: res
+    //     });
+    // }).catch(err => {
+    //    
+    //     res.status(500).json({
+    //         error: err
+    //     });
+    // })
+    userHelper.emailUsersAsync({
+        config: {
+            from: req.body.email,
+            to: 'ajay.kapur@philance.org', //email to be requested from the database
+        },
+        data: {
+            subject: `Philance Query from Contact Form by ${req.body.firstName} ${req.body.lastName} `,
+            text: req.body.message
+        }
+    }).then(resp => {
+        res.status(200).send(resp)
+    }).catch(err => {
+        res.status(500).send(err)
+    })
+
+}
 
 /**
  * This is to get the list if users who applied for a specific Project. This is called when comes to one comes to candidate review page
@@ -624,7 +925,7 @@ exports.resourceListForReview = (req, res, next) => {
             Candidates: _projectTeam
         });
     }).catch(err => {
-        console.log(err);
+
         res.status(500).json({
             error: err
         });
@@ -738,7 +1039,7 @@ exports.resourceApproveOrReject = (req, res, next) => {
             });
         })
     }).catch(err => {
-        console.log(err);
+
         res.status(500).json({
             error: err.message
         });
@@ -803,9 +1104,10 @@ exports.getProjectTeamMember = (req, res, next) => {
 exports.deleteProjectAttachment = (req, res, next) => {
     //TODO: Delete File from server
     //
-    //
+
 
     projectAttachments.destroy({
+
         where: {
             [Op.and]: {
                 attachment: `/philance/projects/files/${req.params.projectId}/uploads/${req.params.fileName}`,
@@ -822,7 +1124,7 @@ exports.getProjectTaskAttachments = (req, res, next) => {
         where: {
             [Op.and]: {
                 projectId: req.params.projectId,
-				taskId: req.params.taskId,
+                taskId: req.params.taskId,
                 attachment: `/philance/projects/${req.params.projectId}/tasks/${req.params.taskId}/files/uploads/${req.params.fileName}`,
             }
         }
@@ -908,5 +1210,122 @@ exports.projectTasksFileUploaded = (req, res, next) => {
         createdBy: JSON.parse(req.body.param).taskInfo.userId,
     }).then(() => {
         res.send('Files uploaded')
+    })
+}
+
+exports.changeDefaultImage = (req, res, next) => {
+    projects.update({
+        defaultImage: req.body.imageUri,
+    }, {
+            where: {
+                projectId: req.params.projectId
+            }
+        }).then((resp) => {
+            res.status(200).send(resp)
+        })
+}
+exports.createProjectUpdate = (req, res, next) => {
+
+    projectUpdates.create({
+        projectId: req.body.projectId,
+        creationDate: new Date(),
+        text: req.body.text,
+        lastUpdatedDate: new Date(),
+        createdBy: req.body.userId,
+        lastUpdatedBy: req.body.userId,
+    }).then(() => {
+        res.status(200).send({
+            message: 'successfully created the update'
+        })
+    }).catch(() => {
+
+        res.status(500).send({
+            message: 'could not create the update'
+        })
+    })
+}
+exports.updateProjectUpdate = (req, res, next) => {
+    projectUpdates.update({
+        creationDate: new Date(),
+        text: req.body.text,
+        lastUpdatedDate: new Date(),
+        createdBy: req.body.userId,
+        lastUpdatedBy: req.body.userId,
+    }, {
+            where: {
+                projectId: req.body.projectId,
+            }
+        }).then(() => {
+            res.status(200).send({
+                message: 'successfully created the update'
+            })
+        }).catch(() => {
+
+            res.status(500).send({
+                message: 'could not create the update'
+            })
+        })
+}
+projectUpdates.belongsTo(users, {
+    foreignKey: 'created_by',
+    scope: {
+        created_by: {
+            $col: 'createdByDetails.user_id'
+        }
+    },
+    as: 'createdByDetails'
+});
+exports.getProjectUpdates = (req, res, next) => {
+
+    const offset = (req.body.activePage - 1) * req.body.pageSize
+    const limit = req.body.pageSize
+    projectUpdates.findAndCountAll({
+        where: {
+            projectId: req.params.projectId,
+        },
+    })
+        .then((data) => {
+            let pages = Math.ceil(data.count);
+            projectUpdates.findAll({
+                offset: offset,
+                limit: limit,
+                order: [['creationDate', 'DESC']],
+                where: {
+                    projectId: req.params.projectId,
+                },
+                include: {
+                    model: users,
+                    attributes: [
+                        'firstName', 'lastName', 'email'
+                    ],
+                    as: 'createdByDetails'
+
+                }
+            }).then(resp => {
+                res.status(200).send({
+                    updates: resp,
+                    totalPages: pages
+                })
+            }).catch(err => {
+                res.status(500).send({
+                    message: 'could not retrieve updates'
+                })
+            })
+        })
+}
+exports.getProjectUpdate = (req, res, next) => {
+
+}
+exports.deleteProjectUpdate = (req, res, next) => {
+
+    projectUpdates.destroy({
+        where: {
+            [Op.and]: {
+                projectId: req.params.projectId,
+                updateId: req.params.updateId
+            }
+        }
+    }).then((response) => {
+        res.sendStatus(200)
     })
 }

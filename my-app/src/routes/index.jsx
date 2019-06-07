@@ -7,5 +7,4 @@ var indexRoutes = [
   { path: "/pages", name: "Pages", component: Pages },
   { path: "/", name: "Home", component: Dashboard }
 ];
-
 export default indexRoutes;

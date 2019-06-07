@@ -91,15 +91,15 @@ class ResetPasswordPublic extends React.Component {
                     </CardBody>
 
                     :
-                        <CardBody>
-                    <GridContainer className={classes.justifyContentCenter} >
-                      <GridItem  className={classes.justifyContentCenter}>
+                    <CardBody>
+                      <GridContainer className={classes.justifyContentCenter} >
+                        <GridItem className={classes.justifyContentCenter}>
                           Password Changed Successfully
                           <h4 className={classes.textCenter}><NavLink to='/login'>Login Here</NavLink></h4>
 
-                      </GridItem  >
-                    </GridContainer >
-                        </CardBody>
+                        </GridItem  >
+                      </GridContainer >
+                    </CardBody>
 
 
                   }

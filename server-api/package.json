@@ -32,7 +32,9 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
+    "eslint": "^5.16.0",
+    "eslint-plugin-react": "^7.12.4",
     "newman": "^3.10.0",
-    "nodemon": "^1.17.5"
+    "nodemon": "^1.18.10"
   }
 }

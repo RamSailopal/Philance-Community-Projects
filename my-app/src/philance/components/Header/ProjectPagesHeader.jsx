@@ -66,7 +66,7 @@ class ProjectPagesHeader extends React.Component {
             });
           return (
             <ListItem key={key} className={classes.listItem}>
-              <NavLink style={{"text-align": "center"}} to={prop.path} className={navLink}>
+              <NavLink style={{ "text-align": "center" }} to={prop.path} className={navLink}>
                 {/* <ListItemIcon className={classes.listItemIcon}>
                   <prop.icon />
                 </ListItemIcon> */}

@@ -7,7 +7,6 @@ import {
   cardTitle
 } from "assets/jss/material-dashboard-pro-react.jsx";
 
-import customCheckboxRadioSwitch from "assets/jss/material-dashboard-pro-react/customCheckboxRadioSwitch.jsx";
 
 const projectSearchStyle = {
   // ...customCheckboxRadioSwitch,
@@ -18,8 +17,8 @@ const projectSearchStyle = {
   container: {
     ...container,
     position: "relative",
-    zIndex: "3",
-    paddingTop: "23vh"
+    zIndex: "4",
+    paddingTop: "2vh"
   },
   cardSignup: {
     borderRadius: "6px",
@@ -28,6 +27,19 @@ const projectSearchStyle = {
     marginBottom: "100px",
     padding: "40px 0px",
     marginTop: "1vh"
+  },
+  fontClass1: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    fontFamily:"Aleo,Georgia,serif",
+    transform: "translate(-50%, -50%)",
+    "&:hover": {
+      opacity: 1,
+      color: "#ff7b00"
+    },
+    fontSize:'4rem'
+  
   },
   center: {
     textAlign: "center"
@@ -61,6 +73,13 @@ const projectSearchStyle = {
   checkboxLabel: {
     marginLeft: "6px",
     color: "rgba(0, 0, 0, 0.26)"
+  },
+  donateRight: {
+
+    paddingRight: '0px !important'
+  },
+  donateLeft: {
+    paddingLeft: '0px !important'
   }
 };
 

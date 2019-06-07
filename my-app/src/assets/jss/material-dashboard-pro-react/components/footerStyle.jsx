@@ -18,13 +18,13 @@ const footerStyle = {
   right: {
     margin: "0",
     fontSize: "14px",
-    float: "right!important",
-    padding: "15px"
+    float: "right !important",
+    // padding: "15px"
   },
   footer: {
     bottom: "0",
     borderTop: "1px solid #e7e7e7",
-    padding: "15px 0",
+    padding: "10px 0px 0 0",
     ...defaultFont,
     zIndex: 4
   },
