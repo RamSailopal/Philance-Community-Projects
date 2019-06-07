@@ -18,7 +18,7 @@
 	$response = curl_exec($handle);
 
 	$httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
-	if($httpCode != 200) {
+	if($httpCode != 404) {
 		$backerr=1;
 	}
 	echo $fronterr;
