@@ -1,34 +1,26 @@
 # [PhiLance](http://philance.org)
-An open source platform for social impact projects
+An open source platform creating economic opportunities for people facing barriers to employment
 
-PhiLance is a platform that individuals and organizations can use to:
-* Launch their own social impact project, no matter how big or small that project is (e.g. helping homeless people in your city or finding a wheelchair for a handicapped person in your neighborhood)
-* Recruit volunteers and/or freelancers to work on that project. Your project team could comprise of members who live across your street or across the world.
-* Manage the project using project management tools provided in the PhiLance platform
-* Raise funds for their projects, if required
+PhiLance is an AI-enabled online jobs marketplace connecting opportunity youth and those facing barriers to employment to
+jobs posted by businesses. We work closely with workforce development agencies and nonprofits that support such individuals
+with career services.
 
 You can read more about the mission and vision of PhiLance on [philance.org](http://philance.org)
 
 For project documentation refer to the [PhiLance Wiki on GitHub](https://github.com/Philance/Philance/wiki)
 
 ## Features
-Here are the features that we think need to go into the initial version of the platform. If you have suggestions for other features, please contact the team.
+Here are the features that will be in the initial version of the platform.
 * Client application that runs on browser and mobile devices
 * User Management Suite
-  * Ability to sign up on the platform as a volunteer or a freelancer and work on projects
-  * Ability to sign onto the platform as a project sponsor and post projects
-  * Ability to sign onto the platform as an investor and fund projects of interest (phase 2)
-* Search Tool to find projects of interest, find people, etc.
-* Project management Suite
-  * Collaboration tools to enable project members to communicate with one another (text messaging, email, A/V conferencing, file sharing)
-  * Project planning and scheduling tools
-  * Time tracking tool
-  * Project budgeting tool to track project expenses
-  * Reporting tool
-* Payment Processing Suite for handling payments to freelancers on a project
-* Analytics Suite to see KPIs of projects, including measurable social impact KPIs.
-* Ratings and Review component to get feedback about projects, project sponsors, freelancers and volunteers
-* Fund raising component for project sponsors to raise funds for their projects through crowdfunding and/or contributions from impact investors (phase 2)
+  * Ability to sign up on the platform as a job seeker, an employer or an agency that supports job seekers through workforce training and/or career placement
+* Quick and easy process to post jobs
+* Quick and easy process to post resumes of job seekers including video profiles
+* Search Tool for job seekers to find jobs of interest and for employers to find potential employees
+* Intelligent matching of well-qualified job seekers to jobs
+* Instant messaging between potentials employers, employees and support agencies
+* Application Tracking System for job seekers and agencies supporting them to track status of job applications
+* Ratings and Review component to get feedback about jobseekers and companies
 
 ## Built With
 * Client web app: ReactJS
