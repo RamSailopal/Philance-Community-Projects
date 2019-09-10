@@ -1,4 +1,4 @@
-# [PhiLance](http://philance.org)
+# [PhiLance - Community Projects](http://philance.org)
 PhiLance community-projects is an open-source software platform bringing together: (a) nonprofits that post projects, (b) Donors including individuals, businesses, foundations and public-sector organizations that sponsor those projects and (c) individuals seeking employment who work on those projects for a living wage. It is a crowdfunding-based jobs platform for people in distressed communities
 
 ## Built With
