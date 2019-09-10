@@ -1,26 +1,5 @@
 # [PhiLance](http://philance.org)
-An open source platform creating economic opportunities for people facing barriers to employment
-
-PhiLance is an AI-enabled online jobs marketplace connecting opportunity youth and those facing barriers to employment to
-jobs posted by businesses. We work closely with workforce development agencies and nonprofits that support such individuals
-with career services.
-
-You can read more about the mission and vision of PhiLance on [philance.org](http://philance.org)
-
-For project documentation refer to the [PhiLance Wiki on GitHub](https://github.com/Philance/Philance/wiki)
-
-## Features
-Here are the features that will be in the initial version of the platform.
-* Client application that runs on browser and mobile devices
-* User Management Suite
-  * Ability to sign up on the platform as a job seeker, an employer or an agency that supports job seekers through workforce training and/or career placement
-* Quick and easy process to post jobs
-* Quick and easy process to post resumes of job seekers including video profiles
-* Search Tool for job seekers to find jobs of interest and for employers to find potential employees
-* Intelligent matching of well-qualified job seekers to jobs
-* Instant messaging between potentials employers, employees and support agencies
-* Application Tracking System for job seekers and agencies supporting them to track status of job applications
-* Ratings and Review component to get feedback about jobseekers and companies
+PhiLance community-projects is an open-source software platform bringing together: (a) nonprofits that post projects, (b) Donors including individuals, businesses, foundations and public-sector organizations that sponsor those projects and (c) individuals seeking employment who work on those projects for a living wage. It is a crowdfunding-based jobs platform for people in distressed communities
 
 ## Built With
 * Client web app: ReactJS
